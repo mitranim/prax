@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>prax</title>
+    <meta name="author" content="mitranim">
+    <meta charset="utf-8">
+    <base href="/prax/">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=2, initial-scale=1, user-scalable=yes">
+    <link rel="stylesheet" type="text/css" href="/prax/styles/app.css">
+    <link rel="icon" href="data:;base64,=">
+  </head>
+
+  <body>
+    <%= $include('partials/banner', $) %>
+
+    <div class="container">
+      <div data-print></div>
+    </div>
+
+    <%= $include('partials/footer', $) %>
+
+    <script src="/prax/scripts/app.js" async></script>
+  </body>
+</html>
