@@ -7,7 +7,7 @@
   "scripts": {
     "start": "gulp",
     "test": "node test/test",
-    "autotest": "nodemon --watch lib --watch test --exec \"npm test\"",
+    "autotest": "nodemon --watch lib --watch test --exec \"node test/test\"",
     "prepublish": "npm test"
   },
   "description": "Reactive data library inspired by Meteor's Tracker",

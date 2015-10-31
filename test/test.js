@@ -1,18 +1,7 @@
 'use strict'
 
-/** ****************************** Transpile *********************************/
-
-require('babel-core/register')({
-  modules: 'common',
-  optional: [
-    'spec.protoToAssign',
-    'es7.classProperties'
-  ],
-  loose: [
-    'es6.classes',
-    'es6.properties.computed'
-  ]
-})
+// See .babelrc
+require('babel-core/register')
 
 /** ***************************** Dependencies *******************************/
 
@@ -42,13 +31,13 @@ let last = NaN
 let source = new Source(first)
 
 if (source.read() !== first) {
-  throw new Error(`expected ${first}, got ${source.read()}`)
+  throw Error(`expected ${first}, got ${source.read()}`)
 }
 
 source.write(second)
 
 if (source.read() !== second) {
-  throw new Error(`expected ${second}, got ${source.read()}`)
+  throw Error(`expected ${second}, got ${source.read()}`)
 }
 
 /**
@@ -65,19 +54,19 @@ autorun(function () {
   else throwAfterFirst()
 })
 
-if (last !== first) throw new Error('fail')
+if (last !== first) throw Error()
 
 source.write(second)
 
-if (last !== second) throw new Error('fail')
+if (last !== second) throw Error()
 
 source.write(first)
 
-if (last !== first) throw new Error('fail')
+if (last !== first) throw Error()
 
 source.write(second)
 
-if (last !== second) throw new Error('fail')
+if (last !== second) throw Error()
 
 /**
  * Automatic cleanup
@@ -95,19 +84,19 @@ times(10, () => {
     run++
     if (run === 1) source.read()
     else if (run === 2) return
-    else throw new Error('fail')
+    else throw Error()
   })
 })
 
 if (source.beacon.readers.length !== 10) {
-  throw new Error(`Expected 10 readers, found: ${source.beacon.readers.length}`)
+  throw Error(`Expected 10 readers, found: ${source.beacon.readers.length}`)
 }
 
 // This write should successfully flush all the readers.
 source.write(first)
 
 if (source.beacon.readers.length !== 0) {
-  throw new Error(`Expected readers to be flushed, found: ${source.beacon.readers.length}`)
+  throw Error(`Expected readers to be flushed, found: ${source.beacon.readers.length}`)
 }
 
 /**
@@ -124,11 +113,11 @@ autorun(function () {
 
 db.add(first)
 
-if (last !== first) throw new Error('fail')
+if (last !== first) throw Error()
 
 db.add(second)
 
-if (last !== second) throw new Error('fail')
+if (last !== second) throw Error()
 
 // Automatic cleanup
 
@@ -216,11 +205,11 @@ times(10, () => {
   autorun(function () {
     if (!runs++) source.read()
   })
-  if (!runs) throw new Error('failed to run')
+  if (!runs) throw Error('failed to run')
 
   source.write(first)
   if (source.beacon.readers.length !== 0) {
-    throw new Error('failed to clean up readers')
+    throw Error('failed to clean up readers')
   }
 })
 
@@ -233,17 +222,17 @@ times(10, () => {
   readers.push(autorun(function () {
     if (!runs++) source.read()
   }))
-  if (!runs) throw new Error('failed to run')
+  if (!runs) throw Error('failed to run')
 })
 
 if (source.beacon.readers.length !== 10) {
-  throw new Error('expected 10 readers')
+  throw Error('expected 10 readers')
 }
 
 readers.forEach(stop)
 
 if (source.beacon.readers.length !== 0) {
-  throw new Error('failed to clean up all readers')
+  throw Error('failed to clean up all readers')
 }
 
 // Via `autorun`.
@@ -255,13 +244,13 @@ times(10, () => {
   readers.push(autorun(function () {
     if (!runs++) source.read()
   }))
-  if (!runs) throw new Error('failed to run')
+  if (!runs) throw Error('failed to run')
 })
 
 readers.forEach(autorun)
 
 if (source.beacon.readers.length !== 0) {
-  throw new Error('failed to clean up all readers')
+  throw Error('failed to clean up all readers')
 }
 
 /**
@@ -283,11 +272,11 @@ autorun(function () {
   last = indirectRead()
 })
 
-if (last !== first) throw new Error('fail')
+if (last !== first) throw Error()
 
 indirectWrite(second)
 
-if (last !== second) throw new Error('fail')
+if (last !== second) throw Error()
 
 /**
  * Automatic switch between sources
@@ -302,35 +291,35 @@ reader = autorun(function () {
   last = source.read()
 })
 
-if (last !== first) throw new Error('fail')
+if (last !== first) throw Error()
 
 // Switch on write, with cleanup
 
 source = sourceTwo
 
 sourceTwo.write(second)
-if (last !== first) throw new Error('fail')
+if (last !== first) throw Error()
 
 sourceOne.write(first)
-if (last !== second) throw new Error('fail')
+if (last !== second) throw Error()
 
-if (sourceOne.beacon.readers.length !== 0) throw new Error('fail')
-if (sourceTwo.beacon.readers.length !== 1) throw new Error('fail')
+if (sourceOne.beacon.readers.length !== 0) throw Error()
+if (sourceTwo.beacon.readers.length !== 1) throw Error()
 
 // Switch on autorun, with cleanup
 
 source = sourceOne
 autorun(reader)
 
-if (last !== first) throw new Error('fail')
+if (last !== first) throw Error()
 
 source = sourceTwo
 autorun(reader)
 
-if (last !== second) throw new Error('fail')
+if (last !== second) throw Error()
 
-if (sourceOne.beacon.readers.length !== 0) throw new Error('fail')
-if (sourceTwo.beacon.readers.length !== 1) throw new Error('fail')
+if (sourceOne.beacon.readers.length !== 0) throw Error()
+if (sourceTwo.beacon.readers.length !== 1) throw Error()
 
 /** ******************************** Utils ***********************************/
 
@@ -338,12 +327,14 @@ function throwAfterFirst () {
   runs += 1
 
   if (runs > 1) {
-    throw new Error('unexpectedly called more than once after unsubscribing')
+    throw Error('unexpectedly called more than once after unsubscribing')
   } else if (runs !== 1) {
-    throw new Error('internal test error: expected runs to equal 1, got: ' + runs)
+    throw Error('internal test error: expected runs to equal 1, got: ' + runs)
   }
 }
 
 function times (num, func) {
   Array(num).fill().forEach(func)
 }
+
+console.info(`[${new Date().getUTCHours()}:${new Date().getUTCMinutes()}:${new Date().getUTCSeconds()}] Finished without errors.`)

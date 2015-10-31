@@ -7,3 +7,6 @@ node_modules
 gh-pages
 test
 docs
+
+# Build-related files
+gulpfile.js

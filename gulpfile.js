@@ -93,22 +93,7 @@ function scripts (done) {
         {
           test: /\.jsx?$/,
           exclude: /(node_modules|bower_components)/,
-          loader: 'babel',
-          query: {
-            modules: 'common',
-            optional: [
-              'spec.protoToAssign',
-              'es7.classProperties',
-              'es7.decorators',
-              'es7.functionBind',
-              'validation.undeclaredVariableCheck'
-            ],
-            loose: [
-              'es6.classes',
-              'es6.properties.computed',
-              'es6.forOf'
-            ]
-          }
+          loader: 'babel'
         }
       ]
     },
@@ -121,7 +106,7 @@ function scripts (done) {
 
   function onComplete (err, stats) {
     if (err) {
-      throw new Error(err)
+      throw Error(err)
     } else {
       const report = stats.toString({
         colors: true,
