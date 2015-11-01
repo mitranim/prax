@@ -10,3 +10,4 @@ docs
 
 # Build-related files
 gulpfile.js
+.babelrc

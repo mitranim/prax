@@ -1,7 +1,6 @@
 {
   "name": "prax",
   "version": "0.0.1",
-  "private": true,
   "main": "lib/prax.js",
   "jsnext:main": "lib/prax.js",
   "scripts": {
