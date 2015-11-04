@@ -1,8 +1,5 @@
 'use strict'
 
-// See .babelrc
-require('babel-core/register')
-
 /** ***************************** Dependencies *******************************/
 
 const main = require('path').join(__dirname, '..', require('../package').main)
@@ -337,4 +334,4 @@ function times (num, func) {
   Array(num).fill().forEach(func)
 }
 
-console.info(`[${new Date().getUTCHours()}:${new Date().getUTCMinutes()}:${new Date().getUTCSeconds()}] Finished without errors.`)
+console.info(`[${new Date().getUTCHours()}:${new Date().getUTCMinutes()}:${new Date().getUTCSeconds()}] Finished test without errors.`)
