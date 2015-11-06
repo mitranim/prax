@@ -5,8 +5,8 @@
   "jsnext:main": "lib/prax.js",
   "scripts": {
     "start": "gulp",
-    "test": "gulp test",
-    "prepublish": "gulp build && gulp test"
+    "test": "node test/test",
+    "prepublish": "gulp build && npm test"
   },
   "description": "Reactive data library inspired by Meteor's Tracker",
   "keywords": [
