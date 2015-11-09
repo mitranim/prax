@@ -1,6 +1,6 @@
 'use strict'
 
-const main = require('path').join(__dirname, '..', require('../package').main)
+const main = require('path').join(__dirname, '..', require('../package')['jsnext:main'])
 
 const Beacon = require(main).Beacon
 

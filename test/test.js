@@ -2,7 +2,7 @@
 
 /** ***************************** Dependencies *******************************/
 
-const main = require('path').join(__dirname, '..', require('../package').main)
+const main = require('path').join(__dirname, '..', require('../package')['jsnext:main'])
 
 const autorun = require(main).autorun
 const stop = require(main).stop
@@ -19,13 +19,15 @@ const db = require('./db').db
 
 const first = 127
 const second = 255
-let last = NaN
+let last, source, reader, active, runs, readers
 
 /**
  * Source
  */
 
-let source = new Source(first)
+last = source = reader = active = runs = readers = undefined
+
+source = new Source(first)
 
 if (source.read() !== first) {
   throw Error(`expected ${first}, got ${source.read()}`)
@@ -41,10 +43,11 @@ if (source.read() !== second) {
  * Autorun
  */
 
-source = new Source(first)
+last = source = reader = active = runs = readers = undefined
 
-let active = true
-let runs = 0
+source = new Source(first)
+active = true
+runs = 0
 
 autorun(function () {
   if (active) last = source.read()
@@ -100,6 +103,8 @@ if (source.beacon.readers.length !== 0) {
  * Using Beacon to create a custom reactive data source
  */
 
+last = source = reader = active = runs = readers = undefined
+
 active = true
 runs = 0
 
@@ -136,6 +141,8 @@ db.add(second)
  * change, the reader must not be called again. In other words, a rerun caused
  * by one beacon clears the links between the reader and all other beacons.
  */
+
+last = source = reader = active = runs = readers = undefined
 
 const beaconOne = new Beacon()
 const beaconTwo = new Beacon()
@@ -175,9 +182,12 @@ source.write(first)
  * Cleanup with `stop`
  */
 
+last = source = reader = active = runs = readers = undefined
+
+source = new Source(first)
 runs = 0
 
-let reader = autorun(function () {
+reader = autorun(function () {
   throwAfterFirst()
   source.read()
 })
@@ -186,12 +196,14 @@ let reader = autorun(function () {
 stop(reader)
 
 // Should not throw.
-source.write(first)
 source.write(second)
+source.write(first)
 
 /**
  * Cleanup of multiple readers from one source
  */
+
+last = source = reader = active = runs = readers = undefined
 
 source = new Source(first)
 
@@ -212,7 +224,7 @@ times(10, () => {
 
 // Via `stop`.
 
-let readers = []
+readers = []
 
 times(10, () => {
   let runs = 0
@@ -254,6 +266,8 @@ if (source.beacon.readers.length !== 0) {
  * Indirect effects
  */
 
+last = source = reader = active = runs = readers = undefined
+
 source = new Source(first)
 last = null
 
@@ -278,6 +292,8 @@ if (last !== second) throw Error()
 /**
  * Automatic switch between sources
  */
+
+last = source = reader = active = runs = readers = undefined
 
 const sourceOne = new Source(first)
 const sourceTwo = new Source(second)
