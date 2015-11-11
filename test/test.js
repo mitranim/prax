@@ -2,7 +2,8 @@
 
 /** ***************************** Dependencies *******************************/
 
-const main = require('path').join(__dirname, '..', require('../package')['jsnext:main'])
+const pt = require('path')
+const main = pt.join(__dirname, '..', require('../package')['jsnext:main'])
 
 const autorun = require(main).autorun
 const stop = require(main).stop
@@ -333,6 +334,25 @@ if (last !== second) throw Error()
 
 if (sourceOne.beacon.readers.length !== 0) throw Error()
 if (sourceTwo.beacon.readers.length !== 1) throw Error()
+
+/**
+ * Interoperation between multiple copies of prax.
+ */
+
+last = source = reader = active = runs = readers = undefined
+
+source = new Source(first)
+
+if (!require.cache[main]) throw Error()
+delete require.cache[main]
+
+const secondAutorun = require(main).autorun
+
+secondAutorun(function () {
+  last = source.read()
+})
+
+if (last !== first) throw Error()
 
 /** ******************************** Utils ***********************************/
 
