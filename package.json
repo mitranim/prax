@@ -1,6 +1,6 @@
 {
   "name": "prax",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "dist/prax.js",
   "jsnext:main": "lib/prax.js",
   "scripts": {
@@ -8,17 +8,16 @@
     "test": "node test/test",
     "prepublish": "gulp build && npm test"
   },
-  "description": "Reactive data library inspired by Meteor's Tracker",
+  "description": "Lightweight change detection system for abstract data trees",
   "keywords": [
-    "event",
     "change",
-    "listener",
-    "emitter",
+    "detection",
     "reactive",
+    "listener",
+    "event",
+    "emitter",
     "observable",
-    "observe",
-    "tracker",
-    "meteor"
+    "observe"
   ],
   "authors": [
     "Mitranim <me@mitranim.com>"
@@ -28,8 +27,12 @@
     "type": "git",
     "url": "https://github.com/Mitranim/prax.git"
   },
+  "peerDependencies": {
+    "emerge": ">= 0.0.5"
+  },
   "devDependencies": {
     "del": "^2.0.2",
+    "emerge": "0.0.5",
     "gulp": "gulpjs/gulp#4.0",
     "gulp-babel": "^5.3.0",
     "gulp-load-plugins": "^1.0.0",

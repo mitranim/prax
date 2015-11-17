@@ -1,6 +1,6 @@
 'use strict'
 
-const main = require('path').join(__dirname, '..', require('../package')['jsnext:main'])
+const main = require('path').join(__dirname, '../lib/prax-multi.js')
 
 const Beacon = require(main).Beacon
 
