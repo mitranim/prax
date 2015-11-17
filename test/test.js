@@ -52,7 +52,7 @@ if (typeof write !== 'function') throw Error()
 if (read() !== prev) throw Error()
 
 // Used across the rest of the test to reset the state.
-const reset = () => {
+const RESET = () => {
   stop(reader)
   reader = last = readerShouldThrow = undefined
   write(prev)
@@ -62,7 +62,7 @@ const reset = () => {
  * read
  */
 
-reset()
+RESET()
 
 if (read() !== prev) throw Error()
 if (read('one') !== prev.one) throw Error()
@@ -72,7 +72,7 @@ if (read('one', 'two') !== prev.one.two) throw Error()
  * write
  */
 
-reset()
+RESET()
 write(next)
 if (read() !== next) throw Error()
 
@@ -83,7 +83,7 @@ if (read() !== next) throw Error()
  * them only if the data at those exact paths has changed.
  */
 
-reset()
+RESET()
 
 // Basic change detection.
 
@@ -109,7 +109,7 @@ write({one: {three: NaN}})
 
 // Reader that doesn't read any data should be called exactly once.
 
-reset()
+RESET()
 
 reader = autorun(() => {
   last = true
@@ -125,7 +125,7 @@ write(prev)
 // Reader that depends on deep leaves should be called only when these leaves
 // are changed, and not when the rest of the branch is changed.
 
-reset()
+RESET()
 
 reader = autorun(() => {
   last = read('one', 'two', 0)
@@ -140,7 +140,7 @@ write(next)
 
 // Reader that reads from root should be rerun on any change.
 
-reset()
+RESET()
 
 reader = autorun(() => {
   last = read()
@@ -154,7 +154,7 @@ if (last !== next) throw Error()
  * stop
  */
 
-reset()
+RESET()
 
 reader = autorun(() => {
   read()
