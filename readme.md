@@ -12,6 +12,5 @@ npm start
 npm run autotest
 ```
 
-`prax` is a lightweight, efficient change detection system. It's designed for
+`prax` is a lightweight, efficient change detection library. It's designed for
 _unistate_ systems, where the entire application state is kept in a single tree.
-Popular use case: user-facing apps using Redux.
