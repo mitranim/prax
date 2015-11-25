@@ -1,0 +1,42 @@
+@import './_variables';
+
+@import './node_modules/stylific/scss/stylific';
+@import './node_modules/font-awesome/scss/font-awesome';
+
+/*********************************** Misc ************************************/
+
+.fa.inline, .fa:not(:empty)::before {
+  margin-left: 0.3em;
+  margin-right: 0.3em;
+  &:first-child {margin-left: 0}
+  &:last-child {margin-right: 0}
+}
+
+.fa.pop {
+  &:hover, &:focus, &:active {
+    transform: scale(1.2);
+  }
+  @include sf-transitions(all);
+}
+
+.dark {
+  @extend [class*=sf-icon].dark;
+  @include sf-transitions(all);
+}
+
+a[href].dark {
+  &, &:hover, &:focus, &:active {
+    background: none;
+  }
+}
+
+.fa-github  {color: $color-github}
+.fa-twitter {color: $color-twitter}
+
+a[href].fa {
+  &, &:hover, &:focus, &:active, &.active {
+    background: none;
+  }
+}
+
+.text-size-double {font-size: 2em}

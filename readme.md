@@ -11,6 +11,3 @@ npm start
 # tab2
 npm run autotest
 ```
-
-`prax` is a lightweight, efficient change detection library. It's designed for
-_unistate_ systems, where the entire application state is kept in a single tree.
