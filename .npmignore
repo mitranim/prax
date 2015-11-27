@@ -4,6 +4,8 @@
 
 # Folders
 node_modules
+gh-pages
+docs
 test
 
 # Build-related files
