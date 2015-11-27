@@ -20,7 +20,7 @@ const toTest = require(main).toTest
  * Globals
  */
 
-let last, called, transducer, factor
+let last, called, transducer, factor, throwWhenCalled
 
 const tree = immute({
   one: {two: [2]},
@@ -35,7 +35,7 @@ const read = function () {
 const write = value => last = value
 
 const RESET = () => {
-  last = called = transducer = factor = undefined
+  last = called = transducer = factor = throwWhenCalled = undefined
 }
 
 const circular = () => circular
@@ -108,13 +108,17 @@ RESET()
 
 transducer = match({type: 'hit'}, write)
 
-factor = transducer(() => {last = 'default'})
+factor = transducer(() => {
+  last = 'default'
+  if (throwWhenCalled) throw Error()
+})
 
 // Missing the pattern should call the external factor.
 factor('miss')
 if (last !== 'default') throw Error()
 
-// Hitting the pattern should call the internal factor.
+// Hitting the pattern should call the internal factor, but not the external.
+throwWhenCalled = true
 factor({type: 'hit', value: Infinity})
 if (last.value !== Infinity) throw Error()
 
@@ -126,10 +130,10 @@ if (last.value !== Infinity) throw Error()
  * to receive an internal factor that closures the external factor and has the
  * ability to call it. It then transduces that factor and returns the third,
  * final factor. When called with a value, it checks the value against the
- * pattern and passes it to either the internal or the external vector.
+ * pattern and passes it to either the internal or the external factor.
  *
  * The main difference from `match` is that `multimatch` passes the external
- * vector to the user-defined transducer, giving the opportunity to closure it
+ * factor to the user-defined transducer, giving the opportunity to closure it
  * in the factor that will be called with the pattern is matched.
  *
  * given:

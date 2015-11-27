@@ -1,6 +1,6 @@
 {
   "name": "prax",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "dist/index.js",
   "jsnext:main": "lib/index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "build-prod": "gulp build --prod",
     "serve-prod": "npm run build-prod && gulp server"
   },
-  "description": "Supercharger for React apps. Immutable data, efficient change detection, message-style middleware with pattern matching",
+  "description": "Supercharger for React apps. Immutable data, efficient change detection, pattern matching in middleware",
   "keywords": [
     "immutable",
     "data",
@@ -32,7 +32,7 @@
     "url": "https://github.com/Mitranim/prax.git"
   },
   "dependencies": {
-    "emerge": "^0.0.6"
+    "emerge": "^0.0.7"
   },
   "devDependencies": {
     "babel-core": "^5.8.25",
