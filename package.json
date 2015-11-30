@@ -1,6 +1,6 @@
 {
   "name": "prax",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "main": "dist/index.js",
   "jsnext:main": "lib/index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "build-prod": "gulp build --prod",
     "serve-prod": "npm run build-prod && gulp server"
   },
-  "description": "Supercharger for React apps. Immutable data, efficient change detection, pattern matching in middleware",
+  "description": "Supercharger for React apps. Immutable data, efficient change detection, pattern matching for commands",
   "keywords": [
     "immutable",
     "data",

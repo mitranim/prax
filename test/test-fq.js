@@ -66,12 +66,14 @@ if (!toTest(isNumber)(Infinity)) throw Error()
 // Objects.
 
 if (toTest({type: 'fork'})({type: 'FORK'})) throw Error()
+if (toTest({type: 'fork'})(null)) throw Error()
 if (!toTest({type: 'fork'})({type: 'fork', extra: true})) throw Error()
 
 // Nested objects.
 
 if (toTest({space: {time: NaN}})({space: {}})) throw Error()
 if (toTest({space: {time: NaN}})({space: {time: {}}})) throw Error()
+if (toTest({space: {time: NaN}})({space: null})) throw Error()
 if (!toTest({space: {time: NaN}})({space: {time: NaN}, extra: true})) throw Error()
 
 // Combined and nested.
@@ -230,9 +232,8 @@ shouldThrow(() => {send(undefined)})
 
 const secret = Symbol()
 
-if (send(secret) !== secret) throw Error()
-
 // Should ultimately be connected to `write`.
+send(secret)
 if (last !== secret) throw Error()
 
 /**
