@@ -21,7 +21,10 @@ export const {read, watch, stop} = atom
 
 import factors from './factors'
 
-const writer = read => next => ({type, value, path}) => {
+const writer = read => next => msg => {
+  if (msg === 'init') return
+  const {type, value, path} = msg
+
   switch (type) {
     case 'set':
       next(replaceAtPath(read(), value, path))
@@ -29,6 +32,8 @@ const writer = read => next => ({type, value, path}) => {
     case 'patch':
       next(mergeAtPath(read(), value, path || []))
       break
+    default:
+      console.warn('Discarding unrecognised message:', msg)
   }
 }
 
