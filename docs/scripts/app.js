@@ -1,4 +1,5 @@
-// import 'stylific'
+import 'stylific'
+import 'simple-pjax'
 import React from 'react'
 import {renderTo} from './utils'
 import {read} from './core'

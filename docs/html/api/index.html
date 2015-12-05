@@ -1,0 +1,17 @@
+<div class="doc-columns">
+  <div class="sidenav">
+    <a href="api/atom/" ${$act('api/atom', $)}><span>atom</span></a>
+    <a href="api/factors/" ${$act('api/factors', $)}><span>factors</span></a>
+    <a href="api/matching/" ${$act('api/matching', $)}><span>matching</span></a>
+    <a href="api/merging/" ${$act('api/merging', $)}><span>merging</span></a>
+    <a href="api/react/" ${$act('api/react', $)}><span>react</span></a>
+  </div>
+
+  <div class="sf-article">
+    <% if ($path === 'api/index') { %>
+      <%= $include('api/api', $) %>
+    <% } else { %>
+      <%= $content %>
+    <% } %>
+  </div>
+</div>

@@ -15,6 +15,7 @@ const del = require('del')
 const exec = require('child_process').exec
 const flags = require('yargs').boolean('prod').argv
 const gulp = require('gulp')
+const hljs = require('highlight.js')
 const pt = require('path')
 const webpack = require('webpack')
 
@@ -92,7 +93,21 @@ gulp.task('docs:html:clear', function (done) {
 })
 
 gulp.task('docs:html:compile', function () {
+  const filterMd = $.filter('**/*.md', {restore: true})
+
   return gulp.src(src.docHtml)
+    // Pre-process markdown files.
+    .pipe(filterMd)
+    .pipe($.remarkable({
+      preset: 'commonmark',
+      highlight (code, lang) {
+        const result = lang ? hljs.highlight(lang, code) : hljs.highlightAuto(code)
+        return result.value
+      }
+    }))
+    // Add hljs code class.
+    .pipe($.replace(/<pre><code class="(.*)">|<pre><code>/g, '<pre class="hljs"><code class="hljs $1">'))
+    .pipe(filterMd.restore)
     .pipe($.statil({imports: {prod: flags.prod}}))
     // Change each `<filename>` into `<filename>/index.html`.
     .pipe($.rename(function (path) {
