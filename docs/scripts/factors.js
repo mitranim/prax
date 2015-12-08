@@ -10,14 +10,6 @@ export default (read, send) => pipe(
     })
   }),
 
-  match({type: 'test', value: isNumber}, msg => {
-    console.log('-- got test number:', msg)
-  }),
-
-  match(isNumber, msg => {
-    console.log('-- got number:', msg)
-  }),
-
   match({type: 'personUpdate'}, ({value}) => {
     // This will execute as a sequence.
     send([
@@ -48,16 +40,6 @@ export default (read, send) => pipe(
   /**
    * Mock
    */
-
-  multimatch({type: 'im'}, pipe(
-    match({action: 'send'}, msg => {
-      console.log('-- sending:', msg)
-    }),
-
-    match({action: 'poll'}, msg => {
-      console.log('-- polling:', msg)
-    })
-  )),
 
   multimatch('init', next => msg => {
     next(msg)
