@@ -28,6 +28,8 @@ const Root = auto(props => {
     </div>
   )
 })
+
+React.render(<Root />, document.getElementById('root'))
 ```
 
   <div data-state></div>

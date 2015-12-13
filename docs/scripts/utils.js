@@ -29,7 +29,8 @@ export function renderTo (selector, renderFunc) {
 
 document.addEventListener('simple-pjax-before-transition', () => {
   while (unmountQueue.length) {
-    unmountComponentAtNode(unmountQueue.shift())
+    unmountComponentAtNode(unmountQueue[0])
+    unmountQueue.shift()
   }
 })
 
