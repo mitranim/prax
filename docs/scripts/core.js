@@ -49,5 +49,6 @@ send('init')
 if (window.developmentMode) {
   window.atom = atom
   window.fq = fq
+  window.read = read
   window.send = send
 }
