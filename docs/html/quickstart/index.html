@@ -1,14 +1,10 @@
-<!-- <div class="doc-columns"> -->
-  <!-- <div class="sidenav">
-    <a href="quickstart/first/" ${$act('quickstart/first', $)}><span>first</span></a>
-    <a href="quickstart/second/" ${$act('quickstart/second', $)}><span>second</span></a>
-  </div> -->
-
-  <div class="sf-article">
-    <% if ($path === 'quickstart/index') { %>
-      <%= $include('quickstart/quickstart', $) %>
-    <% } else { %>
-      <%= $content %>
-    <% } %>
+<div class="doc-columns">
+  <div class="col-start-stretch container">
+    <a href="quickstart/#installation"><span>installation</span></a>
+    <a href="quickstart/#atom"><span>atom</span></a>
   </div>
-<!-- </div> -->
+
+  <article>
+    <%= $include('quickstart/quickstart', $) %>
+  </article>
+</div>

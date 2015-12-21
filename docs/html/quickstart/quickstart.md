@@ -1,11 +1,21 @@
+Welcome to Prax. This guide will cover the basics.
+
 ## Installation
 
-Prerequisites:
-* <a href="https://www.npmjs.com" target="_blank">`npm`</a>
-* module-friendly build system (browserify, Webpack, SystemJS)
+The guide assumes you're using
+<a href="https://www.npmjs.com" target="_blank">`npm`</a> and a module-friendly
+build system like browserify or Webpack.
+
+Install from `npm`:
 
 ```sh
 npm i --save-dev prax
+```
+
+Then import it in your application:
+
+```javascript
+import * as prax from 'prax'
 ```
 
 ## Atom
@@ -25,25 +35,24 @@ const atom = createAtom(initialState)
 const {read, write, watch, stop} = atom
 ```
 
-Just for fun, you can watch the atom for changes:
+Watch the atom for changes:
 
 ```javascript
 function watcher (read) {
   console.log(read('one', 'two'))
 }
 
-watch(watcher)
+watch(watcher)  // prints '2'
 
-atom.write({one: {two: 'two'}})  // watcher prints 'two'
+atom.write({one: {two: 'two'}})  // prints 'two'
 
 stop(watcher)
 ```
 
 
-
 We want to prevent accidental data mutation. We also want to update atom state
-in a way that retains old references of unchanged objects, so we can compare
-them with `===`.
+in a way that retains references of unchanged objects, so we can compare them
+with `===`.
 
 Prax has utilities just for that:
 

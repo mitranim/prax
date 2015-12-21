@@ -98,8 +98,9 @@ gulp.task('docs:html:compile', function () {
   return gulp.src(src.docHtml)
     // Pre-process markdown files.
     .pipe(filterMd)
-    .pipe($.remarkable({
-      preset: 'commonmark',
+    .pipe($.marked({
+      smartypants: true,
+      // Code highlighter.
       highlight (code, lang) {
         const result = lang ? hljs.highlight(lang, code) : hljs.highlightAuto(code)
         return result.value
@@ -108,6 +109,8 @@ gulp.task('docs:html:compile', function () {
     // Add hljs code class.
     .pipe($.replace(/<pre><code class="(.*)">|<pre><code>/g, '<pre class="hljs"><code class="hljs $1">'))
     .pipe(filterMd.restore)
+    // Unpack commented HTML parts.
+    .pipe($.replace(/<!--\s*:((?:[^:]|:(?!\s*-->))*):\s*-->/g, '$1'))
     .pipe($.statil({imports: {prod: flags.prod}}))
     // Change each `<filename>` into `<filename>/index.html`.
     .pipe($.rename(function (path) {
@@ -237,7 +240,7 @@ gulp.task('server', function () {
     startPath: '/prax/',
     server: {
       baseDir: out.docHtml,
-      middleware: function (req, res, next) {
+      middleware (req, res, next) {
         req.url = req.url.replace(/^\/prax\//, '').replace(/^[/]*/, '/')
         next()
       }

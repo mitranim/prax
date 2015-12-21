@@ -9,7 +9,7 @@ const fs = require('fs')
 require.extensions['.js'] = (module, path) => {
   let content = fs.readFileSync(path, 'utf8')
   content = content
-    .replace(/^\/\*\s*#if\s+TESTING\b.*$/gm, '')
+    .replace(/^\s*\/\*\s*#if\s+TESTING\b.*$/gm, '')
     .replace(/^\s*#endif\s+TESTING\b.*\*\/$/gm, '')
   module._compile(content, path)
 }
