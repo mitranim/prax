@@ -19,6 +19,6 @@ require.extensions['.js'] = (module, path) => {
  */
 
 require('./test-atom')
-require('./test-fq')
+require('./test-mb')
 
 console.info(`[${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}] Finished test without errors.`)
