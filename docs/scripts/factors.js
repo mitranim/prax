@@ -1,3 +1,4 @@
+import {createMb} from 'prax'
 import {send, match} from './core'
 
 match(x => x instanceof Array, msgs => {
@@ -40,7 +41,7 @@ match({type: 'person/update'}, ({value}) => {
  * Mock
  */
 
-match('init', msg => {
+match('init', () => {
   const names = ['Atlanta', 'Kara', 'Moira']
   let i = -1
 
@@ -73,10 +74,26 @@ match('init', msg => {
   })
 })
 
+match({type: 'test', value: isNumber}, createMb(
+  {value: 1}, ({value}) => {
+    console.log('-- one:', value)
+  },
+
+  {type: 'test', value: 2}, ({value}) => {
+    console.log('-- two:', value)
+  },
+
+  Boolean, () => {}
+).send)
+
 /**
  * Utils
  */
 
 function isPromise (value) {
   return value && typeof value.then === 'function' && typeof value.catch === 'function'
+}
+
+function isNumber (value) {
+  return typeof value === 'number'
 }

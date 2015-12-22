@@ -31,6 +31,7 @@ const mb = createMb(
 
 export const {send, match} = mb
 
+// Application logic.
 require('./factors')
 
 send('init')

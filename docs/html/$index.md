@@ -41,6 +41,10 @@ React.render(<Root />, document.getElementById('root'))
 
 Class-based forms are also available, see the [React addons](api/react) API.
 
+<!--:
+<%= $include('partials/mock', $) %>
+:-->
+
 ## Compatibility
 
 Any ES5 environment (IE9+).
