@@ -1,14 +1,15 @@
 import React from 'react'
 import {renderTo} from './utils'
-import {atom, read} from './core'
-import {createReactiveRender, createReactiveMethod} from 'prax/react'
+import {atom, read, match} from './core'
+import {createReactiveRender, createReactiveMethod, createMatchDecorator} from 'prax/react'
 
 /**
- * Decorators for legacy components.
+ * Decorators for class-style components.
  */
 
 const reactiveRender = createReactiveRender(atom)
 const reactiveMethod = createReactiveMethod(atom)
+const on = createMatchDecorator(match)
 
 // Reactive `render`. The component is automatically updated when the atom data
 // is changed.
@@ -24,15 +25,20 @@ export class KeyReporter extends React.Component {
   }
 }
 
-// Reactive updates with `setState`. The method is automatically rerun when the
-// atom data is changed.
+// Reactive updates with `setState`, event handling with a match decorator.
 @renderTo('[data-stamp]')
 export class StampReporter extends React.Component {
+  // The method is automatically rerun when the data it `read`s is changed.
   @reactiveMethod
   update () {
     this.setState({
       stamp: read('stamp')
     })
+  }
+
+  @on(x => typeof x === 'number')
+  test (num) {
+    console.log('-- num:', num)
   }
 
   render () {

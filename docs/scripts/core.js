@@ -1,5 +1,5 @@
 // Core utilities.
-import {createAtom, createFq} from 'prax'
+import {createAtom, createMb} from 'prax'
 // Immutability utilities.
 import {immute, replaceAtPath, mergeAtPath} from 'prax'
 
@@ -16,29 +16,22 @@ export const atom = createAtom(immute({
 export const {read, watch, stop} = atom
 
 /**
- * FQ
+ * Message Bus
  */
 
-import factors from './factors'
+const mb = createMb(
+  {type: 'set', path: x => x instanceof Array}, ({value, path}) => {
+    atom.write(replaceAtPath(read(), value, path))
+  },
 
-const writer = read => next => msg => {
-  if (msg === 'init') return
-  const {type, value, path} = msg
-
-  switch (type) {
-    case 'set':
-      next(replaceAtPath(read(), value, path))
-      break
-    case 'patch':
-      next(mergeAtPath(read(), value, path || []))
-      break
-    default:
-      console.warn('Discarding unrecognised message:', msg)
+  {type: 'patch'}, ({value, path}) => {
+    atom.write(mergeAtPath(read(), value, path || []))
   }
-}
+)
 
-export const fq = createFq(factors, writer)
-export const send = fq(atom.read, atom.write)
+export const {send, match} = mb
+
+require('./factors')
 
 send('init')
 
@@ -48,7 +41,7 @@ send('init')
 
 if (window.developmentMode) {
   window.atom = atom
-  window.fq = fq
   window.read = read
+  window.mb = mb
   window.send = send
 }

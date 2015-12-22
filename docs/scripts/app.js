@@ -3,10 +3,10 @@ import 'simple-pjax'
 import React from 'react'
 import {renderTo} from './utils'
 import {read} from './core'
-import './legacy'
+import './classes'
 
 /**
- * Reactive components as pure functions
+ * Reactive components as functions
  */
 
 renderTo('[data-state]', state)

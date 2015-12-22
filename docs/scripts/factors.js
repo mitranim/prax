@@ -1,81 +1,77 @@
-import {match, multimatch, pipe} from 'prax'
+import {send, match} from './core'
 
-export default (read, send) => pipe(
-  match(x => x instanceof Array, msgs => {
-    let step
-    msgs.forEach(msg => {
-      if (step) step = step.then(() => {send(msg)})
-      else if (isPromise(msg)) step = msg.then(send)
-      else send(msg)
-    })
-  }),
+match(x => x instanceof Array, msgs => {
+  let step
+  msgs.forEach(msg => {
+    if (step) step = step.then(() => {send(msg)})
+    else if (isPromise(msg)) step = msg.then(send)
+    else send(msg)
+  })
+})
 
-  match({type: 'personUpdate'}, ({value}) => {
-    // This will execute as a sequence.
-    send([
-      {
-        type: 'patch',
-        value: {
-          persons: {[value.id]: {id: value.id, loading: true}}
-        }
-      },
-      new Promise(resolve => {
-        setTimeout(() => {
-          resolve({
-            type: 'patch',
-            value: {persons: {[value.id]: value}}
-          })
-        }, 1000)
-      }),
-      // Will wait until the promise is resolved.
-      {
-        type: 'patch',
-        value: {
-          persons: {[value.id]: {loading: false}}
-        }
+match({type: 'person/update'}, ({value}) => {
+  // This will execute as a sequence.
+  send([
+    {
+      type: 'patch',
+      value: {
+        persons: {[value.id]: {id: value.id, loading: true}}
       }
-    ])
-  }),
-
-  /**
-   * Mock
-   */
-
-  multimatch('init', next => msg => {
-    next(msg)
-
-    const names = ['Atlanta', 'Kara', 'Moira']
-    let i = -1
-
-    function mockUpdate () {
-      send({
-        type: 'personUpdate',
-        value: {
-          id: 1,
-          name: names[++i % names.length]
-        }
-      })
+    },
+    new Promise(resolve => {
+      setTimeout(() => {
+        resolve({
+          type: 'patch',
+          value: {persons: {[value.id]: value}}
+        })
+      }, 1000)
+    }),
+    // Will wait until the promise is resolved.
+    {
+      type: 'patch',
+      value: {
+        persons: {[value.id]: {loading: false}}
+      }
     }
+  ])
+})
 
-    mockUpdate()
-    setInterval(mockUpdate, 2000)
+/**
+ * Mock
+ */
 
-    setInterval(() => {
-      send({
-        type: 'patch',
-        value: {stamp: window.performance.now() | 0}
-      })
-    }, 1000)
+match('init', msg => {
+  const names = ['Atlanta', 'Kara', 'Moira']
+  let i = -1
 
-    document.addEventListener('keypress', event => {
-      send({
-        type: 'set',
-        path: ['key'],
-        value: event.keyCode
-      })
+  function mockUpdate () {
+    send({
+      type: 'person/update',
+      value: {
+        id: 1,
+        name: names[++i % names.length]
+      }
+    })
+  }
+
+  mockUpdate()
+  setInterval(mockUpdate, 2000)
+
+  setInterval(() => {
+    send({
+      type: 'patch',
+      value: {stamp: window.performance.now() | 0}
+    })
+  }, 1000)
+
+  document.addEventListener('keypress', event => {
+    send({
+      type: 'set',
+      path: ['key'],
+      value: event.keyCode
     })
   })
-)
+})
 
 /**
  * Utils
@@ -83,8 +79,4 @@ export default (read, send) => pipe(
 
 function isPromise (value) {
   return value && typeof value.then === 'function' && typeof value.catch === 'function'
-}
-
-function isNumber (value) {
-  return typeof value === 'number'
 }
