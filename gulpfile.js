@@ -136,6 +136,7 @@ function scripts (done) {
 
   const alias = {
     'prax/react': pt.join(process.cwd(), 'react.js'),
+    'prax/async': pt.join(process.cwd(), 'async.js'),
     'prax': pt.join(process.cwd(), src.main)
   }
   if (flags.prod) {
