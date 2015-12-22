@@ -10,6 +10,10 @@ const main = pt.join(__dirname, '..', require('../package')['jsnext:main'])
 
 const createAtom = require(main).createAtom
 
+// Hack for easier testing.
+let i = 0
+global.requestAnimationFrame = x => (x(), ++i)
+
 /** ********************************* Test ***********************************/
 
 /**
