@@ -91,7 +91,7 @@ RESET()
 
 // Basic change detection.
 
-watcher = watch(read => {
+watcher = watch(() => {
   last = read('one', 'three')
   if (watcherShouldThrow) throw Error()
 })
@@ -131,7 +131,7 @@ write(prev)
 
 RESET()
 
-watcher = watch(read => {
+watcher = watch(() => {
   last = read('one', 'two', 0)
   read('seven', 'eight')
   if (watcherShouldThrow) throw Error()
@@ -146,7 +146,7 @@ write(next)
 
 RESET()
 
-watcher = watch(read => {
+watcher = watch(() => {
   last = read()
 })
 
@@ -160,7 +160,7 @@ if (last !== next) throw Error()
 
 RESET()
 
-watcher = watch(read => {
+watcher = watch(() => {
   read()
   read('one', 'three')
   read('seven', 'eight')
