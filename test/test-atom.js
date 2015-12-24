@@ -4,6 +4,7 @@
 
 const immute = require('emerge').immute
 const replaceAtPath = require('emerge').replaceAtPath
+const deepEqual = require('emerge').deepEqual
 
 const pt = require('path')
 const main = pt.join(__dirname, '..', require('../package')['jsnext:main'])
@@ -14,15 +15,13 @@ const createAtom = require(main).createAtom
 
 /**
  * TODO test for automatic unsubscription on repeat watch (see tests in <= 0.0.3).
- *
- * TODO test async mode.
  */
 
 /**
  * Globals
  */
 
-let atom, watch, stop, read, write, last, watcher, watcherShouldThrow
+let atom, watch, stop, read, set, patch, last, watcher, watcherShouldThrow
 
 const prev = immute({
   one: {two: [2]},
@@ -43,12 +42,14 @@ const next = replaceAtPath(prev, {
 atom = createAtom(prev)
 
 read = atom.read
-write = atom.write
+set = atom.set
+patch = atom.patch
 watch = atom.watch
 stop = atom.stop
 
 if (typeof read !== 'function') throw Error()
-if (typeof write !== 'function') throw Error()
+if (typeof set !== 'function') throw Error()
+if (typeof patch !== 'function') throw Error()
 if (typeof watch !== 'function') throw Error()
 if (typeof stop !== 'function') throw Error()
 
@@ -59,7 +60,7 @@ if (read() !== prev) throw Error()
 const RESET = () => {
   stop(watcher)
   watcher = last = watcherShouldThrow = undefined
-  write(prev)
+  set([], prev)
 }
 
 /**
@@ -73,12 +74,31 @@ if (read('one') !== prev.one) throw Error()
 if (read('one', 'two') !== prev.one.two) throw Error()
 
 /**
- * write
+ * set
  */
 
 RESET()
-write(next)
-if (read() !== next) throw Error()
+
+set([], next)
+if (!deepEqual(read(), next)) throw Error()
+
+set(['one'], prev.one)
+if (!deepEqual(read('one'), prev.one)) throw Error()
+
+/**
+ * patch
+ */
+
+RESET()
+
+patch([], next)
+if (deepEqual(read(), prev)) throw Error()
+if (deepEqual(read(), next)) throw Error()
+if (read('one', 'three') !== next.one.three) throw Error()
+
+patch(['one'], {value: NaN})
+if (deepEqual(read('one'), {value: NaN})) throw Error()
+if (!deepEqual(read('one', 'value'), NaN)) throw Error()
 
 /**
  * Change detection with watch/write.
@@ -91,31 +111,31 @@ RESET()
 
 // Basic change detection.
 
-watcher = watch(() => {
+watcher = watch(read => {
   last = read('one', 'three')
   if (watcherShouldThrow) throw Error()
 })
 
 if (last !== prev.one.three) throw Error()
 
-write(next)
+set([], next)
 
 if (last !== next.one.three) throw Error()
 
 // Reader should not be rerun when data remains unchanged.
 
-write({one: {three: NaN}})
+set([], {one: {three: NaN}})
 
 watcherShouldThrow = true
 
-write({one: {three: NaN}})
-write({one: {three: NaN}})
+set(['one'], {three: NaN})
+set(['one', 'three'], NaN)
 
 // Reader that doesn't read any data should be called exactly once.
 
 RESET()
 
-watcher = watch(() => {
+watcher = watch(read => {
   last = true
   if (watcherShouldThrow) throw Error()
 })
@@ -123,15 +143,15 @@ watcher = watch(() => {
 if (!last) throw Error()
 
 watcherShouldThrow = true
-write(next)
-write(prev)
+set([], next)
+set([], prev)
 
 // Reader that depends on deep leaves should be called only when these leaves
 // are changed, and not when the rest of the branch is changed.
 
 RESET()
 
-watcher = watch(() => {
+watcher = watch(read => {
   last = read('one', 'two', 0)
   read('seven', 'eight')
   if (watcherShouldThrow) throw Error()
@@ -140,19 +160,19 @@ watcher = watch(() => {
 if (last !== prev.one.two[0]) throw Error()
 
 watcherShouldThrow = true
-write(next)
+set([], next)
 
 // Reader that reads from root should be rerun on any change.
 
 RESET()
 
-watcher = watch(() => {
+watcher = watch(read => {
   last = read()
 })
 
-if (last !== prev) throw Error()
-write(next)
-if (last !== next) throw Error()
+if (!deepEqual(last, prev)) throw Error()
+set([], next)
+if (!deepEqual(last, next)) throw Error()
 
 /**
  * stop
@@ -160,7 +180,7 @@ if (last !== next) throw Error()
 
 RESET()
 
-watcher = watch(() => {
+watcher = watch(read => {
   read()
   read('one', 'three')
   read('seven', 'eight')
@@ -169,4 +189,29 @@ watcher = watch(() => {
 
 watcherShouldThrow = true
 stop(watcher)
-write(next)
+set([], next)
+
+/**
+ * Notification strategy
+ */
+
+RESET()
+
+atom = createAtom(prev, notify => {
+  return () => {
+    last = atom.read()
+  }
+})
+
+atom.watch(read => {
+  read()
+  if (watcherShouldThrow) throw Error()
+})
+
+// This will cause the watcher to throw if the original notify func is called.
+watcherShouldThrow = true
+
+atom.set([], next)
+
+// The custom notify func should have been called.
+if (!deepEqual(atom.read(), next)) throw Error()

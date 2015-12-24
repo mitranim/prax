@@ -1,37 +1,32 @@
 // Core utilities.
 import {createAtom, createMb} from 'prax'
-// Immutability utilities.
-import {immute, replaceAtPath, mergeAtPath} from 'prax'
+// Extras.
+import {asyncStrategy} from 'prax/async'
 
 /**
  * State
  */
 
-export const atom = createAtom(immute({
+export const atom = createAtom({
   stamp: null,
   key: null,
   persons: null
-}))
+}, asyncStrategy)
 
-export const {read, watch, stop} = atom
+export const {read, set, patch, watch, stop} = atom
 
 /**
  * Message Bus
  */
 
-const mb = createMb(
-  {type: 'set', path: x => x instanceof Array}, ({value, path}) => {
-    atom.write(replaceAtPath(read(), value, path))
-  },
-
-  {type: 'patch'}, ({value, path}) => {
-    atom.write(mergeAtPath(read(), value, path || []))
-  }
-)
+const mb = createMb()
 
 export const {send, match} = mb
 
-// Application logic.
+/**
+ * App Logic
+ */
+
 require('./factors')
 
 send('init')
@@ -42,6 +37,8 @@ send('init')
 
 if (window.developmentMode) {
   window.atom = atom
+  window.set = set
+  window.patch = patch
   window.read = read
   window.mb = mb
   window.send = send

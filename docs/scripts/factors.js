@@ -1,40 +1,14 @@
 import {createMb} from 'prax'
-import {send, match} from './core'
-
-match(x => x instanceof Array, msgs => {
-  let step
-  msgs.forEach(msg => {
-    if (step) step = step.then(() => {send(msg)})
-    else if (isPromise(msg)) step = msg.then(send)
-    else send(msg)
-  })
-})
+import {send, match, set, patch} from './core'
 
 match({type: 'person/update'}, ({value}) => {
-  // This will execute as a sequence.
-  send([
-    {
-      type: 'patch',
-      value: {
-        persons: {[value.id]: {id: value.id, loading: true}}
-      }
-    },
-    new Promise(resolve => {
-      setTimeout(() => {
-        resolve({
-          type: 'patch',
-          value: {persons: {[value.id]: value}}
-        })
-      }, 1000)
-    }),
-    // Will wait until the promise is resolved.
-    {
-      type: 'patch',
-      value: {
-        persons: {[value.id]: {loading: false}}
-      }
-    }
-  ])
+  const {id} = value
+
+  patch(['persons', id], {id, loading: true})
+
+  setTimeout(() => {
+    patch(['persons', id], {...value, loading: false})
+  }, 1000)
 })
 
 /**
@@ -42,7 +16,12 @@ match({type: 'person/update'}, ({value}) => {
  */
 
 match('init', () => {
-  const names = ['Atlanta', 'Kara', 'Moira']
+  const persons = [
+    {name: 'Atlanta', age: 1000},
+    {name: 'Kara', age: 2000},
+    {name: 'Moira', age: 3000}
+  ]
+
   let i = -1
 
   function mockUpdate () {
@@ -50,7 +29,7 @@ match('init', () => {
       type: 'person/update',
       value: {
         id: 1,
-        name: names[++i % names.length]
+        ...persons[++i % persons.length]
       }
     })
   }
@@ -59,18 +38,11 @@ match('init', () => {
   setInterval(mockUpdate, 2000)
 
   setInterval(() => {
-    send({
-      type: 'patch',
-      value: {stamp: window.performance.now() | 0}
-    })
+    set(['stamp'], window.performance.now() | 0)
   }, 1000)
 
   document.addEventListener('keypress', event => {
-    send({
-      type: 'set',
-      path: ['key'],
-      value: event.keyCode
-    })
+    set(['key'], event.keyCode)
   })
 })
 
@@ -89,10 +61,6 @@ match({type: 'test', value: isNumber}, createMb(
 /**
  * Utils
  */
-
-function isPromise (value) {
-  return value && typeof value.then === 'function' && typeof value.catch === 'function'
-}
 
 function isNumber (value) {
   return typeof value === 'number'

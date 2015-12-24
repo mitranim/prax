@@ -1,6 +1,6 @@
 import React from 'react'
 import {renderTo} from './utils'
-import {atom, read, match} from './core'
+import {atom, match} from './core'
 import {createReactiveRender, createReactiveMethod, createMatchDecorator} from 'prax/react'
 
 /**
@@ -16,7 +16,7 @@ const on = createMatchDecorator(match)
 @renderTo('[data-key]')
 @reactiveRender
 export class KeyReporter extends React.Component {
-  render () {
+  render (read) {
     return (
       <div>
         <p>last pressed key's code: {read('key')}</p>
@@ -30,7 +30,7 @@ export class KeyReporter extends React.Component {
 export class StampReporter extends React.Component {
   // The method is automatically rerun when the data it `read`s is changed.
   @reactiveMethod
-  update () {
+  update (read) {
     this.setState({
       stamp: read('stamp')
     })
