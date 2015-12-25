@@ -24,7 +24,8 @@
     "react"
   ],
   "authors": [
-    "Mitranim <me@mitranim.com>"
+    "Mitranim <me@mitranim.com>",
+    "Yury Egorenkov <yury.egorenkov@gmail.com>"
   ],
   "license": "MIT",
   "repository": {
@@ -59,7 +60,7 @@
     "react": "^0.14.3",
     "react-dom": "^0.14.3",
     "simple-pjax": "^0.3.0",
-    "stylific": "^0.13.0",
+    "stylific": "^0.13.1",
     "webpack": "^1.12.9",
     "yargs": "^3.30.0"
   },
