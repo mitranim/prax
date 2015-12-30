@@ -14,10 +14,6 @@ const createAtom = require(main).createAtom
 /** ********************************* Test ***********************************/
 
 /**
- * TODO test for automatic unsubscription on repeat watch (see tests in <= 0.0.3).
- */
-
-/**
  * Globals
  */
 

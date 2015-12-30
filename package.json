@@ -1,6 +1,6 @@
 {
   "name": "prax",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "main": "dist/index.js",
   "jsnext:main": "lib/index.js",
   "scripts": {
@@ -60,7 +60,7 @@
     "react": "^0.14.3",
     "react-dom": "^0.14.3",
     "simple-pjax": "^0.3.0",
-    "stylific": "^0.13.1",
+    "stylific": "^0.13.2",
     "webpack": "^1.12.9",
     "yargs": "^3.30.0"
   },
