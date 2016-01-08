@@ -1,5 +1,3 @@
-<!-- {{include('partials/mock.html')}} -->
-
 ## Overview
 
 Prax is:
