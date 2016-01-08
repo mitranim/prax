@@ -1,4 +1,4 @@
 'use strict'
 
-var values = require('./dist/async');
+var values = require('./dist/query');
 for (var key in values) exports[key] = values[key];

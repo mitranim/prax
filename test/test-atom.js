@@ -17,7 +17,7 @@ const createAtom = require(main).createAtom
  * Globals
  */
 
-let atom, watch, stop, read, set, patch, last, watcher, watcherShouldThrow
+let atom, watch, read, set, patch, last, watcherShouldThrow, unsub
 
 const prev = immute({
   one: {two: [2]},
@@ -41,21 +41,19 @@ read = atom.read
 set = atom.set
 patch = atom.patch
 watch = atom.watch
-stop = atom.stop
 
 if (typeof read !== 'function') throw Error()
 if (typeof set !== 'function') throw Error()
 if (typeof patch !== 'function') throw Error()
 if (typeof watch !== 'function') throw Error()
-if (typeof stop !== 'function') throw Error()
 
 // Verify initial state.
-if (read() !== prev) throw Error()
+if (!deepEqual(read(), prev)) throw Error()
 
 // Used across the rest of the test to reset the state.
 const RESET = () => {
-  stop(watcher)
-  watcher = last = watcherShouldThrow = undefined
+  if (unsub) unsub()
+  last = watcherShouldThrow = unsub = undefined
   set([], prev)
 }
 
@@ -65,9 +63,9 @@ const RESET = () => {
 
 RESET()
 
-if (read() !== prev) throw Error()
-if (read('one') !== prev.one) throw Error()
-if (read('one', 'two') !== prev.one.two) throw Error()
+if (!deepEqual(read(), prev)) throw Error()
+if (!deepEqual(read('one'), prev.one)) throw Error()
+if (!deepEqual(read('one', 'two'), prev.one.two)) throw Error()
 
 /**
  * set
@@ -107,7 +105,7 @@ RESET()
 
 // Basic change detection.
 
-watcher = watch(read => {
+unsub = watch(read => {
   last = read('one', 'three')
   if (watcherShouldThrow) throw Error()
 })
@@ -131,7 +129,7 @@ set(['one', 'three'], NaN)
 
 RESET()
 
-watcher = watch(read => {
+unsub = watch(read => {
   last = true
   if (watcherShouldThrow) throw Error()
 })
@@ -147,7 +145,7 @@ set([], prev)
 
 RESET()
 
-watcher = watch(read => {
+unsub = watch(read => {
   last = read('one', 'two', 0)
   read('seven', 'eight')
   if (watcherShouldThrow) throw Error()
@@ -162,7 +160,7 @@ set([], next)
 
 RESET()
 
-watcher = watch(read => {
+unsub = watch(read => {
   last = read()
 })
 
@@ -171,12 +169,12 @@ set([], next)
 if (!deepEqual(last, next)) throw Error()
 
 /**
- * stop
+ * unsub
  */
 
 RESET()
 
-watcher = watch(read => {
+unsub = watch(read => {
   read()
   read('one', 'three')
   read('seven', 'eight')
@@ -184,30 +182,30 @@ watcher = watch(read => {
 })
 
 watcherShouldThrow = true
-stop(watcher)
+unsub()
 set([], next)
 
 /**
- * Notification strategy
+ * Linearity
+ *
+ * If epoch transitions are not linear, this contraption blows up the stack.
  */
 
 RESET()
 
-atom = createAtom(prev, notify => {
-  return () => {
-    last = atom.read()
-  }
-})
+const unsubs = []
+unsub = () => { while (unsubs.length) unsubs.shift()() }
+let first = true
+set([], 1)
 
-atom.watch(read => {
-  read()
-  if (watcherShouldThrow) throw Error()
-})
+unsubs.push(watch(read => {
+  const val = read()
+  if (!first) set([], val + 1)
+}))
 
-// This will cause the watcher to throw if the original notify func is called.
-watcherShouldThrow = true
+unsubs.push(watch(read => {
+  first = false
+  if (read() === 3) unsub()
+}))
 
-atom.set([], next)
-
-// The custom notify func should have been called.
-if (!deepEqual(atom.read(), next)) throw Error()
+set([], read() + 1)

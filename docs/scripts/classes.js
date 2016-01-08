@@ -1,14 +1,14 @@
 import React from 'react'
 import {renderTo} from './utils'
-import {atom, match} from './core'
+import {watch, match} from './core'
 import {createReactiveRender, createReactiveMethod, createMatchDecorator} from 'prax/react'
 
 /**
  * Decorators for class-style components.
  */
 
-const reactiveRender = createReactiveRender(atom)
-const reactiveMethod = createReactiveMethod(atom)
+const reactiveRender = createReactiveRender(watch)
+const reactiveMethod = createReactiveMethod(watch)
 const on = createMatchDecorator(match)
 
 // Reactive `render`. The component is automatically updated when the atom data

@@ -1,9 +1,6 @@
-import React, {Component} from 'react'
+import React from 'react'
 import {render, unmountComponentAtNode} from 'react-dom'
-import {createAuto} from 'prax/react'
-import {atom} from './core'
-
-const auto = createAuto(Component, atom)
+import {auto} from './core'
 
 const unmountQueue = []
 

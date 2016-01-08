@@ -2,7 +2,7 @@ import 'stylific'
 import 'simple-pjax'
 import React from 'react'
 import {renderTo} from './utils'
-import './classes'
+// import './classes'
 
 /**
  * Reactive components as functions

@@ -1,19 +1,16 @@
-// Core utilities.
 import {createAtom, createMb} from 'prax'
-// Extras.
-import {asyncStrategy} from 'prax/async'
 
 /**
  * State
  */
 
-export const atom = createAtom({
+const atom = createAtom({
   stamp: null,
   key: null,
   persons: null
-}, asyncStrategy)
+})
 
-export const {read, set, patch, watch, stop} = atom
+export const {read, set, patch, watch} = atom
 
 /**
  * Message Bus
@@ -22,6 +19,15 @@ export const {read, set, patch, watch, stop} = atom
 const mb = createMb()
 
 export const {send, match} = mb
+
+/**
+ * Render Utils
+ */
+
+import {Component} from 'react'
+import {createAuto} from 'prax/react'
+
+export const auto = createAuto(Component, watch)
 
 /**
  * App Logic

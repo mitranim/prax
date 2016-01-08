@@ -1,12 +1,5 @@
 'use strict'
 
-/*
- * Requires gulp 4.0:
- *   "gulp": "gulpjs/gulp#4.0"
- *
- * Requires Node.js 4.0+
- */
-
 /* ***************************** Dependencies ********************************/
 
 const $ = require('gulp-load-plugins')()
@@ -54,7 +47,7 @@ function reload (done) {
 /* ---------------------------------- Lib -----------------------------------*/
 
 gulp.task('lib:clear', function (done) {
-  del(out.lib).then(() => {done()})
+  del(out.lib).then(() => void done())
 })
 
 gulp.task('lib:compile', function () {
@@ -89,7 +82,7 @@ gulp.task('lib:watch', function () {
 /* --------------------------------- HTML -----------------------------------*/
 
 gulp.task('docs:html:clear', function (done) {
-  del(out.docHtml + '/**/*.html').then(() => {done()})
+  del(out.docHtml + '/**/*.html').then(() => void done())
 })
 
 gulp.task('docs:html:compile', function () {
@@ -190,12 +183,12 @@ function scripts (done) {
 
 gulp.task('docs:scripts:build', scripts)
 
-gulp.task('docs:scripts:build:watch', (_) => {scripts()})
+gulp.task('docs:scripts:build:watch', () => void scripts())
 
 /* -------------------------------- Styles ----------------------------------*/
 
 gulp.task('docs:styles:clear', function (done) {
-  del(out.docStyles).then(() => {done()})
+  del(out.docStyles).then(() => void done())
 })
 
 gulp.task('docs:styles:compile', function () {
@@ -221,7 +214,7 @@ gulp.task('docs:styles:watch', function () {
 /* --------------------------------- Fonts ----------------------------------*/
 
 gulp.task('docs:fonts:clear', function (done) {
-  del(out.docFonts).then(() => {done()})
+  del(out.docFonts).then(() => void done())
 })
 
 gulp.task('docs:fonts:copy', function () {
