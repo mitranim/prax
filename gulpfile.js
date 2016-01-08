@@ -8,8 +8,8 @@ const del = require('del')
 const exec = require('child_process').exec
 const flags = require('yargs').boolean('prod').argv
 const gulp = require('gulp')
-const hljs = require('highlight.js')
 const pt = require('path')
+const statilOptions = require('./statil')
 const webpack = require('webpack')
 
 /* ******************************** Globals **********************************/
@@ -46,26 +46,26 @@ function reload (done) {
 
 /* ---------------------------------- Lib -----------------------------------*/
 
-gulp.task('lib:clear', function (done) {
+gulp.task('lib:clear', done => {
   del(out.lib).then(() => void done())
 })
 
-gulp.task('lib:compile', function () {
-  return gulp.src(src.lib)
+gulp.task('lib:compile', () => (
+  gulp.src(src.lib)
     .pipe($.babel())
     .pipe(gulp.dest(out.lib))
-})
+))
 
-gulp.task('lib:minify', function () {
-  return gulp.src(src.dist)
+gulp.task('lib:minify', () => (
+  gulp.src(src.dist)
     .pipe($.uglify())
     .pipe($.rename(path => {
       path.extname = '.min.js'
     }))
     .pipe(gulp.dest(out.lib))
-})
+))
 
-gulp.task('lib:test', function (done) {
+gulp.task('lib:test', done => {
   exec(testCommand, (err, stdout) => {
     process.stdout.write(stdout)
     done(err)
@@ -74,51 +74,26 @@ gulp.task('lib:test', function (done) {
 
 gulp.task('lib:build', gulp.series('lib:clear', 'lib:compile', 'lib:minify'))
 
-gulp.task('lib:watch', function () {
+gulp.task('lib:watch', () => {
   $.watch(src.lib, gulp.series('lib:build', 'lib:test'))
   $.watch(out.test, gulp.series('lib:test'))
 })
 
 /* --------------------------------- HTML -----------------------------------*/
 
-gulp.task('docs:html:clear', function (done) {
+gulp.task('docs:html:clear', done => {
   del(out.docHtml + '/**/*.html').then(() => void done())
 })
 
-gulp.task('docs:html:compile', function () {
-  const filterMd = $.filter('**/*.md', {restore: true})
-
-  return gulp.src(src.docHtml)
-    // Pre-process markdown files.
-    .pipe(filterMd)
-    .pipe($.marked({
-      smartypants: true,
-      // Code highlighter.
-      highlight (code, lang) {
-        const result = lang ? hljs.highlight(lang, code) : hljs.highlightAuto(code)
-        return result.value
-      }
-    }))
-    // Add hljs code class.
-    .pipe($.replace(/<pre><code class="(.*)">|<pre><code>/g, '<pre class="hljs"><code class="hljs $1">'))
-    .pipe(filterMd.restore)
-    // Unpack commented HTML parts.
-    .pipe($.replace(/<!--\s*:((?:[^:]|:(?!\s*-->))*):\s*-->/g, '$1'))
-    .pipe($.statil({imports: {prod: flags.prod}}))
-    // Change each `<filename>` into `<filename>/index.html`.
-    .pipe($.rename(function (path) {
-      switch (path.basename + path.extname) {
-        case 'index.html': case '404.html': return
-      }
-      path.dirname = pt.join(path.dirname, path.basename)
-      path.basename = 'index'
-    }))
+gulp.task('docs:html:compile', () => (
+  gulp.src(src.docHtml)
+    .pipe($.statil(statilOptions))
     .pipe(gulp.dest(out.docHtml))
-})
+))
 
 gulp.task('docs:html:build', gulp.series('docs:html:clear', 'docs:html:compile'))
 
-gulp.task('docs:html:watch', function () {
+gulp.task('docs:html:watch', () => {
   $.watch(src.docHtml, gulp.series('docs:html:build', reload))
 })
 
@@ -143,9 +118,7 @@ function scripts (done) {
       path: pt.join(process.cwd(), out.docScripts),
       filename: 'app.js'
     },
-    resolve: {
-      alias: alias
-    },
+    resolve: {alias},
     module: {
       loaders: [
         {
@@ -158,24 +131,21 @@ function scripts (done) {
     plugins: flags.prod ? [
       new webpack.optimize.UglifyJsPlugin({compress: {warnings: false}})
     ] : [],
-    watch: watch,
-    cache: false
+    watch
   }, onComplete)
 
   function onComplete (err, stats) {
-    if (err) {
-      throw Error(err)
-    } else {
-      const report = stats.toString({
-        colors: true,
-        chunks: false,
-        timings: true,
-        version: false,
-        hash: false,
-        assets: false
-      })
-      if (report) console.log(report)
-    }
+    if (err) throw Error(err)
+    const report = stats.toString({
+      colors: true,
+      chunks: false,
+      timings: true,
+      version: false,
+      hash: false,
+      assets: false
+    })
+    if (report) console.log(report)
+    if (stats.hasErrors() && !watch) throw Error('U FAIL')
     if (watch) bsync.reload()
     else done()
   }
@@ -187,50 +157,51 @@ gulp.task('docs:scripts:build:watch', () => void scripts())
 
 /* -------------------------------- Styles ----------------------------------*/
 
-gulp.task('docs:styles:clear', function (done) {
+gulp.task('docs:styles:clear', done => {
   del(out.docStyles).then(() => void done())
 })
 
-gulp.task('docs:styles:compile', function () {
-  return gulp.src(src.docStylesMain)
+gulp.task('docs:styles:compile', () => (
+  gulp.src(src.docStylesMain)
     .pipe($.sass())
     .pipe($.autoprefixer())
     .pipe($.if(flags.prod, $.minifyCss({
       keepSpecialComments: 0,
       aggressiveMerging: false,
-      advanced: false
+      advanced: false,
+      compatibility: {properties: {colors: false}}
     })))
     .pipe(gulp.dest(out.docStyles))
     .pipe(bsync.reload({stream: true}))
-})
+))
 
 gulp.task('docs:styles:build',
   gulp.series('docs:styles:clear', 'docs:styles:compile'))
 
-gulp.task('docs:styles:watch', function () {
+gulp.task('docs:styles:watch', () => {
   $.watch(src.docStyles, gulp.series('docs:styles:build'))
 })
 
 /* --------------------------------- Fonts ----------------------------------*/
 
-gulp.task('docs:fonts:clear', function (done) {
+gulp.task('docs:fonts:clear', done => {
   del(out.docFonts).then(() => void done())
 })
 
-gulp.task('docs:fonts:copy', function () {
-  return gulp.src(src.docFonts).pipe(gulp.dest(out.docFonts))
-})
+gulp.task('docs:fonts:copy', () => (
+  gulp.src(src.docFonts).pipe(gulp.dest(out.docFonts))
+))
 
 gulp.task('docs:fonts:build', gulp.series('docs:fonts:copy'))
 
-gulp.task('docs:fonts:watch', function () {
+gulp.task('docs:fonts:watch', () => {
   $.watch(src.docFonts, gulp.series('docs:fonts:build', reload))
 })
 
 /* -------------------------------- Server ----------------------------------*/
 
-gulp.task('server', function () {
-  return bsync.init({
+gulp.task('server', () => (
+  bsync.init({
     startPath: '/prax/',
     server: {
       baseDir: out.docHtml,
@@ -246,7 +217,7 @@ gulp.task('server', function () {
     ghostMode: false,
     notify: false
   })
-})
+))
 
 /* -------------------------------- Default ---------------------------------*/
 

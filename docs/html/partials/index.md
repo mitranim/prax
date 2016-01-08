@@ -1,12 +1,13 @@
+<!-- {{include('partials/mock.html')}} -->
+
 ## Overview
 
 Prax is:
 * an architecture for GUI apps
 * a library implementing that architecture
 
-Prax complements React. See comparison with [Flux](rationale/comparison/#flux)
-or [Redux](rationale/comparison/#redux). It's not React-specific, and should
-complement any React-inspired rendering library.
+Prax complements React. It's not React-specific, and should complement any
+React-inspired rendering library.
 
 Borrows many concepts from Clojure / Om, Erlang, Elm, and others. Similar to
 Redux, but more feature-complete. Very powerful but extremely small (5 KB
@@ -40,10 +41,6 @@ React.render(<Root />, document.getElementById('root'))
 :-->
 
 Class-based forms are also available, see the [React addons](api/react) API.
-
-<!--:
-<%= $include('partials/mock', $) %>
-:-->
 
 ## Compatibility
 

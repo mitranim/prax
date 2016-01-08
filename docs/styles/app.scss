@@ -1,9 +1,10 @@
+// @import './node_modules/highlight.js/styles/atelier-dune-light';
+@import './node_modules/highlight.js/styles/atelier-seaside-light';
+
 @import './_variables';
 
-@import './node_modules/stylific/scss/stylific';
-@import './node_modules/font-awesome/scss/font-awesome';
-@import './node_modules/highlight.js/styles/atelier-dune-light';
-// @import './node_modules/highlight.js/styles/atelier-seaside-light';
-// @import './node_modules/highlight.js/styles/github-gist';
+@import './node_modules/stylific-lite/scss/stylific-lite';
+@import './node_modules/stylific-lite/scss/classes';
 
+@import './fa';
 @import './misc';

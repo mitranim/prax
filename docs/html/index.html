@@ -1,34 +1,25 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>prax</title>
-    <meta charset="utf-8">
-    <base href="/prax/">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=2, initial-scale=1, user-scalable=yes">
-    <link rel="stylesheet" href="/prax/styles/app.css">
-    <link rel="icon" href="data:;base64,=">
-  </head>
+<!doctype html>
 
-  <body>
-    <%= $include('partials/navbar', $) %>
+<meta charset="utf-8">
+<title>{{typeof title === 'string' ? title + ' | prax' : 'prax'}}</title>
+<base href="/prax/">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=2, initial-scale=1, user-scalable=yes">
+<link rel="stylesheet" href="/prax/styles/app.css">
+<link rel="icon" href="data:;base64,=">
 
-    <% if ($path === 'index') { %>
-      <div class="sf-article">
-        <%= $include('$index', $) %>
-      </div>
-    <% } else { %>
-      <%= $content %>
-    <% } %>
+<body></body>
 
-    <%= $include('partials/footer', $) %>
+{{include('partials/nav.html')}}
 
-    <% if (!prod) { %>
-      <script>
-        window.developmentMode = true;
-      </script>
-    <% } %>
+<article>
+  {{path === 'index.html' ? include('partials/index.md') : content}}
+</article>
 
-    <script src="/prax/scripts/app.js" async></script>
-  </body>
-</html>
+{% if (!prod) { %}
+  <script>
+    window.developmentMode = true;
+  </script>
+{% } %}
+
+<script src="/prax/scripts/app.js" async></script>

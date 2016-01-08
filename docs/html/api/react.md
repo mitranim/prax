@@ -1,3 +1,5 @@
+{% extend('index.html', {title: 'react'}) %}
+
 ## Overview
 
 Prax has optional React-specific addons. It complements React with:

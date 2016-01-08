@@ -25,9 +25,10 @@ export const {send, match} = mb
  */
 
 import {Component} from 'react'
-import {createAuto} from 'prax/react'
+import {createAuto, createReactiveRender} from 'prax/react'
 
 export const auto = createAuto(Component, watch)
+export const reactiveRender = createReactiveRender(watch)
 
 /**
  * App Logic

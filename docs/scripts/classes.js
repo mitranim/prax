@@ -1,21 +1,12 @@
 import React from 'react'
 import {renderTo} from './utils'
-import {watch, match} from './core'
-import {createReactiveRender, createReactiveMethod, createMatchDecorator} from 'prax/react'
+import {reactiveRender} from './core'
 
-/**
- * Decorators for class-style components.
- */
+// Demonstrates reactive `render`. These components are automatically updated
+// when the atom data is changed.
 
-const reactiveRender = createReactiveRender(watch)
-const reactiveMethod = createReactiveMethod(watch)
-const on = createMatchDecorator(match)
-
-// Reactive `render`. The component is automatically updated when the atom data
-// is changed.
-@renderTo('[data-key]')
-@reactiveRender
-export class KeyReporter extends React.Component {
+renderTo('[data-key]')(reactiveRender(
+class KeyReporter extends React.Component {
   render (read) {
     return (
       <div>
@@ -23,29 +14,15 @@ export class KeyReporter extends React.Component {
       </div>
     )
   }
-}
+}))
 
-// Reactive updates with `setState`, event handling with a match decorator.
-@renderTo('[data-stamp]')
-export class StampReporter extends React.Component {
-  // The method is automatically rerun when the data it `read`s is changed.
-  @reactiveMethod
-  update (read) {
-    this.setState({
-      stamp: read('stamp')
-    })
-  }
-
-  @on(x => typeof x === 'number')
-  test (num) {
-    console.log('-- num:', num)
-  }
-
-  render () {
+renderTo('[data-stamp]')(reactiveRender(
+class StampReporter extends React.Component {
+  render (read) {
     return (
       <div>
-        <p>ms elapsed since page load: {this.state.stamp}</p>
+        <p>ms elapsed since page load: {read('stamp')}</p>
       </div>
     )
   }
-}
+}))

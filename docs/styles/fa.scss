@@ -1,0 +1,33 @@
+@import './node_modules/font-awesome/scss/variables';
+@import './node_modules/font-awesome/scss/path';
+@import './node_modules/font-awesome/scss/core';
+
+.fa-arrow-up::before      {content: $fa-var-arrow-up}
+.fa-code::before          {content: $fa-var-code}
+.fa-github::before        {content: $fa-var-github}
+.fa-link::before          {content: $fa-var-link}
+.fa-twitter::before       {content: $fa-var-twitter}
+
+.fa::before {
+  display: inline-block;
+  width: 1em;
+  text-align: center;
+}
+
+.fa.inline {
+  margin-right: $sf-space / 2;
+  &:last-child {margin-right: 0}
+}
+
+// wtf
+:not(:empty) .fa.inline:not(:first-child) {
+  margin-left: $sf-space / 2;
+}
+
+a.fa {
+  border: none;
+}
+
+// Brand colours.
+.fa-github, a.fa-github   {color: $color-github}
+.fa-twitter, a.fa-twitter {color: $color-twitter}

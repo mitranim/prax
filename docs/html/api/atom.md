@@ -1,3 +1,5 @@
+{% extend('index.html', {title: 'atom'}) %}
+
 ## Overview
 
 An _atom_ is the place for all changing data in a Prax application. It's
