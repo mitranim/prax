@@ -1,4 +1,4 @@
-import {createAtom, createMb} from 'prax'
+import {createAtom} from 'prax'
 
 /**
  * State
@@ -10,11 +10,13 @@ const atom = createAtom({
   persons: null
 })
 
-export const {read, set, patch, watch} = atom
+export const {read, set, patch, subscribe, watch} = atom
 
 /**
  * Message Bus
  */
+
+import {createMb} from 'prax/mb'
 
 const mb = createMb()
 

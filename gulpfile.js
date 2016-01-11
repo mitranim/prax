@@ -17,7 +17,6 @@ const webpack = require('webpack')
 const src = {
   lib: 'lib/**/*.js',
   dist: 'dist/**/*.js',
-  main: require('./package').main,
   docHtml: 'docs/html/**/*',
   docScripts: 'docs/scripts/**/*.js',
   docScriptsMain: 'docs/scripts/app.js',
@@ -42,13 +41,15 @@ function reload (done) {
   done()
 }
 
+function noop () {}
+
 /* ********************************* Tasks ***********************************/
 
 /* ---------------------------------- Lib -----------------------------------*/
 
-gulp.task('lib:clear', done => {
-  del(out.lib).then(() => void done())
-})
+gulp.task('lib:clear', () => (
+  del(out.lib).catch(noop)
+))
 
 gulp.task('lib:compile', () => (
   gulp.src(src.lib)
@@ -81,9 +82,9 @@ gulp.task('lib:watch', () => {
 
 /* --------------------------------- HTML -----------------------------------*/
 
-gulp.task('docs:html:clear', done => {
-  del(out.docHtml + '/**/*.html').then(() => void done())
-})
+gulp.task('docs:html:clear', () => (
+  del(out.docHtml + '/**/*.html').catch(noop)
+))
 
 gulp.task('docs:html:compile', () => (
   gulp.src(src.docHtml)
@@ -103,9 +104,7 @@ function scripts (done) {
   const watch = typeof done !== 'function'
 
   const alias = {
-    'prax/react': pt.join(process.cwd(), 'react.js'),
-    'prax/async': pt.join(process.cwd(), 'async.js'),
-    'prax': pt.join(process.cwd(), src.main)
+    prax: process.cwd()
   }
   if (flags.prod) {
     alias['react'] = 'react/dist/react.min'
@@ -157,22 +156,22 @@ gulp.task('docs:scripts:build:watch', () => void scripts())
 
 /* -------------------------------- Styles ----------------------------------*/
 
-gulp.task('docs:styles:clear', done => {
-  del(out.docStyles).then(() => void done())
-})
+gulp.task('docs:styles:clear', () => (
+  del(out.docStyles).catch(noop)
+))
 
 gulp.task('docs:styles:compile', () => (
   gulp.src(src.docStylesMain)
     .pipe($.sass())
     .pipe($.autoprefixer())
-    .pipe($.if(flags.prod, $.minifyCss({
+    .pipe($.minifyCss({
       keepSpecialComments: 0,
       aggressiveMerging: false,
       advanced: false,
       compatibility: {properties: {colors: false}}
-    })))
+    }))
     .pipe(gulp.dest(out.docStyles))
-    .pipe(bsync.reload({stream: true}))
+    .pipe(bsync.stream())
 ))
 
 gulp.task('docs:styles:build',
@@ -184,9 +183,9 @@ gulp.task('docs:styles:watch', () => {
 
 /* --------------------------------- Fonts ----------------------------------*/
 
-gulp.task('docs:fonts:clear', done => {
-  del(out.docFonts).then(() => void done())
-})
+gulp.task('docs:fonts:clear', () => (
+  del(out.docFonts).catch(noop)
+))
 
 gulp.task('docs:fonts:copy', () => (
   gulp.src(src.docFonts).pipe(gulp.dest(out.docFonts))

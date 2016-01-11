@@ -1,14 +1,8 @@
-import {createMb} from 'prax'
-import {send, match, set, patch} from './core'
+import {createMb} from 'prax/mb'
+import {set, patch, send, match} from './core'
 
 match({type: 'person/update'}, ({value}) => {
-  const {id} = value
-
-  patch(['persons', id], {id, loading: true})
-
-  setTimeout(() => {
-    patch(['persons', id], {...value, loading: false})
-  }, 1000)
+  patch(['persons', value.id], value)
 })
 
 /**

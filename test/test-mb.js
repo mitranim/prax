@@ -2,11 +2,8 @@
 
 /** ***************************** Dependencies *******************************/
 
-const pt = require('path')
-const main = pt.join(__dirname, '..', require('../package')['jsnext:main'])
-
-const createMb = require(main).createMb
-const toTest = require(main).toTest
+const createMb = require('../lib/mb').createMb
+const toTest = require('../lib/mb').toTest
 
 /** ********************************* Test ***********************************/
 
