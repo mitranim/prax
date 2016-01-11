@@ -7,20 +7,26 @@ import {createAtom} from 'prax'
 const atom = createAtom({
   stamp: null,
   key: null,
-  persons: null
+  persons: null,
+  updating: null,
+  initing: false
 })
 
 export const {read, set, patch, subscribe, watch} = atom
 
 /**
- * Message Bus
+ * History Utils
  */
 
-import {createMb} from 'prax/mb'
+import {queryWatcher} from 'prax/query'
+import {toTest} from 'prax/mb'
 
-const mb = createMb()
-
-export const {send, match} = mb
+export const matchValue = (query, cond, func) => (
+  cond = toTest(cond),
+  subscribe(queryWatcher(query, (path, prev, next) => {
+    if (cond(next)) func(path, next)
+  }))
+)
 
 /**
  * Render Utils
@@ -38,7 +44,7 @@ export const reactiveRender = createReactiveRender(watch)
 
 require('./factors')
 
-send('init')
+set(['initing'], true)
 
 /**
  * Utils
@@ -46,9 +52,7 @@ send('init')
 
 if (window.developmentMode) {
   window.atom = atom
+  window.read = read
   window.set = set
   window.patch = patch
-  window.read = read
-  window.mb = mb
-  window.send = send
 }

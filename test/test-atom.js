@@ -17,7 +17,7 @@ const createAtom = require(main).createAtom
  * Globals
  */
 
-let atom, watch, read, set, patch, last, watcherShouldThrow, unsub
+let atom, read, set, patch, subscribe, watch, last, watcherShouldThrow, unsub
 
 const prev = immute({
   one: {two: [2]},
@@ -40,11 +40,13 @@ atom = createAtom(prev)
 read = atom.read
 set = atom.set
 patch = atom.patch
+subscribe = atom.subscribe
 watch = atom.watch
 
 if (typeof read !== 'function') throw Error()
 if (typeof set !== 'function') throw Error()
 if (typeof patch !== 'function') throw Error()
+if (typeof subscribe !== 'function') throw Error()
 if (typeof watch !== 'function') throw Error()
 
 // Verify initial state.
@@ -95,10 +97,34 @@ if (deepEqual(read('one'), {value: NaN})) throw Error()
 if (!deepEqual(read('one', 'value'), NaN)) throw Error()
 
 /**
- * Change detection with watch/write.
+ * subscribe
+ */
+
+RESET()
+
+unsub = subscribe((prev, next) => {
+  last = next
+})
+
+if (!deepEqual(last, prev)) throw Error()
+
+unsub()
+
+set([], next)
+
+unsub = subscribe((_prev, _next) => {
+  last = 'subscriber called'
+  if (!deepEqual(prev, _prev)) throw Error()
+  if (!deepEqual(next, _next)) throw Error()
+})
+
+if (last !== 'subscriber called') throw Error()
+
+/**
+ * Change detection with watch.
  *
- * We expect the atom to remember the exact paths accessed by watchers, and
- * rerun them only if the data at those exact paths has changed.
+ * Watchers should be rerun when and only when data they access through the
+ * "read" function is changed.
  */
 
 RESET()
@@ -174,6 +200,16 @@ if (!deepEqual(last, next)) throw Error()
 
 RESET()
 
+unsub = subscribe(() => {
+  if (watcherShouldThrow) throw Error()
+})
+
+watcherShouldThrow = true
+unsub()
+set([], next)
+
+RESET()
+
 unsub = watch(read => {
   read()
   read('one', 'three')
@@ -198,14 +234,14 @@ unsub = () => { while (unsubs.length) unsubs.shift()() }
 let first = true
 set([], 1)
 
-unsubs.push(watch(read => {
-  const val = read()
+unsubs.push(subscribe((prev, next) => {
+  const val = next
   if (!first) set([], val + 1)
 }))
 
-unsubs.push(watch(read => {
+unsubs.push(subscribe((prev, next) => {
   first = false
-  if (read() === 3) unsub()
+  if (next === 3) unsub()
 }))
 
 set([], read() + 1)

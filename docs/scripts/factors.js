@@ -1,15 +1,20 @@
-import {createMb} from 'prax/mb'
-import {set, patch, send, match} from './core'
+import {set, patch, matchValue} from './core'
 
-match({type: 'person/update'}, ({value}) => {
-  patch(['persons', value.id], value)
+matchValue(['updating', 'persons', Boolean], Boolean, (path, value) => {
+  setTimeout(() => {
+    patch(['persons', path[2]], value)
+  }, 1000)
 })
 
 /**
  * Mock
  */
 
-match('init', () => {
+matchValue(['initing'], true, () => {
+  set(['initing'], undefined)
+})
+
+matchValue(['initing'], true, () => {
   const persons = [
     {name: 'Atlanta', age: 1000},
     {name: 'Kara', age: 2000},
@@ -19,16 +24,14 @@ match('init', () => {
   let i = -1
 
   function mockUpdate () {
-    send({
-      type: 'person/update',
-      value: {
-        id: 1,
-        ...persons[++i % persons.length]
-      }
+    set(['updating', 'persons', 1], {
+      id: 1,
+      ...persons[++i % persons.length]
     })
   }
 
   mockUpdate()
+
   setInterval(mockUpdate, 2000)
 
   setInterval(() => {
@@ -39,23 +42,3 @@ match('init', () => {
     set(['key'], event.keyCode)
   })
 })
-
-match({type: 'test', value: isNumber}, createMb(
-  {value: 1}, ({value}) => {
-    console.log('-- one:', value)
-  },
-
-  {type: 'test', value: 2}, ({value}) => {
-    console.log('-- two:', value)
-  },
-
-  Boolean, () => {}
-).send)
-
-/**
- * Utils
- */
-
-function isNumber (value) {
-  return typeof value === 'number'
-}

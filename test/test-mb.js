@@ -37,6 +37,11 @@ if (!toTest(NaN)(NaN)) throw Error()
 if (toTest(isNumber)('not a number')) throw Error()
 if (!toTest(isNumber)(Infinity)) throw Error()
 
+// Regexes.
+
+if (toTest(/secret/)(NaN)) throw Error()
+if (!toTest(/secret/)('my secret')) throw Error()
+
 // Objects.
 
 if (toTest({type: 'fork'})({type: 'FORK'})) throw Error()
