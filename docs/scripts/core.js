@@ -19,7 +19,7 @@ export const {read, set, patch, subscribe, watch} = atom
  */
 
 import {queryWatcher} from 'prax/query'
-import {toTest} from 'prax/mb'
+import {toTest} from 'prax/pattern'
 
 export const matchValue = (query, cond, func) => (
   cond = toTest(cond),

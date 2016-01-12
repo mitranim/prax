@@ -3,7 +3,7 @@
 /** ***************************** Dependencies *******************************/
 
 const createMb = require('../lib/mb').createMb
-const toTest = require('../lib/mb').toTest
+const toTest = require('../lib/pattern').toTest
 
 /** ********************************* Test ***********************************/
 
