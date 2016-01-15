@@ -15,18 +15,18 @@ const atom = createAtom({
 export const {read, set, patch, subscribe, watch} = atom
 
 /**
- * History Utils
+ * Compute Utils
  */
 
-import {queryWatcher} from 'prax/query'
-import {toTest} from 'prax/pattern'
+import {condMatcher, valueMatcher} from 'prax/subs'
 
-export const matchValue = (query, cond, func) => (
-  cond = toTest(cond),
-  subscribe(queryWatcher(query, (path, prev, next) => {
-    if (cond(next)) func(path, next)
-  }))
-)
+export function when () {
+  return watch(condMatcher(...arguments))
+}
+
+export function matchValue () {
+  return subscribe(valueMatcher(...arguments))
+}
 
 /**
  * Render Utils

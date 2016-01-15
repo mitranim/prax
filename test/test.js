@@ -2,7 +2,6 @@
 
 require('./test-atom')
 require('./test-mb')
-require('./test-query')
 
 console.log(`[${pad(new Date().getHours())}:${pad(new Date().getMinutes())}:${pad(new Date().getSeconds())}] Finished test without errors.`)
 

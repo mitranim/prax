@@ -1,8 +1,8 @@
-import {set, patch, matchValue} from './core'
+import {set, patch, when, matchValue} from './core'
 
-matchValue(['updating', 'persons', Boolean], Boolean, (path, value) => {
+matchValue(['updating', 'persons'], [], Boolean, (id, value) => {
   setTimeout(() => {
-    patch(['persons', path[2]], value)
+    patch(['persons', id], value)
   }, 1000)
 })
 
@@ -10,11 +10,11 @@ matchValue(['updating', 'persons', Boolean], Boolean, (path, value) => {
  * Mock
  */
 
-matchValue(['initing'], true, () => {
+when(read => read('initing'), true, () => {
   set(['initing'], undefined)
 })
 
-matchValue(['initing'], true, () => {
+when(read => read('initing'), true, () => {
   const persons = [
     {name: 'Atlanta', age: 1000},
     {name: 'Kara', age: 2000},
