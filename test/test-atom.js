@@ -2,7 +2,7 @@
 
 /** ***************************** Dependencies *******************************/
 
-const immute = require('emerge').immute
+const immutableClone = require('emerge').immutableClone
 const replaceAtPath = require('emerge').replaceAtPath
 const deepEqual = require('emerge').deepEqual
 
@@ -19,7 +19,7 @@ const createAtom = require(main).createAtom
 
 let atom, read, set, patch, subscribe, watch, last, watcherShouldThrow, unsub
 
-const prev = immute({
+const prev = immutableClone({
   one: {two: [2]},
   four: [4],
   seven: {eight: NaN}

@@ -1,4 +1,4 @@
-import {createAtom} from 'prax'
+import {createAtom} from 'prax/ex'
 
 /**
  * State
@@ -18,14 +18,14 @@ export const {read, set, patch, subscribe, watch} = atom
  * Compute Utils
  */
 
-import {condMatcher, valueMatcher} from 'prax/subs'
+import {cond, collectionCond} from 'prax/effects'
 
 export function when () {
-  return watch(condMatcher(...arguments))
+  return watch(cond(...arguments))
 }
 
-export function matchValue () {
-  return subscribe(valueMatcher(...arguments))
+export function whenOneOf () {
+  return subscribe(collectionCond(...arguments))
 }
 
 /**

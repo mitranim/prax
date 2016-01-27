@@ -1,6 +1,6 @@
-import {set, patch, when, matchValue} from './core'
+import {set, patch, when, whenOneOf} from './core'
 
-matchValue(['updating', 'persons'], [], Boolean, (id, value) => {
+whenOneOf(['updating', 'persons'], x => x, (id, value) => {
   setTimeout(() => {
     patch(['persons', id], value)
   }, 1000)
@@ -10,11 +10,11 @@ matchValue(['updating', 'persons'], [], Boolean, (id, value) => {
  * Mock
  */
 
-when(read => read('initing'), true, () => {
+when(read => read('initing'), () => {
   set(['initing'], undefined)
 })
 
-when(read => read('initing'), true, () => {
+when(read => read('initing'), () => {
   const persons = [
     {name: 'Atlanta', age: 1000},
     {name: 'Kara', age: 2000},
