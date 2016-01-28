@@ -31,7 +31,7 @@ document.addEventListener('simple-pjax-before-transition', () => {
   }
 })
 
-export function onload (callback: Function) {
+export function onload (callback) {
   if (/loaded|complete|interactive/.test(document.readyState)) {
     callback()
   } else {
