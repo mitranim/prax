@@ -4,7 +4,7 @@ import {renderTo} from './utils'
 import './classes'
 
 /**
- * Reactive components as functions
+ * Demonstrates reactive components as functions
  */
 
 renderTo('[data-state]', state)
@@ -14,29 +14,11 @@ function state (props, read) {
   )
 }
 
-renderTo('[data-person]', person)
-function person (props, read) {
+renderTo('[data-profile]', profile)
+function profile (props, read) {
   return (
     <div>
-      <p>person: {JSON.stringify(read('persons', 1))}</p>
+      <p>profiles: {JSON.stringify(read('profiles'))}</p>
     </div>
   )
-}
-
-renderTo('[data-person-name-length]', personNameLength)
-function personNameLength (props, read) {
-  return (
-    <div>
-      <p>person name length: {nameLength(read, 1)}</p>
-    </div>
-  )
-}
-
-/**
- * Utils
- */
-
-function nameLength (read, id) {
-  const name = read('persons', id, 'name')
-  return (name && name.length) | 0
 }

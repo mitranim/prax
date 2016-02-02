@@ -1,4 +1,4 @@
 'use strict'
 
-var values = require('./dist/effects')
+var values = require('./dist/effect')
 for (var key in values) exports[key] = values[key]

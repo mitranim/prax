@@ -1,6 +1,6 @@
 {
   "name": "prax",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "main": "dist/index.js",
   "jsnext:main": "lib/index.js",
   "scripts": {
@@ -10,10 +10,12 @@
     "build-prod": "gulp build --prod",
     "serve-prod": "npm run build-prod && gulp server"
   },
-  "description": "Supercharger for React apps. Centralised state, efficient change detection, message-based events",
+  "description": "Supercharged architecture for realtime web apps",
   "keywords": [
-    "immutable",
     "state",
+    "events",
+    "immutability",
+    "functional",
     "react"
   ],
   "authors": [
