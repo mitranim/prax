@@ -48,7 +48,6 @@ function profile (fields) {
 
 function dialog (fields) {
   return {
-    _unprocessed: false,
     _messageIds: [],
     ...fields,
     _unread: fields.last_message_read < fields.last_message
