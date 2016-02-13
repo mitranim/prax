@@ -31,7 +31,8 @@ export default [
   ),
 
   manage(['messages'],
-    on('messages', mapAndGroup(message, '_id'))
+    on('messages', mapAndGroup(message, '_id')),
+    one('message', upgrade(message))
   )
 ]
 

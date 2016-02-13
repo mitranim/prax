@@ -1,6 +1,6 @@
 {
   "name": "prax",
-  "version": "0.0.28",
+  "version": "0.0.29",
   "main": "dist/index.js",
   "jsnext:main": "lib/index.js",
   "scripts": {
@@ -28,7 +28,7 @@
     "url": "https://github.com/Mitranim/prax.git"
   },
   "dependencies": {
-    "emerge": "^0.0.13"
+    "emerge": "^0.0.15"
   },
   "devDependencies": {
     "babel-core": "^6.4.0",
