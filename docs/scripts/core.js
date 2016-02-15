@@ -1,73 +1,45 @@
-import {readAt} from 'prax/emerge'
-import {createWatcher} from 'prax'
-import {createEventLoop} from 'prax/event-loop'
-import {callEach, foldl, remove, resolve, flat} from 'prax/lang'
-import {reduceIterator, computeIterator, std} from 'prax/reduce'
+import {App, Emit} from 'prax/app'
+import {Watch, WatchNow} from 'prax/watch'
+import {When} from 'prax/effects'
+import {std} from 'prax/reduce'
+
+import reducers from './reducers'
+import computers from './computers'
+
+const init = {
+  keyCode: 0,
+  profiles: {},
+  visibility: {},
+  updating: {}
+}
 
 /**
  * Globals
  */
 
-const reducers = flat(require('./reducers').default)
+const app = App(reducers, computers, [], init)
 
-const computers = flat(require('./computers').default)
+export const emit = Emit(app.enque)
 
-let effects = []
+export const watch = Watch(app.addEffect)
 
-let prev
+export const watchNow = WatchNow(app)
 
-let state
-
-/**
- * Effects
- */
-
-function mainLoop (event) {
-  prev = state
-  let next = foldl(reducers, reduceIterator(event), prev)
-  next = foldl(computers, computeIterator(prev), next)
-  state = next
-  callEach(effects, prev, next)
-}
-
-const tick = createEventLoop(mainLoop)
-
-export function emit (value) {
-  return function () {
-    return tick(resolve(value, arguments))
-  }
-}
-
-export function subscribe (func) {
-  func(prev, state)
-  effects = effects.concat(func)
-  return () => { effects = remove(effects, func) }
-}
-
-export function watch (func) {
-  return subscribe(createWatcher(func))
-}
+export const when = When(watch)
 
 /**
  * Render Utils
  */
 
 import {Component} from 'react'
-import {createAuto, createReactiveRender} from 'prax/react'
+import {Auto, ReactiveRender} from 'prax/react'
 
-export const auto = createAuto(Component, watch)
-export const reactiveRender = createReactiveRender(watch)
+export const auto = Auto(Component, watchNow)
+export const reactiveRender = ReactiveRender(watchNow)
 
 /**
  * Init
  */
-
-tick(std('init', null, {
-  keyCode: 0,
-  profiles: {},
-  visibility: {},
-  updating: {}
-}))
 
 require('./effects')
 
@@ -82,16 +54,13 @@ document.addEventListener('keypress', emit(keyCode))
  */
 
 if (window.developmentMode) {
-  Object.defineProperty(window, 'state', {get: () => state})
-  window.readAt = readAt
+  window.app = app
   window.emit = emit
-  window.tick = tick
-  window.subscribe = subscribe
   window.watch = watch
   window.std = std
 
   window.test = () => {
-    tick(std('dialogs', null, [
+    app.enque(std('dialogs', null, [
       {
         subject: 'test',
         last_message: 100,
@@ -99,7 +68,7 @@ if (window.developmentMode) {
         _shopId: 2
       }
     ]))
-    tick(std('messages', null, [
+    app.enque(std('messages', null, [
       {subject: 'test', sender: 1, receiver: 2, created: 80},
       {subject: 'test', sender: 2, receiver: 1, created: 90},
       {subject: 'test', sender: 1, receiver: 2, created: 100}

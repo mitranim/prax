@@ -73,7 +73,7 @@ gulp.task('lib:test', done => {
   })
 })
 
-gulp.task('lib:build', gulp.series('lib:clear', 'lib:compile', 'lib:minify'))
+gulp.task('lib:build', gulp.series('lib:compile', 'lib:minify'))
 
 gulp.task('lib:watch', () => {
   $.watch(src.lib, gulp.series('lib:build', 'lib:test'))
@@ -220,17 +220,12 @@ gulp.task('server', () => (
 
 /* -------------------------------- Default ---------------------------------*/
 
-if (flags.prod) {
-  gulp.task('build', gulp.series(
-    'lib:build',
-    gulp.parallel('docs:scripts:build', 'docs:html:build', 'docs:styles:build', 'docs:fonts:build')
-  ))
-} else {
-  gulp.task('build', gulp.series(
-    'lib:build',
-    gulp.parallel('docs:html:build', 'docs:styles:build', 'docs:fonts:build')
-  ))
-}
+gulp.task('build', gulp.series(
+  'lib:clear', 'lib:build',
+  flags.prod
+  ? gulp.parallel('docs:scripts:build', 'docs:html:build', 'docs:styles:build', 'docs:fonts:build')
+  : gulp.parallel('docs:html:build', 'docs:styles:build', 'docs:fonts:build')
+))
 
 gulp.task('watch', gulp.parallel(
   'lib:watch', 'docs:scripts:build:watch', 'docs:html:watch', 'docs:styles:watch', 'docs:fonts:watch'

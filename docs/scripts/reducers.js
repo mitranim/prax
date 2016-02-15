@@ -2,8 +2,6 @@ import {on, one, manage, upgrade, passNext, mapAndGroup, mapTo} from 'prax/reduc
 import {pipe, mapValues} from 'prax/lang'
 
 export default [
-  on('init', passNext),
-
   manage(['keyCode'],
     on('keyCode', passNext)
   ),

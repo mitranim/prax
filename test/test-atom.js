@@ -6,10 +6,7 @@ const immutableClone = require('emerge').immutableClone
 const replaceAtPath = require('emerge').replaceAtPath
 const deepEqual = require('emerge').deepEqual
 
-const pt = require('path')
-const main = pt.join(__dirname, '..', require('../package')['jsnext:main'])
-
-const createAtom = require(main).createAtom
+const Atom = require('../lib/atom').Atom
 
 /** ********************************* Test ***********************************/
 
@@ -32,10 +29,10 @@ const next = replaceAtPath(prev, {
 }, [])
 
 /**
- * createAtom
+ * Atom
  */
 
-atom = createAtom(prev)
+atom = Atom(prev)
 
 read = atom.read
 set = atom.set

@@ -2,7 +2,7 @@
 
 /** ***************************** Dependencies *******************************/
 
-const createMb = require('../lib/mb').createMb
+const Mb = require('../lib/mb').Mb
 const toTest = require('../lib/pattern').toTest
 
 /** ********************************* Test ***********************************/
@@ -14,7 +14,7 @@ const toTest = require('../lib/pattern').toTest
 let mb, send, match, last, unsub
 
 const RESET = () => {
-  mb = createMb()
+  mb = Mb()
   send = mb.send
   match = mb.match
   last = unsub = undefined
@@ -110,10 +110,10 @@ send(2)
 if (last !== 4) throw Error()
 
 /**
- * createMb(...pairs)
+ * Mb(...pairs)
  */
 
-mb = createMb(
+mb = Mb(
   Boolean, msg => {
     last = msg
   },
@@ -136,7 +136,7 @@ match(Boolean, msg => {
   last = msg
 })
 
-match(Boolean, createMb(
+match(Boolean, Mb(
   Number.isInteger, msg => {
     last += msg
   },
