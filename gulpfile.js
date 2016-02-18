@@ -51,6 +51,10 @@ gulp.task('lib:clear', () => (
   del(out.lib).catch(noop)
 ))
 
+gulp.task('lib:clear-min', () => (
+  del(out.lib + '/**/*.min.js').catch(noop)
+))
+
 gulp.task('lib:compile', () => (
   gulp.src(src.lib)
     .pipe($.babel())
@@ -76,7 +80,7 @@ gulp.task('lib:test', done => {
 gulp.task('lib:build', gulp.series('lib:compile', 'lib:minify'))
 
 gulp.task('lib:watch', () => {
-  $.watch(src.lib, gulp.series('lib:build', 'lib:test'))
+  $.watch(src.lib, gulp.parallel('lib:test', gulp.series('lib:clear-min', 'lib:build')))
   $.watch(out.test, gulp.series('lib:test'))
 })
 

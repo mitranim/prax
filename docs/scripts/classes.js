@@ -2,7 +2,7 @@ import React from 'react'
 import {renderTo} from './utils'
 import {reactiveRender} from './core'
 
-// Demonstrates reactive `render`. This component stays in sync with the atom
+// Demonstrates reactive `render`. This component stays in sync with the app
 // data accessed in its `render` method. (This also works with ES6-style
 // classes.)
 

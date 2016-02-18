@@ -2,8 +2,8 @@
 
 /** ***************************** Dependencies *******************************/
 
-const Mb = require('../lib/mb').Mb
-const toTest = require('../lib/pattern').toTest
+const Mb = require(process.cwd() + '/mb').Mb
+const toTest = require(process.cwd() + '/pattern').toTest
 
 /** ********************************* Test ***********************************/
 

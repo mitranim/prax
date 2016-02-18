@@ -14,8 +14,4 @@ Install from `npm`:
 npm i --save-dev prax
 ```
 
-Then import it in your application:
-
-```javascript
-import * as prax from 'prax'
-```
+Then import it in your application.

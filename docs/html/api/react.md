@@ -7,8 +7,8 @@ Prax has optional React-specific addons. It complements React with:
 * automatic change detection
 * components as pure functions
 
-Prax frees you from manual subscriptions and triggers that permeate Flux apps. It
-also eliminates all unnecessary re-renders.
+Prax frees you from manual subscriptions and triggers that permeate Flux apps.
+It also eliminates all unnecessary re-renders.
 
 The addons are not imported into the main library, so you don't pay the size
 cost if you're using Prax without React.
@@ -30,21 +30,23 @@ finer-grained updates.
 Function components in Prax are actually useful.
 
 ```javascript
-import {createAtom, createAuto} from 'prax'
+import {App} from 'prax/app'
+import {WatchNow} from 'prax/watch'
+import {Auto} from 'prax/react'
 import {Component} from 'react'
 
-const atom = createAtom(/* ... initial state */)
-const auto = createAuto(Component, atom)
+const app = App()
+const auto = Auto(Component, WatchNow(app))
 
-const ReactiveComponent = auto(props => (
+const ReactiveComponent = auto((props, read) => (
   <div>
-    {atom.read('one', props.one)}
-    {atom.read('two', props.two)}
+    {read('one', props.one)}
+    {read('two', props.two)}
   </div>
 ))
 ```
 
 In this example, instances of `ReactiveComponent` will automatically subscribe
-to atom's data at paths `['one', props.one]` and `['one', props.two]`. They will
+to app data at paths `['one', props.one]` and `['one', props.two]`. They will
 automatically re-render when that data is changed. If `props` change, the
 subscriptions will automatically change.

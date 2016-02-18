@@ -1,8 +1,7 @@
 {
   "name": "prax",
-  "version": "0.0.30",
+  "version": "0.0.31",
   "main": "dist/index.js",
-  "jsnext:main": "lib/index.js",
   "scripts": {
     "start": "gulp",
     "test": "node test/test",
@@ -10,12 +9,13 @@
     "build-prod": "gulp build --prod",
     "serve-prod": "npm run build-prod && gulp server"
   },
-  "description": "Supercharged architecture for realtime web apps",
+  "description": "Sane architecture for realtime web apps",
   "keywords": [
     "state",
-    "events",
-    "immutability",
+    "immutable",
     "functional",
+    "events",
+    "reactive",
     "react"
   ],
   "authors": [

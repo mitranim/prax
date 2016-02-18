@@ -20,7 +20,7 @@ React component with Prax:
 :-->
 
 ```javascript
-const Root = auto(props => {
+const Root = auto((props, read) => {
   return (
     <div>
       <pre className='pad'>
@@ -38,7 +38,7 @@ React.render(<Root />, document.getElementById('root'))
 </div>
 :-->
 
-Class-based forms are also available, see the [React addons](api/react) API.
+Class-style components are also available, see the [React addons](api/react) API.
 
 ## Compatibility
 
