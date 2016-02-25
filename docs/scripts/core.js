@@ -43,6 +43,8 @@ export const reactiveRender = ReactiveRender(watchNow)
 
 require('./effects')
 
+app.init()
+
 function keyCode (event) {
   return std('keyCode', null, event.keyCode)
 }
