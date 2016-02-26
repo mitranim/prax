@@ -1,5 +1,5 @@
-import {on, one, manage, upgrade, passNext, mapAndGroup, mapTo} from 'prax/reduce'
 import {pipe, mapValues} from 'prax/lang'
+import {on, one, manage, upgrade, passNext, mapAndGroup, mapTo} from 'prax/reduce'
 
 export default [
   manage(['keyCode'],
