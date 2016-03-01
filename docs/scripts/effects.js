@@ -1,12 +1,11 @@
+import {id} from 'prax/lang'
 import {std} from 'prax/reduce'
-import {apply} from 'prax/lang'
-import {emit, when} from './core'
+import {when} from 'prax/effects'
 
-when(
-  at('updating', 'profile'),
-  emit(value => std('profile/update/done', value.id, value))
-)
-
-function at () {
-  return read => apply(read, arguments)
-}
+export default [
+  when(
+    [['updating', 'profile']],
+    id,
+    value => std('profile/update/done', value.id, value)
+  )
+]
