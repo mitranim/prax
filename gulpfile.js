@@ -79,6 +79,8 @@ gulp.task('lib:test', done => {
 
 gulp.task('lib:build', gulp.series('lib:compile', 'lib:minify'))
 
+gulp.task('lib:rebuild', gulp.series('lib:clear', 'lib:build'))
+
 gulp.task('lib:watch', () => {
   $.watch(src.lib, gulp.parallel('lib:test', gulp.series('lib:clear-min', 'lib:build')))
   $.watch(out.test, gulp.series('lib:test'))

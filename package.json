@@ -1,11 +1,11 @@
 {
   "name": "prax",
-  "version": "0.0.38",
+  "version": "0.0.39",
   "main": "dist/index.js",
   "scripts": {
     "start": "gulp",
     "test": "node test/test",
-    "prepublish": "gulp lib:build && npm test",
+    "prepublish": "gulp lib:rebuild && npm test",
     "build-prod": "gulp build --prod",
     "serve-prod": "npm run build-prod && gulp server"
   },
