@@ -6,7 +6,7 @@ const immutableClone = require('emerge').immutableClone
 const replaceAtPath = require('emerge').replaceAtPath
 const deepEqual = require('emerge').deepEqual
 
-const Atom = require(process.cwd() + '/atom').Atom
+const Atom = require(process.cwd() + '/lib/atom').Atom
 
 /** ********************************* Test ***********************************/
 

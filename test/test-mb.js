@@ -2,8 +2,7 @@
 
 /** ***************************** Dependencies *******************************/
 
-const Mb = require(process.cwd() + '/mb').Mb
-const toTest = require(process.cwd() + '/pattern').toTest
+const Mb = require(process.cwd() + '/lib/mb').Mb
 
 /** ********************************* Test ***********************************/
 
@@ -19,47 +18,6 @@ const RESET = () => {
   match = mb.match
   last = unsub = undefined
 }
-
-/**
- * toTest
- */
-
-// Primitives.
-
-if (toTest('pattern')('PATTERN')) throw Error()
-if (!toTest('pattern')('pattern')) throw Error()
-
-if (toTest(NaN)(undefined)) throw Error()
-if (!toTest(NaN)(NaN)) throw Error()
-
-// Functions.
-
-if (toTest(isNumber)('not a number')) throw Error()
-if (!toTest(isNumber)(Infinity)) throw Error()
-
-// Regexes.
-
-if (toTest(/secret/)(NaN)) throw Error()
-if (!toTest(/secret/)('my secret')) throw Error()
-
-// Objects.
-
-if (toTest({type: 'fork'})({type: 'FORK'})) throw Error()
-if (toTest({type: 'fork'})(null)) throw Error()
-if (!toTest({type: 'fork'})({type: 'fork', extra: true})) throw Error()
-
-// Nested objects.
-
-if (toTest({space: {time: NaN}})({space: {}})) throw Error()
-if (toTest({space: {time: NaN}})({space: {time: {}}})) throw Error()
-if (toTest({space: {time: NaN}})({space: null})) throw Error()
-if (!toTest({space: {time: NaN}})({space: {time: NaN}, extra: true})) throw Error()
-
-// Combined and nested.
-
-if (toTest({space: {time: NaN}, value: isNumber})({space: {}})) throw Error()
-if (toTest({space: {time: NaN}, value: isNumber})({space: {time: {}}, value: 'not a number'})) throw Error()
-if (!toTest({space: {time: NaN}, value: isNumber})({space: {time: NaN}, value: Infinity})) throw Error()
 
 /**
  * match / send
@@ -148,11 +106,3 @@ match(Boolean, Mb(
 send(12)
 
 if (last !== (12 + 12) * 12) throw Error()
-
-/**
- * Utils
- */
-
-function isNumber (value) {
-  return typeof value === 'number'
-}
