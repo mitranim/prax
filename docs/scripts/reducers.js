@@ -1,9 +1,9 @@
 import {pipe, mapValues} from 'prax/lang'
-import {on, one, manage, upgrade, passNext, mapAndGroup, mapTo} from 'prax/reduce'
+import {on, one, manage, upgrade, third, mapAndGroup, mapTo} from 'prax/reduce'
 
 export default [
   manage(['keyCode'],
-    on('keyCode', passNext)
+    on('keyCode', third)
   ),
 
   manage(['visibility'],
@@ -18,14 +18,14 @@ export default [
   ),
 
   manage(['updating', 'profile'],
-    on('profile/update', passNext),
+    on('profile/update', third),
     on('profile/update/done', () => null)
   ),
 
   manage(['dialogs'],
     on('dialogs', mapAndGroup(dialog, 'subject')),
     one('dialog', upgrade(dialog)),
-    on('messages', pipe(passNext, mapTo(message), idsBySubject))
+    on('messages', pipe(third, mapTo(message), idsBySubject))
   ),
 
   manage(['messages'],
