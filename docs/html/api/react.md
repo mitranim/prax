@@ -1,4 +1,4 @@
-{% extend('index.html', {title: 'react'}) %}
+{% extend('api.html', {title: 'react'}) %}
 
 ## Overview
 

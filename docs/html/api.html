@@ -1,0 +1,10 @@
+{% extend('index.html') %}
+
+<div>
+  <a href="api/" {{active('api')}}>api</a>
+  <a href="api/react/" {{active('api/react')}}>react</a>
+</div>
+
+<article>
+  {{path === 'api.html' ? include('partials/api.md') : content}}
+</article>

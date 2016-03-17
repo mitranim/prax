@@ -10,7 +10,7 @@ import './classes'
 renderTo('[data-state]', state)
 function state (props, read) {
   return (
-    <pre className='pad'>{JSON.stringify(read(), null, 2)}</pre>
+    <pre className='pad hljs'>{JSON.stringify(read(), null, 2)}</pre>
   )
 }
 
