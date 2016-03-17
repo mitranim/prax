@@ -3,7 +3,7 @@
 /** ***************************** Dependencies *******************************/
 
 const immutableClone = require('emerge').immutableClone
-const replaceAtPath = require('emerge').replaceAtPath
+const replaceAt = require('emerge').replaceAt
 const deepEqual = require('emerge').deepEqual
 
 const Atom = require(process.cwd() + '/lib/atom').Atom
@@ -22,11 +22,11 @@ const prev = immutableClone({
   seven: {eight: NaN}
 })
 
-const next = replaceAtPath(prev, {
+const next = replaceAt([], prev, {
   one: {two: [2], three: 3},
   five: {six: 6},
   seven: {eight: NaN}
-}, [])
+})
 
 /**
  * Atom
