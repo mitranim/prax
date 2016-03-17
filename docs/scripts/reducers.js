@@ -65,7 +65,7 @@ function msgId ({sender, receiver, created}) {
 }
 
 function idsBySubject (messages) {
-  return mapValues(groupBy(messages, 'subject'), toIds)
+  return mapValues(toIds, groupBy(messages, 'subject'))
 }
 
 function toIds (messages) {
