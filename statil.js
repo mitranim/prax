@@ -23,7 +23,10 @@ marked.setOptions({
 
 module.exports = {
   imports: {
-    prod: flags.prod
+    prod: flags.prod,
+    url (path) {
+      return pt.join(pt.dirname(path), pt.parse(path).name)
+    }
   },
   ignorePaths: path => (
     /^partials/.test(path)
