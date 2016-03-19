@@ -92,11 +92,11 @@ function hash (str) {
 }
 
 function groupBy (list, key) {
-  const buffer = {}
+  const out = {}
   for (let i = -1; ++i < list.length;) {
     const item = list[i]
-    const group = buffer[item[key]] || (buffer[item[key]] = [])
+    const group = out[item[key]] || (out[item[key]] = [])
     group.push(item)
   }
-  return buffer
+  return out
 }

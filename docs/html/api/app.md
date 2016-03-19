@@ -57,7 +57,7 @@ Events are arbitrary JavaScript values. You decide on their format when writing
 reducers.
 
 ```javascript
-const event0 = {type: 'init'}
+const event0 = 'init'
 const event1 = {type: 'ajax', key: 'user'}
 app.enque(event0, event1)
 ```
