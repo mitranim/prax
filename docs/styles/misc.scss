@@ -2,6 +2,13 @@ code, pre {
   background-color: aliceblue;
 }
 
+.notes {
+  padding: $sf-space / 2;
+  background-color: aliceblue;
+  > * {margin: 0 0 $sf-space 0}
+  > :last-child {margin-bottom: 0}
+}
+
 /**
  * nav
  */

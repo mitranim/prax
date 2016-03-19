@@ -1,8 +1,8 @@
-{% extend('api.html', {title: 'react'}) %}
+{% extend('api.html', {title: 'reduce'}) %}
 
 ## TOC
 
-* [`when`]({{url(path)}}#-when-predicate-effect-)
+* [`when`]({{url(path)}}/#-when-predicate-effect-)
 
 ## `when(predicate, effect)`
 

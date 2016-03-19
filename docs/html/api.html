@@ -1,10 +1,18 @@
 {% extend('index.html') %}
 
-<div>
-  <a href="api/" {{active('api')}}>api</a>
-  <a href="api/react/" {{active('api/react')}}>react</a>
-  <a href="api/reduce/" {{active('api/reduce')}}>reduce</a>
-</div>
+<nav class="nav-h">
+  <a href="api/" class="{{path === 'api.html' ? 'active' : ''}}">
+    overview
+  </a>
+  <a href="api/app/" {{active('api/app')}}>app</a>
+  <a href="api/compute/" {{active('api/compute')}}>[stub] compute</a>
+  <a href="api/effects/" {{active('api/effects')}}>[stub] effects</a>
+  <a href="api/lang/" {{active('api/lang')}}>[stub] lang</a>
+  <a href="api/pattern/" {{active('api/pattern')}}>[stub] pattern</a>
+  <a href="api/react/" {{active('api/react')}}>[wip] react</a>
+  <a href="api/reduce/" {{active('api/reduce')}}>[wip] reduce</a>
+  <a href="api/watch/" {{active('api/watch')}}>[stub] watch</a>
+</nav>
 
 <article>
   {{path === 'api.html' ? include('partials/api.md') : content}}

@@ -6,8 +6,8 @@
     "start": "gulp",
     "test": "node test/test",
     "prepublish": "gulp lib:rebuild && npm test",
-    "build-prod": "gulp build --prod",
-    "serve-prod": "npm run build-prod && gulp server"
+    "serve-prod": "gulp build --prod && gulp server",
+    "push-docs": "gulp build --prod && (cd gh-pages && git add -A . && git commit -a -m autocommit && git push origin gh-pages)"
   },
   "description": "Sane architecture for realtime web apps",
   "keywords": [
