@@ -23,8 +23,8 @@ stimuli, spinning its inner pure-functional gears.
 
 Creates an application object.
 
-All arguments are optional. The function lists may be deeply nested; the app
-flattens them automatically.
+All arguments are optional. The first three arguments (lists of functions) may
+be deeply nested; the app flattens them automatically.
 
 ```javascript
 import {App} from 'prax/app'
@@ -73,7 +73,7 @@ app.enque(event0, event1)
 
 The queue is synchronous. If you call `app.enque` when the app is idle (at the
 top of the stack in a task or microtask callback), it's guaranteed to finish
-before control flow returns to the callsite.
+before control returns to the callsite.
 
 The queue is asynchronous. If you call `app.enque` when the app is busy (inside
 an effect), it's guaranteed to delay the new events until the current queue
@@ -125,8 +125,8 @@ three values of state:
 `prev -> mean -> next`
 
 The `next` state exists during the data phase: it's passed to reducers and
-computers, and becomes their return value. When the data phase ends, the app
-substitutes its `mean` state for `next`.
+computers, and gets replaced by their return value. When the data phase ends,
+the app substitutes its `mean` state for `next`.
 
 ## `EmitMono(enque)`
 
