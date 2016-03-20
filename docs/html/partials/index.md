@@ -18,7 +18,7 @@ React component with Prax:
 <div class="demo-pair">
 :-->
 
-```javascript
+```js
 const Root = auto((props, read) => {
   return (
     <div>

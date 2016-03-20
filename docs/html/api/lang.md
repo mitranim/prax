@@ -44,7 +44,7 @@ The `lang` module contains general purpose utility functions.
 
 All examples on this page imply an import:
 
-```javascript
+```js
 import {someFunction} from 'prax/lang'
 ```
 
@@ -56,7 +56,7 @@ Like
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice" target="_blank">`Array#slice`</a>,
 but with the sliceable as the first argument.
 
-```javascript
+```js
 slice([1, 2, 3], 2)
 // [3]
 slice('hello world', 3, 5)
@@ -69,7 +69,7 @@ Like
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat" target="_blank">`Array#concat`</a>,
 but with `this` as the first argument.
 
-```javascript
+```js
 concat([1], [2], 3)
 // [1, 2, 3]
 ```
@@ -81,7 +81,7 @@ Similar to
 but with an FP-friendly argument order (more suitable for currying and partial
 application).
 
-```javascript
+```js
 function add (a, b) {
   return a + b
 }
@@ -96,7 +96,7 @@ Similar to
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduceRight" target="_blank">`Array#reduceRight`</a>,
 but with an FP-friendly argument order.
 
-```javascript
+```js
 function sub (a, b) {
   return a - b
 }
@@ -111,7 +111,7 @@ Similar to
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf" target="_blank">`Array#indexOf`</a>,
 but with an FP-friendly argument order. Unlike `Array#indexOf`, it detects `NaN`.
 
-```javascript
+```js
 indexOf(1, [3, 2, 1])
 // 2
 indexOf(NaN, [3, 2, NaN])
@@ -123,7 +123,7 @@ indexOf(NaN, [3, 2, NaN])
 Returns a new list with one occurrence of `value` removed. Doesn't change the
 original list. Returns the original if it doesn't include `value`.
 
-```javascript
+```js
 remove('two', ['one', 'two', 'three'])
 // ['one', 'three']
 ```
@@ -132,7 +132,7 @@ remove('two', ['one', 'two', 'three'])
 
 Returns the last element of the given list or `undefined`.
 
-```javascript
+```js
 last([1, 2, 3])
 // 3
 last('try me')
@@ -143,7 +143,7 @@ last('try me')
 
 Deeply flattens the given list.
 
-```javascript
+```js
 flat([1, [2], [[3]]])
 // [1, 2, 3]
 ```
@@ -154,7 +154,7 @@ Like
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map" target="_blank">`Array#map`</a>,
 but with an FP-friendly argument order.
 
-```javascript
+```js
 function double (a) {
   return a * 2
 }
@@ -170,7 +170,7 @@ map(double, [1, 2, 3])
 Like [`map`]({{url(path)}}/#-map-func-list-), but takes an object rather than
 a list.
 
-```javascript
+```js
 function inc (a) {
   return a + 1
 }
@@ -186,7 +186,7 @@ key-value pairing, returning an object rather than an array.
 
 Similar to lodash's `_.mapValues`.
 
-```javascript
+```js
 function bang (a) {
   return a + '!'
 }
@@ -202,7 +202,7 @@ rather than values.
 
 Similar to lodash's `_.mapKeys`.
 
-```javascript
+```js
 mapKeys(last, {one: 'one', two: 'two'})
 // {e: 'one', o: 'two'}
 ```
@@ -215,7 +215,7 @@ Like
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply" target="_blank">`Function#apply`</a>,
 but with the function as the first argument and an implicit `this = null`.
 
-```javascript
+```js
 function add (a, b) {
   return a + b
 }
@@ -241,7 +241,7 @@ like splitting a function call in two (or more).
 
 Equivalent to lodash's `_.partial` if you ignore `this`.
 
-```javascript
+```js
 function add (a, b) {
   return a + b
 }
@@ -270,7 +270,7 @@ rest.
 
 Equivalent to lodash's `_.flow`.
 
-```javascript
+```js
 function add (a, b, c) {
   return a + b + c
 }
@@ -295,7 +295,7 @@ Returns a new function that runs the given functions independently from each
 other, passing all arguments to each and returning the result of the last one.
 Useful for combining operations that have side effects.
 
-```javascript
+```js
 function first (a, b) {
   console.log('first:', a, b)
 }
@@ -324,7 +324,7 @@ arguments to each.
 
 Like `&&`, it's lazy and aborts early when a function returns a falsy value.
 
-```javascript
+```js
 function isNumber (value) {
   return typeof value === 'number'
 }
@@ -356,7 +356,7 @@ arguments to each.
 
 Like `||`, it's lazy and aborts early when a function returns a truthy value.
 
-```javascript
+```js
 function isNumber (value) {
   return typeof value === 'number'
 }
@@ -385,7 +385,7 @@ isPrintable([])
 Represents the `!` operation in function terms. Returns a new function that
 negates the result of the given function.
 
-```javascript
+```js
 function eq (a, b) {
   return a === b
 }
@@ -408,7 +408,7 @@ Represents the `_ ? _ : _` operation in terms of functions rather than
 expressions. Returns a new function that calls `left` if `test` succeeds and
 `right` otherwise, passing all arguments to each.
 
-```javascript
+```js
 function isNumber (a) {
   return typeof a === 'number'
 }
@@ -441,7 +441,7 @@ oneone11('1')
 
 Like `ifelse` without the `else` clause.
 
-```javascript
+```js
 ifthen(test, func)  ->  ifelse(test, func, () => undefined)
 ```
 
@@ -451,7 +451,7 @@ ifthen(test, func)  ->  ifelse(test, func, () => undefined)
 
 Like `===` but considers `NaN` equal to itself.
 
-```javascript
+```js
 is(1, '1')
 // false
 
@@ -464,7 +464,7 @@ is(NaN, NaN)
 True if `value` is a normal, honest-to-goodness object and not something
 fancy-shmancy.
 
-```javascript
+```js
 isPlainObject({})
 // true
 
@@ -481,7 +481,7 @@ True if `value` has the type `'object'` and isn't `null`. This covers arrays,
 regexes, user-defined classes, DOM nodes, and so on. Doesn't consider functions
 to be objects, even though technically they are.
 
-```javascript
+```js
 isObject('blah')
 // false
 
@@ -502,21 +502,21 @@ isObject(() => {})
 
 True if `value` inherits from `Array.prototype`.
 
-```javascript
+```js
 isArray([])
 // true
 ```
 
 ### `isRegExp(value)`
 
-```javascript
+```js
 isRegExp(/blah/)
 // true
 ```
 
 ### `isFunction(value)`
 
-```javascript
+```js
 isFunction(() => {})
 // true
 ```
@@ -525,7 +525,7 @@ isFunction(() => {})
 
 Definition:
 
-```javascript
+```js
 not(or(isObject, isFunction))
 ```
 
@@ -543,7 +543,7 @@ True if the value
 like an ES2015 promise. The value doesn't have to
 inherit from the built-in `Promise.prototype`.
 
-```javascript
+```js
 isPromise(Promise.resolve('test'))
 // true
 
@@ -560,7 +560,7 @@ isPromise({then () {}})
 
 Identity function: returns its argument unchanged. Useful in boolean contexts.
 
-```javascript
+```js
 it(1)
 // 1
 ```

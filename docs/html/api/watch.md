@@ -4,8 +4,8 @@
 
 * [Overview]({{url(path)}}/#overview)
 * [[WIP] `Watcher`]({{url(path)}}/#-watcher-func-)
-* [[TODO] Watch]
-* [[TODO] WatchNow]
+* [TODO] `Watch`
+* [TODO] `WatchNow`
 
 ## Overview
 
@@ -23,7 +23,7 @@ subscriptions expressed as functions, without any explicit metadata.
 
 Takes a function with the following signature:
 
-```javascript
+```js
 function reader (read) {
   // read the data at the given path
   console.log(read('some', 'path'))
@@ -32,7 +32,7 @@ function reader (read) {
 
 Wraps it into a watcher, returning a function with the following signature:
 
-```javascript
+```js
 function watcher (prev, next) {
   // may or may not call the reader
 }
@@ -40,7 +40,7 @@ function watcher (prev, next) {
 
 Basic example:
 
-```javascript
+```js
 // Implicitly subscribes to the path ['one', 'two']
 function reader (read) {
   console.log(read('one', 'two'))

@@ -10,7 +10,7 @@
 The app invokes all effects on each tick of its main loop. At the most basic
 level, each effect is a function of three arguments:
 
-```javascript
+```js
 function effect (prevState, meanState, event) {
   // perform side effects
   // return event(s)
@@ -21,14 +21,14 @@ function effect (prevState, meanState, event) {
 
 Format:
 
-```javascript
+```js
 predicate(read)  ->  result
 effect(result)   ->  event | [event] | void
 ```
 
 Examples:
 
-```javascript
+```js
 import {when} from 'prax/reduce'
 
 export default [

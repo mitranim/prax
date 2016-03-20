@@ -26,7 +26,7 @@ Creates an application object.
 All arguments are optional. The first three arguments (lists of functions) may
 be deeply nested; the app flattens them automatically.
 
-```javascript
+```js
 import {App} from 'prax/app'
 
 import {reducers, computers, effects, defaults} from 'features/my-feature'
@@ -36,7 +36,7 @@ const app = App(reducers, computers, effects, defaults)
 
 Format:
 
-```haskell
+```hs
 reducers :: [Reducer]
 
   where Reducer = ƒ(state, event) -> state
@@ -61,7 +61,7 @@ as soon as the app becomes idle.
 Events are arbitrary JavaScript values. You decide on their format when writing
 reducers.
 
-```javascript
+```js
 const event0 = 'init'
 const event1 = {type: 'ajax', key: 'user'}
 app.enque(event0, event1)
@@ -93,7 +93,7 @@ for side effects and asynchronous operations.
 The primary purpose of this method is to dynamically subscribe and unsubscribe
 views.
 
-```javascript
+```js
 function effect (prev, next, event) {
   // do some side effects
   // optionally return an event
@@ -110,7 +110,7 @@ unsub()
 
 Returns the previous app state.
 
-```javascript
+```js
 const prevState = app.getPrev()
 console.log(prevState)
 ```
@@ -136,7 +136,7 @@ user-supplied function and enqueues the result.
 This allows to hide imperative invocations of `enque` behind pure functions that
 return events.
 
-```javascript
+```js
 const emit = EmitMono(app.enque)
 
 function clickEvent ({type, button}) {
@@ -151,7 +151,7 @@ document.addEventListener('click', emit(clickEvent))
 
 Similar to `EmitMono`, but accepts both functions and plain values.
 
-```javascript
+```js
 const emit = Emit(app.enque)
 
 function down ({type, keyCode}) {

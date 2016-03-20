@@ -12,6 +12,6 @@
 
 [TODO]
 
-## Data Events
+## Data Events | Cause and Effect
 
-[TODO]
+[TODO] Talk about modeling causes.

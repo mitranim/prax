@@ -14,7 +14,7 @@ while helping to eliminate unnecessary re-renders.
 
 React `0.14` introduced an option to write views as functions:
 
-```javascript
+```js
 import React from 'react'
 
 const MyView = props => (<div>...</div>)
@@ -27,7 +27,7 @@ bashing together a string and calling `document.body.innerHTML = ...`.
 
 In contrast, function views in Prax are actually useful.
 
-```javascript
+```js
 import {App} from 'prax/app'
 import {WatchNow} from 'prax/watch'
 import {Auto} from 'prax/react'
