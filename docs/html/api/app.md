@@ -2,6 +2,7 @@
 
 ## TOC
 
+* [Overview]({{url(path)}}/#overview)
 * [`App`]({{url(path)}}/#-app-reducers-computers-effects-initialstate-)
   * [`App#enque`]({{url(path)}}/#-app-enque-events-)
   * [`App#addEffect`]({{url(path)}}/#-app-addeffect-func-)
@@ -10,11 +11,28 @@
 * [`EmitMono`]({{url(path)}}/#-emitmono-enque-)
 * [`Emit`]({{url(path)}}/#-emit-enque-)
 
+## Overview
+
+A mutable `App` object serves as a scaffold for a purely functional application.
+It maintains state, interacts with the impure world, and reacts to external
+stimuli, spinning its inner pure-functional gears.
+
+[TODO] explain the event queue.
+
 ## `App(reducers, computers, effects, initialState)`
 
-Creates an object intended to serve as an application core. It encapsulates
-state and has an event queue that drives state updates and side effects such
-as UI changes.
+Creates an application object.
+
+All arguments are optional. The function lists may be deeply nested; the app
+flattens them automatically.
+
+```javascript
+import {App} from 'prax/app'
+
+import {reducers, computers, effects, defaults} from 'features/my-feature'
+
+const app = App(reducers, computers, effects, defaults)
+```
 
 Format:
 
@@ -33,19 +51,6 @@ effects :: [Effect]
   where events :: any | [any] | Promise any | [Promise any] | void
 
 initialState :: any
-```
-
-All arguments are optional. The function lists may be deeply nested; the app
-flattens them automatically.
-
-Example:
-
-```javascript
-import {App} from 'prax/app'
-
-import {reducers, computers, effects, defaults} from 'features/my-feature'
-
-const app = App(reducers, computers, effects, defaults)
 ```
 
 ### `App#enque(...events)`

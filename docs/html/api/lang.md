@@ -1,15 +1,8 @@
 {% extend('api.html', {title: 'lang'}) %}
 
-The `lang` module contains general purpose utility functions.
-
-All examples on this page imply an import:
-
-```javascript
-import {someFunction} from 'prax/lang'
-```
-
 ## TOC
 
+* [Overview]({{url(path)}}/#overview)
 * [List]({{url(path)}}/#list)
   * [`slice`]({{url(path)}}/#-slice-value-start-end-)
   * [`concat`]({{url(path)}}/#-concat-values-)
@@ -45,6 +38,16 @@ import {someFunction} from 'prax/lang'
 * [Misc]({{url(path)}}/#misc)
   * [`it`]({{url(path)}}/#-it-value-)
 
+## Overview
+
+The `lang` module contains general purpose utility functions.
+
+All examples on this page imply an import:
+
+```javascript
+import {someFunction} from 'prax/lang'
+```
+
 ## List
 
 ### `slice(value, [start], [end])`
@@ -57,7 +60,7 @@ but with the sliceable as the first argument.
 slice([1, 2, 3], 2)
 // [3]
 slice('hello world', 3, 5)
-// lo
+// 'lo'
 ```
 
 ### `concat(...values)`
@@ -179,7 +182,7 @@ mapObject(inc, {one: 1, two: 2})
 ### `mapValues(func, object)`
 
 Like [`mapObject`]({{url(path)}}/#-mapobject-func-object-), but preserves
-key-value pairs, returning an object rather than an array.
+key-value pairing, returning an object rather than an array.
 
 Similar to lodash's `_.mapValues`.
 
@@ -220,8 +223,8 @@ function add (a, b) {
 apply(add, [1, 2])
 // 3
 
-add.apply(null, [1, 2])
-// 3
+// equivalent
+// apply(add, [1, 2]) = add.apply(null, [1, 2])
 ```
 
 ### `bind(func, ...args)`
@@ -252,6 +255,9 @@ const incMany = bind(map, inc)
 
 incMany([1, 2, 3])
 // [2, 3, 4]
+
+// equivalent
+// bind(map, inc) = map.bind(null, inc)
 ```
 
 ### `pipe(...funcs)`
@@ -290,12 +296,12 @@ other, passing all arguments to each and returning the result of the last one.
 Useful for combining operations that have side effects.
 
 ```javascript
-function first () {
-  console.log('first')
+function first (a, b) {
+  console.log('first:', a, b)
 }
 
-function second () {
-  console.log('second')
+function second (a, b) {
+  console.log('second:', a, b)
 }
 
 function add (a, b) {
@@ -305,8 +311,8 @@ function add (a, b) {
 const x = seq(first, second, add)
 
 x(1, 2)
-// >>> first
-// >>> second
+// prints 'first: 1 2'
+// prints 'second: 1 2'
 // 3
 ```
 
@@ -336,10 +342,10 @@ function isPosNum () {
 }
 
 isPosNum(1)
-// true
+// isNumber(1) && isPositive(1) = true
 
 isPosNum('1')
-// false; stops at isNumber, doesn't call isPositive
+// isNumber('1') = false
 ```
 
 ### `or(...funcs)`
@@ -360,18 +366,18 @@ function isString (value) {
 }
 
 // this:
-const isPrintable = or(isNumber, isString, () => undefined)
+const isPrintable = or(isNumber, isString)
 
 // is equivalent to:
 function isPrintable () {
-  return isNumber(...arguments) || isString(...arguments) || undefined
+  return isNumber(...arguments) || isString(...arguments)
 }
 
 isPrintable(NaN)
-// true; stops at isNumber, doesn't call isString
+// isNumber(NaN) = true
 
 isPrintable([])
-// undefined
+// isNumber([]) || isString([]) = false
 ```
 
 ### `not(func)`
@@ -392,15 +398,15 @@ function different () {
   return !eq(...arguments)
 }
 
-eq(1, 2)
-// false
+different(1, 2)
+// !eq(1, 2) = true
 ```
 
 ### `ifelse(test, left, right)`
 
-Represents the `_ ? _ : _` operation in function terms. Returns a new function
-that calls `left` if `test` succeeds and `right` otherwise, passing all
-arguments to each.
+Represents the `_ ? _ : _` operation in terms of functions rather than
+expressions. Returns a new function that calls `left` if `test` succeeds and
+`right` otherwise, passing all arguments to each.
 
 ```javascript
 function isNumber (a) {
@@ -425,10 +431,10 @@ function oneone11 () {
 }
 
 oneone11(1)
-// 2
+// isNumber(1) ? inc(1) : _ = 2
 
 oneone11('1')
-// '1!'
+// isNumber('1') ? _ : bang('1') = '1!'
 ```
 
 ### `ifthen(test, func)`
@@ -471,9 +477,9 @@ isPlainObject([])
 
 ### `isObject(value)`
 
-True if `value` has the type `object` and isn't null. This covers arrays,
+True if `value` has the type `'object'` and isn't `null`. This covers arrays,
 regexes, user-defined classes, DOM nodes, and so on. Doesn't consider functions
-objects, even though technically they are.
+to be objects, even though technically they are.
 
 ```javascript
 isObject('blah')
@@ -532,8 +538,10 @@ This includes:
 
 ### `isPromise(value)`
 
-True if `value` quacks like an ES2015 promise. The value doesn't have to inherit
-from the built-in `Promise.prototype`.
+True if the value
+<a href="https://en.wikipedia.org/wiki/Duck_test" target="_blank">quacks</a>
+like an ES2015 promise. The value doesn't have to
+inherit from the built-in `Promise.prototype`.
 
 ```javascript
 isPromise(Promise.resolve('test'))
