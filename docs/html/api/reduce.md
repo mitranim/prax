@@ -10,6 +10,8 @@
 * [`manage`]({{url(path)}}/#-manage-path-funcs-)
 * [`manageNonStrict`]({{url(path)}}/#-managenonstrict-path-funcs-)
 * [`passValue`]({{url(path)}}/#-passvalue-)
+* [`update`]({{url(path)}}/#-update-func-)
+* [`upgrade`]({{url(path)}}/#-upgrade-func)
 
 ## Overview
 
