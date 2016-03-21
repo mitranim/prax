@@ -59,12 +59,12 @@ function reducer (state, event) {
 }
 
 // this:
-match({type: 'num', key: isNumber}, reduce)
+match({type: 'num', key: isNumber}, reducer)
 
 // is equivalent to:
 function (state, event) {
   return isObject(event) && is(event.type, 'num') && isNumber(event.key)
-    ? reduce(state, event)
+    ? reducer(state, event)
     : state
 }
 ```
@@ -81,7 +81,7 @@ function reducer (state, key, value) {
   return {...state, test: [key, value]}
 }
 
-const x = on('test', reduce)
+const x = on('test', reducer)
 
 x({}, std('blah'))
 // {}
@@ -167,5 +167,49 @@ function passValue (state, key, value) {
 }
 ```
 
-<!-- ## update -->
-<!-- ## upgrade -->
+Useful in function composition contexts:
+
+```js
+import {pipe, mapKeys, it, mapValues} from 'prax/lang'
+
+const x = on('flags', pipe(
+  passValue,
+  bind(mapKeys, it),
+  bind(mapValues, () => true)
+))
+
+x({}, std('flags', null, [1, 2]))
+// {1: true, 2: true}
+```
+
+## `update(func)`
+
+Shortcut for a common operation under `on`: ignoring the key and using only the
+state and event's value.
+
+```js
+function concat (list, value) {
+  return list.concat(value)
+}
+
+const x = on('id', update(concat))
+
+x([1, 2], std('id', null, 3))
+// [1, 2, 3]
+```
+
+## `upgrade(func)`
+
+Shortcut for a common operation under `one`: pre-merging the state and event's
+value before passing the result to the reducer.
+
+```js
+function user (fields) {
+  return {...fields, length: fields.name.length}
+}
+
+const x = on('user', upgrade(user))
+
+x({id: 1, name: 'Mira'}, std('user', 1, {age: 1000}))
+// {id: 1, name: 'Mira', age: 1000, length: 4}
+```
