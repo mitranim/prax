@@ -6,7 +6,7 @@
     -------
 
 
-              event               event                ...
+              event               event
     state n   ---->   state n+1   ---->   state n+2   ---->   ...
 
 
@@ -65,6 +65,8 @@
     Events  -----> Effects
 
     Effects -----> Events
+
+    Events  --X--> Events
 ```
 
 

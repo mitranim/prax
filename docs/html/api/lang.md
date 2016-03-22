@@ -23,6 +23,7 @@
   * [`pipe`]({{url(path)}}/#-pipe-funcs-)
   * [`seq`]({{url(path)}}/#-seq-funcs-)
   * [`rest`]({{url(path)}}/#-rest-func-)
+  * [`spread`]({{url(path)}}/#-spread-func-)
   * [`and`]({{url(path)}}/#-and-funcs-)
   * [`or`]({{url(path)}}/#-or-funcs-)
   * [`not`]({{url(path)}}/#-not-func-)
@@ -320,7 +321,7 @@ x(1, 2)
 ### `rest(func)`
 
 Returns a function that collects its arguments and passes them to `func` as a
-whole, as the first argument.
+whole, as the first argument. An opposite of `spread`.
 
 ```js
 rest(slice)(1, 2, 3)
@@ -329,6 +330,28 @@ rest(slice)(1, 2, 3)
 // same without rest:
 slice([1, 2, 3])
 // [1, 2, 3]
+```
+
+### `spread(func)`
+
+Returns a function that takes one list-like argument and spreads it over `func`
+as multiple arguments. An opposite of `rest`.
+
+```js
+function add (a, b) {
+  return a + b
+}
+
+function sum () {
+  return foldl(add, 0, arguments)
+}
+
+spread(sum)([1, 2, 3])
+// 6
+
+// same without spread:
+sum(1, 2, 3)
+// 6
 ```
 
 ### `and(...funcs)`
