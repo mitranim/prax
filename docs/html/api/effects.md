@@ -7,14 +7,33 @@
 
 ## Overview
 
-The app invokes all effects on each tick of its main loop. At the most basic
-level, each effect is a function of three arguments:
+Base effect interface:
 
 ```js
-function effect (prevState, meanState, event) {
-  // perform side effects
+function effect (prev, mean, event) {
+  // run side effects
   // return event(s)
 }
+```
+
+This module provides abstractions over the base interface, letting you write
+short, specialised effects. All of them are pure higher-order functions, so you
+can design yours for your own needs.
+
+These utils focus mostly on _data events_: the idea that you should act not on
+inbound events themselves, but on changes in the application state.
+
+Examples on this page show effects as standalone functions, but in an app, you
+should group and pass them to the `App` constructor:
+
+```js
+App([], [], [when(...)])
+```
+
+Examples also imply imports:
+
+```js
+import {...} from 'prax/effects'
 ```
 
 ## `when(predicate, effect)`
@@ -29,30 +48,15 @@ effect(result)   ->  event | [event] | void
 Examples:
 
 ```js
-import {when} from 'prax/reduce'
+import {std} from 'prax/reduce'
 
-export default [
-  when(
-    read => read('somewhere', 'myData'),
-    myData => {
-      // ... side effects
-      // optional
-      return someEvent
-    }
-  ),
-
-  // Build abstractions for better readability.
-  when(
-    isLoggedIn,
-    loadProfile
-  )
-]
-
-function isLoggedIn (read) {
-  return read('...')
+function userId (read) {
+  return read('user', 'id')
 }
 
-function loadProfile (loggedIn) {
-  return ajax(...)
+function loadMessages (userId) {
+  return ajax(/* ... */).then(data => std('msg', null, data))
 }
+
+when(userId, loadMessages)
 ```

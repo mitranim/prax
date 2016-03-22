@@ -7,10 +7,9 @@
 
 ## Overview
 
-This module provides a limited form of pattern matching used in some other Prax
-modules. Together with ES2015 destructuring, it lets you crudely approximate
-pattern matching, a feature common in functional languages but missing from
-JavaScript.
+Provides a limited form of pattern testing used in some other Prax modules.
+Together with ES2015 destructuring, it lets you crudely approximate pattern
+matching, a feature common in functional languages but missing from JavaScript.
 
 Examples on this page imply imports:
 

@@ -4,6 +4,10 @@
 
 [TODO]
 
+## Immutable History
+
+[TODO]
+
 ## Functional Purity
 
 [TODO]

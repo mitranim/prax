@@ -22,6 +22,7 @@
   * [`bind`]({{url(path)}}/#-bind-func-args-)
   * [`pipe`]({{url(path)}}/#-pipe-funcs-)
   * [`seq`]({{url(path)}}/#-seq-funcs-)
+  * [`rest`]({{url(path)}}/#-rest-func-)
   * [`and`]({{url(path)}}/#-and-funcs-)
   * [`or`]({{url(path)}}/#-or-funcs-)
   * [`not`]({{url(path)}}/#-not-func-)
@@ -314,6 +315,20 @@ x(1, 2)
 // prints 'first: 1 2'
 // prints 'second: 1 2'
 // 3
+```
+
+### `rest(func)`
+
+Returns a function that collects its arguments and passes them to `func` as a
+whole, as the first argument.
+
+```js
+rest(slice)(1, 2, 3)
+// [1, 2, 3]
+
+// same without rest:
+slice([1, 2, 3])
+// [1, 2, 3]
 ```
 
 ### `and(...funcs)`

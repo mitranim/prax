@@ -1,29 +1,70 @@
 {% extend('index.html', {title: 'scratch'}) %}
 
 ```sh
-                      event queue
-World               ---------------->             Events
 
-  ^                                                 |
-  |                                                 |
-  |                                                 |  reduce
-  |                     Main Loop                   |  compute
-  |                                                 |
-  |                                                 |
-  |                                                 v
+    History
+    -------
 
-Effects             <----------------              Data
-                       data events
+
+              event               event                ...
+    state n   ---->   state n+1   ---->   state n+2   ---->   ...
 
 
 
-World  -----> Events
 
-Events -----> Data
+    App
+    ---
 
-Data   -----> Effects
 
-Events --X--> Effects
+           -----------------  World  <----------------
+          |                                           |
+          |                                           |
+          v                                           |
+                                                      |
+    [Event Queue]  <--------  events  <---------------
+        event                                         |
+        event                                         |
+        event                                         |
+        event                                         |
+        event
+         ...  event  ---------------------------->   Main
+
+
+
+
+
+    Main
+    ----
+
+    Data Phase
+
+      reduce
+
+        state = ƒ(state, event)
+
+      compute
+
+        state = ƒ(prev state, state)
+
+    Effect Phase
+
+      side effects
+
+        events = ƒ(prev state, state, event)
+
+        events -> queue
+
+
+
+    World   -----> Events
+
+    Events  -----> Data
+
+    Data    -----> Effects
+
+    Events  -----> Effects
+
+    Effects -----> Events
 ```
 
 
@@ -48,7 +89,7 @@ state and last event, and is updated by the main loop in response to events.
 
 ```sh
 // reduce
-state = ƒ(prev state, last event)
+state = ƒ(prev state, event)
 
 // compute
 state = ƒ(prev state, next state)
@@ -57,32 +98,34 @@ state = ƒ(prev state, next state)
 
 ### 4. Effects
 
-Effects happen from _data events_, which are conditions defined on data. Effects
-never happen as a direct response to events. Effects may alter the state of the
-world and cause future events.
+Effects may happen directly in response to events, or from _data events_, which
+are conditions defined on data. Effects may alter the state of the world and
+return new events.
 
 ```sh
 // effect
-event = ƒ(prev state, next state)
+event(s) = ƒ(prev state, next state, event)
 ```
 
 
 ### 5. Main Loop
 
 The main loop consumes one event at a time, taking the following steps:
-* thread state + event through reducers, produce new state
-* thread state through computers, update it
+
+* compute new state using reducer functions
+* recompute new state using computer functions
 * replace previous state
-* scan state for data events, trigger effects
+* run effect functions, passing two most recent states and the event
+* enqueue any new events returned by effects
 
 
 ### Goals
 
-This architecture aims to:
 * isolate state mutations
 * define application as function of state
 * compose application out of pure functions
-* eliminate the notion of time from application code
+* minimise the notion of time in application code
 
 Where:
+
 * time ≈ instruction sequences

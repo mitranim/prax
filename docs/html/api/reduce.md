@@ -11,7 +11,7 @@
 * [`manageNonStrict`]({{url(path)}}/#-managenonstrict-path-funcs-)
 * [`passValue`]({{url(path)}}/#-passvalue-)
 * [`update`]({{url(path)}}/#-update-func-)
-* [`upgrade`]({{url(path)}}/#-upgrade-func)
+* [`upgrade`]({{url(path)}}/#-upgrade-func-)
 
 ## Overview
 
@@ -157,6 +157,8 @@ x({}, std('user/set', 1, {name: 'Mira'}))
 Like `manage`, but with merge semantics rather than replacement semantics.
 Reducers under `manageNonStrict` may return patches rather than complete
 objects.
+
+[TODO] examples.
 
 ## `passValue`
 
