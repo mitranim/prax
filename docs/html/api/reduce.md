@@ -3,14 +3,14 @@
 ## TOC
 
 * [Overview]({{url(path)}}/#overview)
+* [`st`]({{url(path)}}/#-st-type-value-)
 * [`std`]({{url(path)}}/#-std-type-key-value-)
 * [`match`]({{url(path)}}/#-match-pattern-func-)
 * [`on`]({{url(path)}}/#-on-type-func-)
 * [`one`]({{url(path)}}/#-one-type-func-)
 * [`manage`]({{url(path)}}/#-manage-path-funcs-)
 * [`manageNonStrict`]({{url(path)}}/#-managenonstrict-path-funcs-)
-* [`passValue`]({{url(path)}}/#-passvalue-)
-* [`update`]({{url(path)}}/#-update-func-)
+* [`pass`]({{url(path)}}/#-pass-)
 * [`upgrade`]({{url(path)}}/#-upgrade-func-)
 
 ## Overview
@@ -38,6 +38,15 @@ Examples also imply imports:
 
 ```js
 import {...} from 'prax/reduce'
+```
+
+## `st(type, value)`
+
+Shortcut to a common event format.
+
+```js
+st('one')     =  {type: 'one', value: undefined}
+st('two', 2)  =  {type: 'two', value: 2}
 ```
 
 ## `std(type, key, value)`
@@ -75,21 +84,21 @@ function (state, event) {
 
 Creates a reducer that acts only on events with the given `type`.
 
-The signature of `func` is not `(state, event)` but `(state, key, value)`. The
-reducer extracts `key` and `value` from the event.
+The signature of `func` is not `(state, event)` but `(state, value)`. The
+reducer extracts `value` from the event.
 
 ```js
-function reducer (state, key, value) {
-  return {...state, test: [key, value]}
+function reducer (state, value) {
+  return {...state, test: value}
 }
 
 const x = on('test', reducer)
 
-x({}, std('blah'))
+x({}, st('blah'))
 // {}
 
-x({}, std('test', 'key', 'value'))
-// {test: ['key', 'value']}
+x({}, st('test', 'value'))
+// {test: 'value'}
 ```
 
 ## `one(type, func)`
@@ -97,18 +106,18 @@ x({}, std('test', 'key', 'value'))
 Creates a reducer that acts only on events with the given `type` and a `key`.
 It manages an individual element under the `key` provided by each event.
 
-The signature of `func` is not `(state, event)` but `(element, key, value)`,
+The signature of `func` is not `(state, event)` but `(element, value, key)`,
 where `element = state[key]`. The reducer extracts `key` and `value` from the
 event and merges the result back into `state` under that key.
 
 Due to merge semantics, the function may also return partial objects, patches.
 
 ```js
-function passValue (state, key, value) {
+function pass (state, value, key) {
   return value
 }
 
-const x = one('elem', passValue)
+const x = one('elem', pass)
 
 let state = x({}, std('elem'))
 // {}
@@ -132,11 +141,13 @@ Each func has the normal reducer signature `(state, event)`, but manages only
 the part of state located at the given path.
 
 ```js
-function setAll (users, _, value) {
+// equivalent to `pass` (see below)
+function setAll (users, value) {
   return value
 }
 
-function setOne (user, key, value) {
+// equivalent to `pass` (see below)
+function setOne (user, value, key) {
   return value
 }
 
@@ -145,7 +156,7 @@ const x = manage(['users'],
   one('user/set', setOne)
 )
 
-x({}, std('users/set', null, {1: {name: 'Mira'}}))
+x({}, st('users/set', {1: {name: 'Mira'}}))
 // {users: {1: {name: 'Mira'}}}
 
 x({}, std('user/set', 1, {name: 'Mira'}))
@@ -160,13 +171,13 @@ objects.
 
 [TODO] examples.
 
-## `passValue`
+## `pass`
 
 Shortcut for a common operation under `on` and `one`: using the event value and
 ignoring other arguments. Definition:
 
 ```js
-function passValue (state, key, value) {
+function pass (state, value) {
   return value
 }
 ```
@@ -177,29 +188,13 @@ Useful in function composition contexts:
 import {pipe, mapKeys, it, mapValues} from 'prax/lang'
 
 const x = on('flags', pipe(
-  passValue,
+  pass,
   bind(mapKeys, it),
   bind(mapValues, () => true)
 ))
 
-x({}, std('flags', null, [1, 2]))
+x({}, st('flags', [1, 2]))
 // {1: true, 2: true}
-```
-
-## `update(func)`
-
-Shortcut for a common operation under `on`: ignoring the key and using only the
-state and event's value.
-
-```js
-function concat (list, value) {
-  return list.concat(value)
-}
-
-const x = on('id', update(concat))
-
-x([1, 2], std('id', null, 3))
-// [1, 2, 3]
 ```
 
 ## `upgrade(func)`
