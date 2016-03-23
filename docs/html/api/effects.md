@@ -48,14 +48,14 @@ effect(result)   ->  event | [event] | void
 Examples:
 
 ```js
-import {std} from 'prax/reduce'
+import {st} from 'prax/reduce'
 
 function userId (read) {
   return read('user', 'id')
 }
 
 function loadMessages (userId) {
-  return ajax(/* ... */).then(data => std('msg', null, data))
+  return ajax(/* ... */).then(data => st('msg', data))
 }
 
 when(userId, loadMessages)
