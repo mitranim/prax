@@ -12,6 +12,7 @@
 * [`manageNonStrict`]({{url(path)}}/#-managenonstrict-path-funcs-)
 * [`pass`]({{url(path)}}/#-pass-)
 * [`upgrade`]({{url(path)}}/#-upgrade-func-)
+* [`ifonly`]({{url(path)}}/#-ifonly-test-func-)
 
 ## Overview
 
@@ -211,4 +212,28 @@ const x = on('user', upgrade(user))
 
 x({id: 1, name: 'Mira'}, std('user', 1, {age: 1000}))
 // {id: 1, name: 'Mira', age: 1000, length: 4}
+```
+
+## `ifonly(test, func)`
+
+Returns a reducer that uses `func` only if `test` passes. `test` must be a
+function, and is called with the same arguments as `func`. When the test fails,
+the state remains unchanged.
+
+```js
+function pos (state, _value) {
+  return state > 0
+}
+
+function dec (state, _value) {
+  return state - 1
+}
+
+const x = on('dec', ifonly(pos, dec))
+
+x(-1, st('dec'))
+// -1
+
+x(2, st('dec'))
+// 1
 ```
