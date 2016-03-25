@@ -2,22 +2,18 @@ import {App, Emit} from 'prax/app'
 import {Watch, WatchNow} from 'prax/watch'
 import {st, std} from 'prax/reduce'
 
-import reducers from './reducers'
-import computers from './computers'
-import effects from './effects'
-
-const init = {
-  keyCode: 0,
-  profiles: {},
-  visibility: {},
-  updating: {}
-}
-
 /**
  * Globals
  */
 
-const app = App(reducers, computers, effects, init)
+import * as feature from './feature'
+
+const app = App(
+  feature.reducers,
+  feature.computers,
+  feature.effects,
+  feature.state
+)
 
 export const emit = Emit(app.enque)
 
@@ -38,8 +34,6 @@ export const reactiveRender = ReactiveRender(watchNow)
 /**
  * Init
  */
-
-require('./effects')
 
 function keyCode (event) {
   return st('keyCode', event.keyCode)
