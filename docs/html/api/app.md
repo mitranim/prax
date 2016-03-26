@@ -128,6 +128,11 @@ The `next` state exists during the data phase: it's passed to reducers and
 computers, and gets replaced by their return value. When the data phase ends,
 the app substitutes its `mean` state for `next`.
 
+```js
+const meanState = app.getMean()
+console.log(meanState)
+```
+
 ## `EmitMono(enque)`
 
 Creates a "delayed" version of `app.enque` that passes arguments to a

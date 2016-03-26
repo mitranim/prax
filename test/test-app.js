@@ -12,6 +12,8 @@
 
 const deepEqual = require('emerge').deepEqual
 const App = require(process.cwd() + '/lib/app').App
+const pipe = require(process.cwd() + '/lib/lang').pipe
+const pass = require(process.cwd() + '/lib/reduce').pass
 
 /** ********************************* Test ***********************************/
 
@@ -34,14 +36,15 @@ call(function reduce () {
 })
 
 call(function compute () {
-  const app = App([passEvent], [mul, [[mul]]], null, 1)
+  const compute = pipe(pass, negative)
+  const app = App([pass], [compute, [compute]], null, 1)
 
   app.enque(2)
-  const next0 = mul(1, mul(1, 2))
+  const next0 = negative(2)
   if (app.getMean() !== next0) throw Error()
 
   app.enque(3)
-  const next1 = mul(next0, mul(next0, 3))
+  const next1 = negative(3)
   if (app.getMean() !== next1) throw Error()
 })
 
@@ -62,7 +65,7 @@ call(function effects () {
 // mean === getMean()
 call(function stateInEffects () {
   const app = App(
-    [passEvent],
+    [pass],
     null,
     [(prev, next) => {
       if (prev !== app.getPrev()) throw Error()
@@ -113,14 +116,10 @@ function call (func) {
   func()
 }
 
-function passEvent (_, event) {
-  return event
-}
-
 function add (a, b) {
   return a + b
 }
 
-function mul (a, b) {
-  return a * b
+function negative (value) {
+  return value < 0 ? value : -value
 }
