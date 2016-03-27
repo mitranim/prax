@@ -18,6 +18,7 @@
   * [`mapValues`]({{url(path)}}/#-mapvalues-func-object-)
   * [`mapKeys`]({{url(path)}}/#-mapkeys-func-object-)
 * [Func]({{url(path)}}/#func)
+  * [`call`]({{url(path)}}/#-call-func-args-)
   * [`apply`]({{url(path)}}/#-apply-func-args-)
   * [`bind`]({{url(path)}}/#-bind-func-args-)
   * [`pipe`]({{url(path)}}/#-pipe-funcs-)
@@ -211,6 +212,28 @@ mapKeys(last, {one: 'one', two: 'two'})
 
 ## Func
 
+### `call(func, ...args)`
+
+Like
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call" target="_blank">`Function#call`</a>,
+but with the function as the first argument and an implicit `this = null`.
+
+```js
+function add (a, b) {
+  return a + b
+}
+
+call(add, 1, 2)
+// 3
+
+// equivalent:
+// add(1, 2)
+// call(add, 1, 2)
+// add.call(null, 1, 2)
+```
+
+## Func
+
 ### `apply(func, args)`
 
 Like
@@ -225,8 +248,9 @@ function add (a, b) {
 apply(add, [1, 2])
 // 3
 
-// equivalent
-// apply(add, [1, 2]) = add.apply(null, [1, 2])
+// equivalent:
+// apply(add, [1, 2])
+// add.apply(null, [1, 2])
 ```
 
 ### `bind(func, ...args)`
