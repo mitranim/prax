@@ -6,7 +6,7 @@
 /**
  * TODO better readability
  *
- * Watchers are impure / stateful. We have to keep this in mind.
+ * Watchers are impure / stateful. We have to keep this in mind when testing.
  */
 
 /** ***************************** Dependencies *******************************/

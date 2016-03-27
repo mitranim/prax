@@ -4,18 +4,33 @@
 
 const deepEqual = require('emerge').deepEqual
 
-exports.test = test
-function test (func) {
-  for (const config of [].slice.call(arguments, 1)) {
+exports.testWith = testWith
+function testWith (compare, func) {
+  for (const config of slice(arguments, 2)) {
     const args = toList(config)
     const result = func.apply(null, args)
-    if (!deepEqual(result, config.$)) err(config.$, result, func, args)
+    if (!compare(result, config.$)) {
+      throw Error(`Function:\n  ${blue(inspect(func))}\n` +
+                  `Arguments:\n  ${blue(inspect(args))}\n` +
+                  `Expected:\n  ${blue(inspect(config.$))}\n` +
+                  `Got:\n  ${red(inspect(result))}`)
+    }
   }
+}
+
+exports.test = test
+function test (func) {
+  testWith.apply(null, [deepEqual].concat(slice(arguments)))
 }
 
 exports.eq = eq
 function eq (a, b) {
   test(equal, {0: a, 1: b, $: true})
+}
+
+exports.neq = neq
+function neq (a, b) {
+  test(equal, {0: a, 1: b, $: false})
 }
 
 function equal (a, b) {
@@ -27,12 +42,22 @@ function deq (a, b) {
   test(deepEqual, {0: a, 1: b, $: true})
 }
 
+exports.ndeq = ndeq
+function ndeq (a, b) {
+  test(deepEqual, {0: a, 1: b, $: false})
+}
+
 exports.throws = throws
-function throws () {
-  for (const func of arguments) {
-    let error
-    try {func()} catch (err) {error = err}
-    if (!error) throw Error(`Expected function ${func.name} to throw`)
+function throws (func) {
+  let error
+  let value
+  const args = slice(arguments, 1)
+  try {value = func.apply(null, args)} catch (err) {error = err}
+  if (!error) {
+    throw Error(`Function:\n  ${blue(inspect(func))}\n` +
+                              `Arguments:\n  ${blue(inspect(args))}\n` +
+                              `Expected to ${red('throw')}\n` +
+                              `Got:\n  ${blue(inspect(value))}`)
   }
 }
 
@@ -49,7 +74,7 @@ const codes = {
 }
 
 function toList (object) {
-  return [].slice.call(Object.assign({}, object, {length: len(object)}))
+  return slice(Object.assign({}, object, {length: len(object)}))
 }
 
 function len (object) {
@@ -58,13 +83,6 @@ function len (object) {
 
 function indices (object) {
   return Object.keys(object).map(Number).filter(x => !isNaN(x))
-}
-
-function err (expected, got, func, args) {
-  throw Error(`Function:\n  ${blue(inspect(func))}\n` +
-              `Arguments:\n  ${blue(inspect(args))}\n` +
-              `Expected:\n  ${blue(inspect(expected))}\n` +
-              `Got:\n  ${red(inspect(got))}`)
 }
 
 function blue (msg) {
@@ -77,4 +95,8 @@ function red (msg) {
 
 function inspect (value) {
   return require('util').inspect(value, {depth: null})
+}
+
+function slice (list, start) {
+  return [].slice.call(list, start)
 }
