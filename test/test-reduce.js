@@ -43,13 +43,11 @@ std: {
 }
 
 match: {
-  const reduce = match({type: 'inc', value: Number.isInteger}, reducer)
-
   function reducer (state, event) {
     return state + event.value
   }
 
-  test(reduce,
+  test(match({type: 'inc', value: Number.isInteger}, reducer),
     {0: 1, 1: {type: 'inc'},           out: 1},
     {0: 1, 1: {type: 'inc', value: 2}, out: 3}
   )
@@ -57,13 +55,11 @@ match: {
 
 // TODO test object replacement semantics.
 on: {
-  const reduce = on('inc', reducer)
-
   function reducer (state, value) {
     return state + value
   }
 
-  test(reduce,
+  test(on('inc', reducer),
     {0: 1, 1: st('dec', 2), out: 1},
     {0: 1, 1: st('inc', 2), out: 3}
   )
@@ -71,13 +67,11 @@ on: {
 
 // TODO test merge semantics.
 one: {
-  const reduce = one('inc', reducer)
-
   function reducer (state, value, key) {
     return state + value + key
   }
 
-  test(reduce,
+  test(one('inc', reducer),
     {0: {val: 1, _: 2}, 1: std('inc'),           out: {val: 1, _: 2}},
     {0: {val: 1, _: 2}, 1: std('inc', 'val', 3), out: {val: '4val', _: 2}},
     {0: {0: 1, _: 2},   1: std('inc', 0, 3),     out: {0: 4, _: 2}}
@@ -139,9 +133,7 @@ upgrade: {
 }
 
 ifonly: {
-  const reduce = ifonly(both(Number.isInteger), add)
-
-  test(reduce,
+  test(ifonly(both(Number.isInteger), add),
     {0: NaN, 1: 1,   out: NaN},
     {0: {},  1: 1,   out: {}},
     {0: 1,   1: NaN, out: 1},

@@ -23,15 +23,11 @@ const computeNonStrict = lib.computeNonStrict
 
 compute: {
   primitives: {
-    const comp = compute(
-      ['sum'],
-      [['one'], ['inc']],
-      function add (a, b) {return a + b}
-    )
-
     const prev = {one: 1, inc: 1}
 
-    test(comp,
+    test(
+      compute(['sum'], [['one'], ['inc']], add),
+
       {0: prev, 1: prev, out: prev},
 
       {0:   prev,
@@ -41,11 +37,11 @@ compute: {
   }
 
   objects: {
-    const comp = compute(['target'], [['source']], x => x)
-
     const prev = {source: {one: 1}, target: {test: 1}}
 
-    test(comp,
+    test(
+      compute(['target'], [['source']], it),
+
       {0: prev, 1: prev, out: prev},
 
       {0:   prev,
@@ -56,15 +52,27 @@ compute: {
 }
 
 computeNonStrict: {
-  const comp = computeNonStrict(['target'], [['source']], x => x)
-
   const prev = {source: {one: 1}, target: {test: 1}}
 
-  test(comp,
+  test(
+    computeNonStrict(['target'], [['source']], it),
+
     {0: prev, 1: prev, out: prev},
 
     {0:   prev,
      1:   replaceAt(['source'], prev, {one: 3}),
      out: {source: {one: 3}, target: {test: 1, one: 3}}}
   )
+}
+
+/**
+ * Utils
+ */
+
+function add (a, b) {
+  return a + b
+}
+
+function it (value) {
+  return value
 }

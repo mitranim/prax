@@ -16,8 +16,9 @@ require('./test-mb')
 require('./test-pattern')
 require('./test-que')
 require('./test-app')
-require('./test-compute')
 require('./test-reduce')
+require('./test-compute')
+require('./test-effects')
 
 console.log(`[${pad(new Date().getHours())}:${pad(new Date().getMinutes())}:${pad(new Date().getSeconds())}] Finished test without errors.`)
 
