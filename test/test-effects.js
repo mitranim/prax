@@ -9,8 +9,7 @@
 
 /** ***************************** Dependencies *******************************/
 
-const utils = require('./utils')
-const test = utils.test
+const test = require('./utils').test
 
 const apply = require(process.cwd() + '/lib/lang').apply
 
@@ -77,8 +76,14 @@ when: {
     // Change -> test -> no effect
     {0: {val: 1, ctrl: 1}, 1: {val: 1, ctrl: 2}, 2: 'event', out: nil},
 
-    // Change -> test -> effect
-    {0: {val: 1, ctrl: 2}, 1: {val: 1, ctrl: 1}, 2: 'event', out: true}
+    // Change -> test -> result unchanged -> no effect
+    {0: {val: 1, ctrl: 2}, 1: {val: 1, ctrl: 3}, 2: 'event', out: nil},
+
+    // Change -> test -> result changed -> effect
+    {0: {val: 1, ctrl: 3}, 1: {val: 1, ctrl: 1}, 2: 'event', out: true},
+
+    // Change -> test -> result unchanged -> no effect
+    {0: {val: 1, ctrl: 1}, 1: {val: 2, ctrl: 2}, 2: 'event', out: nil}
   )
 }
 

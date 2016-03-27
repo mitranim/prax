@@ -9,8 +9,7 @@
 
 /** ***************************** Dependencies *******************************/
 
-const utils = require('./utils')
-const test = utils.test
+const test = require('./utils').test
 
 const emerge = require('emerge')
 const replaceAt = emerge.replaceAt

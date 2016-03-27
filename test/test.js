@@ -19,6 +19,7 @@ require('./test-app')
 require('./test-reduce')
 require('./test-compute')
 require('./test-effects')
+require('./test-watch')
 
 console.log(`[${pad(new Date().getHours())}:${pad(new Date().getMinutes())}:${pad(new Date().getSeconds())}] Finished test without errors.`)
 

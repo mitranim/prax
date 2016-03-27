@@ -9,8 +9,7 @@
 
 /** ***************************** Dependencies *******************************/
 
-const utils = require('./utils')
-const test = utils.test
+const test = require('./utils').test
 
 const lib = require(process.cwd() + '/lib/reduce')
 const st = lib.st

@@ -4,8 +4,7 @@
 
 /** ***************************** Dependencies *******************************/
 
-const utils = require('./utils')
-const eq = utils.eq
+const eq = require('./utils').eq
 
 const Mb = require(process.cwd() + '/lib/mb').Mb
 
