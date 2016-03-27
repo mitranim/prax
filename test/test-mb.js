@@ -1,108 +1,108 @@
 'use strict'
 
+/* eslint-disable no-empty-label, no-labels */
+
 /** ***************************** Dependencies *******************************/
+
+const utils = require('./utils')
+const eq = utils.eq
 
 const Mb = require(process.cwd() + '/lib/mb').Mb
 
 /** ********************************* Test ***********************************/
 
-/**
- * Globals
- */
+match_and_send: {
+  const mb = Mb()
+  const send = mb.send
+  const match = mb.match
+  let last
 
-let mb, send, match, last, unsub
+  match(Number.isInteger, msg => {
+    last = msg
+  })
 
-const RESET = () => {
-  mb = Mb()
-  send = mb.send
-  match = mb.match
-  last = unsub = undefined
+  send(1.1)
+  eq(last, undefined)
+
+  send(1)
+  eq(last, 1)
+
+  send(2)
+  eq(last, 2)
 }
 
-/**
- * match / send
- */
+unsub: {
+  const mb = Mb()
+  const send = mb.send
+  const match = mb.match
+  let last
 
-RESET()
-
-unsub = match(Number.isInteger, msg => {
-  last = msg
-})
-
-send(1.1)
-if (last !== undefined) throw Error()
-
-send(1)
-if (last !== 1) throw Error()
-
-send(2)
-if (last !== 2) throw Error()
-
-/**
- * unsub
- */
-
-if (typeof unsub !== 'function') throw Error()
-
-unsub()
-
-send(3)
-if (last !== 2) throw Error()
-
-/**
- * match many / send / order of factors
- */
-
-RESET()
-
-match(Number.isInteger, msg => {
-  last = msg
-})
-
-match(Number.isInteger, msg => {
-  last = last * msg
-})
-
-send(2)
-
-if (last !== 4) throw Error()
-
-/**
- * Mb(...pairs)
- */
-
-mb = Mb(
-  Boolean, msg => {
+  const unsub = match(Number.isInteger, msg => {
     last = msg
-  },
-  Boolean, msg => {
-    last += msg
-  }
-)
+  })
 
-mb.send('test')
+  send(2)
+  unsub()
+  send(3)
 
-if (last !== 'testtest') throw Error()
+  eq(last, 2)
+}
 
-/**
- * Nested
- */
+order: {
+  const mb = Mb()
+  const send = mb.send
+  const match = mb.match
+  let last
 
-RESET()
+  match(Number.isInteger, msg => {
+    last = msg
+  })
 
-match(Boolean, msg => {
-  last = msg
-})
+  match(Number.isInteger, msg => {
+    last = last * msg
+  })
 
-match(Boolean, Mb(
-  Number.isInteger, msg => {
-    last += msg
-  },
-  Number.isFinite, msg => {
-    last *= msg
-  }
-).send)
+  send(2)
 
-send(12)
+  eq(last, 4)
+}
 
-if (last !== (12 + 12) * 12) throw Error()
+mb_constructor_args: {
+  let last
+  const mb = Mb(
+    Boolean, msg => {
+      last = msg
+    },
+    Boolean, msg => {
+      last += msg
+    }
+  )
+
+  mb.send('test')
+
+  eq(last, 'testtest')
+}
+
+nested: {
+  const mb = Mb()
+  const send = mb.send
+  const match = mb.match
+  let last
+
+  match(Boolean, msg => {
+    last = msg
+  })
+
+  match(Boolean, Mb(
+    Number.isInteger, msg => {
+      last += msg
+    },
+    Number.isFinite, msg => {
+      last *= msg
+    }
+  ).send)
+
+  send(12)
+
+  eq(last, (12 + 12) * 12)
+}

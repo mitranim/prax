@@ -1,17 +1,23 @@
 'use strict'
 
+/* eslint-disable no-empty-label, no-labels, block-spacing */
+
 /**
  * TODO descriptive tests
  */
 
 /** ***************************** Dependencies *******************************/
 
-const deepEqual = require('emerge').deepEqual
+const utils = require('./utils')
+const eq = utils.eq
+const deq = utils.deq
+const ignore = utils.ignore
+
 const Que = require(process.cwd() + '/lib/que').Que
 
 /** ********************************* Test ***********************************/
 
-call(function testPush () {
+push: {
   const que = Que()
   const out = []
 
@@ -20,18 +26,17 @@ call(function testPush () {
 
   que.setConsumer(out.push.bind(out))
 
-  if (!deepEqual(out, [1, 2, 3])) throw Error()
+  deq(out, [1, 2, 3])
 
   out.splice(0)
-
   que.push(1)
 
-  if (!deepEqual(out, [1])) throw Error()
-})
+  deq(out, [1])
+}
 
-// Tests lineary processing of events: que must delay processing of events
-// pushed during flush and maintain their order.
-call(function testLinearity () {
+// Tests linear processing of events: que must delay events pushed during flush
+// and maintain their order.
+linearity: {
   const que = Que()
   const out = []
 
@@ -40,17 +45,17 @@ call(function testLinearity () {
       // This must not call the consumer immediately.
       que.push(2, 3)
       que.push(4)
-      if (out.length) throw Error(out)
+      eq(out.length, 0)
     }
     out.push(event)
   })
 
   que.push(1)
 
-  if (!deepEqual(out, [1, 2, 3, 4])) throw Error()
-})
+  deq(out, [1, 2, 3, 4])
+}
 
-call(function testExceptions () {
+exceptions: {
   const que = Que()
   const out = []
 
@@ -59,19 +64,7 @@ call(function testExceptions () {
     out.push(event)
   })
 
-  try {
-    que.push(1, 2, 3, 4)
-  } catch (_) {
-    // ignore
-  }
+  ignore(() => {que.push(1, 2, 3, 4)})
 
-  if (!deepEqual(out, [2, 4])) throw Error()
-})
-
-/**
- * Utils
- */
-
-function call (func) {
-  func()
+  deq(out, [2, 4])
 }
