@@ -13,8 +13,6 @@
 
 const test = require('./utils').test
 
-const apply = require(process.cwd() + '/lib/lang').apply
-
 const lib = require(process.cwd() + '/lib/watch')
 const Watcher = lib.Watcher
 
@@ -27,18 +25,28 @@ Watcher: {
     return read('val')
   }
 
-  test(Watcher(reader),
+  test(
+    Watcher(reader),
+
     // First call always runs the reader
-    {0: {val: 1}, 1: {val: 1}, out: 1},
+    {0: {val: 1},
+     1: {val: 1},
+     $: 1},
 
     // No change -> no result
-    {0: {val: 1}, 1: {val: 1}, out: nil},
+    {0: {val: 1},
+     1: {val: 1},
+     $: nil},
 
     // Change -> result
-    {0: {val: 1}, 1: {val: 2}, out: 2},
+    {0: {val: 1},
+     1: {val: 2},
+     $: 2},
 
     // Change elsewhere -> no result
-    {0: {val: 2}, 1: {val: 2, ctrl: 1}, out: nil}
+    {0: {val: 2},
+     1: {val: 2, ctrl: 1},
+     $: nil}
   )
 }
 
@@ -47,23 +55,36 @@ Watcher__path_change: {
     return read(read('key'))
   }
 
-  test(Watcher(reader),
+  test(
+    Watcher(reader),
+
     // First call always runs the reader
-    {1: {key: 'val', val: 1}, out: 1},
+    {1: {key: 'val', val: 1},
+     $: 1},
 
     // No change -> no result
-    {0: {key: 'val', val: 1}, 1: {key: 'val', val: 1}, out: nil},
+    {0: {key: 'val', val: 1},
+     1: {key: 'val', val: 1},
+     $: nil},
 
     // Change -> result
-    {0: {key: 'val', val: 1}, 1: {key: 'val', val: 2}, out: 2},
+    {0: {key: 'val', val: 1},
+     1: {key: 'val', val: 2},
+     $: 2},
 
     // Changed path -> result
-    {0: {key: 'val', val: 2}, 1: {key: 'ctrl', val: 2, ctrl: 1}, out: 1},
+    {0: {key: 'val', val: 2},
+     1: {key: 'ctrl', val: 2, ctrl: 1},
+     $: 1},
 
     // Change at old path -> no result
-    {0: {key: 'ctrl', val: 3, ctrl: 1}, 1: {key: 'ctrl', val: 3, ctrl: 1}, out: nil},
+    {0: {key: 'ctrl', val: 3, ctrl: 1},
+     1: {key: 'ctrl', val: 3, ctrl: 1},
+     $: nil},
 
     // Change at new path -> result
-    {0: {key: 'ctrl', val: 3, ctrl: 1}, 1: {key: 'ctrl', val: 3, ctrl: 2}, out: 2}
+    {0: {key: 'ctrl', val: 3, ctrl: 1},
+     1: {key: 'ctrl', val: 3, ctrl: 2},
+     $: 2}
   )
 }

@@ -27,17 +27,33 @@ const ifonly = lib.ifonly
 const nil = undefined
 
 st: {
-  test(st,
-    {0: 'type',             out: {type: 'type', value: nil}},
-    {0: 'type', 1: 'value', out: {type: 'type', value: 'value'}}
+  test(
+    st,
+
+    {0: 'type',
+     $: {type: 'type', value: nil}},
+
+    {0: 'type',
+     1: 'value',
+     $: {type: 'type', value: 'value'}}
   )
 }
 
 std: {
-  test(std,
-    {0: 'type',                       out: {type: 'type', key: nil, value: nil}},
-    {0: 'type', 1: 'key',             out: {type: 'type', key: 'key', value: nil}},
-    {0: 'type', 1: 'key', 2: 'value', out: {type: 'type', key: 'key', value: 'value'}}
+  test(
+    std,
+
+    {0: 'type',
+     $: {type: 'type', key: nil, value: nil}},
+
+    {0: 'type',
+     1: 'key',
+     $: {type: 'type', key: 'key', value: nil}},
+
+    {0: 'type',
+     1: 'key',
+     2: 'value',
+     $: {type: 'type', key: 'key', value: 'value'}}
   )
 }
 
@@ -46,9 +62,16 @@ match: {
     return state + event.value
   }
 
-  test(match({type: 'inc', value: Number.isInteger}, reducer),
-    {0: 1, 1: {type: 'inc'},           out: 1},
-    {0: 1, 1: {type: 'inc', value: 2}, out: 3}
+  test(
+    match({type: 'inc', value: Number.isInteger}, reducer),
+
+    {0: 1,
+     1: {type: 'inc'},
+     $: 1},
+
+    {0: 1,
+     1: {type: 'inc', value: 2},
+     $: 3}
   )
 }
 
@@ -58,9 +81,16 @@ on: {
     return state + value
   }
 
-  test(on('inc', reducer),
-    {0: 1, 1: st('dec', 2), out: 1},
-    {0: 1, 1: st('inc', 2), out: 3}
+  test(
+    on('inc', reducer),
+
+    {0: 1,
+     1: st('dec', 2),
+     $: 1},
+
+    {0: 1,
+     1: st('inc', 2),
+     $: 3}
   )
 }
 
@@ -70,10 +100,20 @@ one: {
     return state + value + key
   }
 
-  test(one('inc', reducer),
-    {0: {val: 1, _: 2}, 1: std('inc'),           out: {val: 1, _: 2}},
-    {0: {val: 1, _: 2}, 1: std('inc', 'val', 3), out: {val: '4val', _: 2}},
-    {0: {0: 1, _: 2},   1: std('inc', 0, 3),     out: {0: 4, _: 2}}
+  test(
+    one('inc', reducer),
+
+    {0: {val: 1, _: 2},
+     1: std('inc'),
+     $: {val: 1, _: 2}},
+
+    {0: {val: 1, _: 2},
+     1: std('inc', 'val', 3),
+     $: {val: '4val', _: 2}},
+
+    {0: {0: 1, _: 2},
+     1: std('inc', 0, 3),
+     $: {0: 4, _: 2}}
   )
 }
 
@@ -88,11 +128,21 @@ manage: {
     return reducers.reduce((next, func) => func(next, event), prev)
   }
 
-  test(reduce,
-    {0: {val: 1, _: 2}, 1: st('inc', 3), out: {val: 4, _: 2}},
-    {0: {val: 4, _: 2}, 1: st('dec', 3), out: {val: 1, _: 2}},
+  test(
+    reduce,
+
+    {0: {val: 1, _: 2},
+     1: st('inc', 3),
+     $: {val: 4, _: 2}},
+
+    {0: {val: 4, _: 2},
+     1: st('dec', 3),
+     $: {val: 1, _: 2}},
+
     // Completely replaces objects.
-    {0: {val: {a: 1}, _: 2}, 1: st('set', {b: 2}), out: {val: {b: 2}, _: 2}}
+    {0: {val: {a: 1}, _: 2},
+     1: st('set', {b: 2}),
+     $: {val: {b: 2}, _: 2}}
   )
 }
 
@@ -107,36 +157,73 @@ manageNonStrict: {
     return reducers.reduce((next, func) => func(next, event), prev)
   }
 
-  test(reduce,
-    {0: {val: 1, _: 2}, 1: st('inc', 3), out: {val: 4, _: 2}},
-    {0: {val: 4, _: 2}, 1: st('dec', 3), out: {val: 1, _: 2}},
+  test(
+    reduce,
+
+    {0: {val: 1, _: 2},
+     1: st('inc', 3),
+     $: {val: 4, _: 2}},
+
+    {0: {val: 4, _: 2},
+     1: st('dec', 3),
+     $: {val: 1, _: 2}},
+
     // Merges objects.
-    {0: {val: {a: 1}, _: 2}, 1: st('set', {b: 2}), out: {val: {a: 1, b: 2}, _: 2}}
+    {0: {val: {a: 1}, _: 2},
+     1: st('set', {b: 2}),
+     $: {val: {a: 1, b: 2}, _: 2}}
   )
 }
 
 upgrade: {
-  test(upgrade(pass),
-    {0: {val: 1}, 1: {val: 2}, out: nil}
+  test(
+    upgrade(pass),
+
+    {0: {val: 1},
+     1: {val: 2},
+     $: nil}
   )
 
   function reducer (value) {
     return value.val
   }
 
-  test(upgrade(reducer),
-    {0: {val: 1}, 1: {},       out: 1},
-    {0: {},       1: {val: 1}, out: 1},
-    {0: {val: 1}, 1: {val: 2}, out: 2}
+  test(
+    upgrade(reducer),
+
+    {0: {val: 1},
+     1: {},
+     $: 1},
+
+    {0: {},
+     1: {val: 1},
+     $: 1},
+
+    {0: {val: 1},
+     1: {val: 2},
+     $: 2}
   )
 }
 
 ifonly: {
-  test(ifonly(both(Number.isInteger), add),
-    {0: NaN, 1: 1,   out: NaN},
-    {0: {},  1: 1,   out: {}},
-    {0: 1,   1: NaN, out: 1},
-    {0: 1,   1: 2,   out: 3}
+  test(
+    ifonly(both(Number.isInteger), add),
+
+    {0: NaN,
+     1: 1,
+     $: NaN},
+
+    {0: {},
+     1: 1,
+     $: {}},
+
+    {0: 1,
+     1: NaN,
+     $: 1},
+
+    {0: 1,
+     1: 2,
+     $: 3}
   )
 }
 

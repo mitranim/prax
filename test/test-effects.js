@@ -39,13 +39,22 @@ where: {
     where([val, ctrl], predicate, effect),
 
     // No change -> no test -> no effect
-    {0: {val: 1, ctrl: 1}, 1: {val: 1, ctrl: 1}, 2: 'event', out: nil},
+    {0: {val: 1, ctrl: 1},
+     1: {val: 1, ctrl: 1},
+     2: 'event',
+     $: nil},
 
     // Change -> test -> no effect
-    {0: {val: 1, ctrl: 1}, 1: {val: 1, ctrl: 2}, 2: 'event', out: nil},
+    {0: {val: 1, ctrl: 1},
+     1: {val: 1, ctrl: 2},
+     2: 'event',
+     $: nil},
 
     // Change -> test -> effect
-    {0: {val: 1, ctrl: 2}, 1: {val: 1, ctrl: 1}, 2: 'event', out: 1}
+    {0: {val: 1, ctrl: 2},
+     1: {val: 1, ctrl: 1},
+     2: 'event',
+     $: 1}
   )
 }
 
@@ -65,25 +74,40 @@ when: {
     when(predicate, effect),
 
     // First run -> test -> effect
-    {out: true},
+    {$: true},
 
-    // Second run, no change -> no effect
-    {out: nil},
+    // Second run -> no change -> no effect
+    {$: nil},
 
     // No change -> no effect
-    {0: {val: 1, ctrl: 1}, 1: {val: 1, ctrl: 1}, 2: 'event', out: nil},
+    {0: {val: 1, ctrl: 1},
+     1: {val: 1, ctrl: 1},
+     2: 'event',
+     $: nil},
 
     // Change -> test -> no effect
-    {0: {val: 1, ctrl: 1}, 1: {val: 1, ctrl: 2}, 2: 'event', out: nil},
+    {0: {val: 1, ctrl: 1},
+     1: {val: 1, ctrl: 2},
+     2: 'event',
+     $: nil},
 
     // Change -> test -> result unchanged -> no effect
-    {0: {val: 1, ctrl: 2}, 1: {val: 1, ctrl: 3}, 2: 'event', out: nil},
+    {0: {val: 1, ctrl: 2},
+     1: {val: 1, ctrl: 3},
+     2: 'event',
+     $: nil},
 
     // Change -> test -> result changed -> effect
-    {0: {val: 1, ctrl: 3}, 1: {val: 1, ctrl: 1}, 2: 'event', out: true},
+    {0: {val: 1, ctrl: 3},
+     1: {val: 1, ctrl: 1},
+     2: 'event',
+     $: true},
 
     // Change -> test -> result unchanged -> no effect
-    {0: {val: 1, ctrl: 1}, 1: {val: 2, ctrl: 2}, 2: 'event', out: nil}
+    {0: {val: 1, ctrl: 1},
+     1: {val: 2, ctrl: 2},
+     2: 'event',
+     $: nil}
   )
 }
 
@@ -100,19 +124,26 @@ whenOneOf: {
     whenOneOf(vals, predicate, effect),
 
     // No collection -> no result
-    {out: nil},
+    {$: nil},
 
     // Empty collection -> empty result
-    {1: {vals: {}}, out: []},
+    {1: {vals: {}},
+     $: []},
 
     // No change -> no effect
-    {0: {vals: {one: 1}}, 1: {vals: {one: 1}}, out: []},
+    {0: {vals: {one: 1}},
+     1: {vals: {one: 1}},
+     $: []},
 
     // Change -> identical test results -> no effect
-    {0: {vals: {one: 1}}, 1: {vals: {one: 2}}, out: []},
+    {0: {vals: {one: 1}},
+     1: {vals: {one: 2}},
+     $: []},
 
     // Change -> different test results -> effect results
-    {0: {vals: {one: 0}}, 1: {vals: {one: 1}}, out: [['one', 1, true]]}
+    {0: {vals: {one: 0}},
+     1: {vals: {one: 1}},
+     $: [['one', 1, true]]}
   )
 }
 
@@ -121,8 +152,15 @@ match: {
     return state[event.key]
   }
 
-  test(match({type: 'out'}, effect),
-    {1: {val: 1}, 2: {type: 'test'},            out: nil},
-    {1: {val: 1}, 2: {type: 'out', key: 'val'}, out: 1}
+  test(
+    match({type: 'out'}, effect),
+
+    {1: {val: 1},
+     2: {type: 'test'},
+     $: nil},
+
+    {1: {val: 1},
+     2: {type: 'out', key: 'val'},
+     $: 1}
   )
 }

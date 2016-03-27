@@ -9,13 +9,13 @@ function test (func) {
   for (const config of [].slice.call(arguments, 1)) {
     const args = toList(config)
     const result = func.apply(null, args)
-    if (!deepEqual(result, config.out)) err(config.out, result, func, args)
+    if (!deepEqual(result, config.$)) err(config.$, result, func, args)
   }
 }
 
 exports.eq = eq
 function eq (a, b) {
-  test(equal, {0: a, 1: b, out: true})
+  test(equal, {0: a, 1: b, $: true})
 }
 
 function equal (a, b) {
@@ -24,7 +24,7 @@ function equal (a, b) {
 
 exports.deq = deq
 function deq (a, b) {
-  test(deepEqual, {0: a, 1: b, out: true})
+  test(deepEqual, {0: a, 1: b, $: true})
 }
 
 exports.throws = throws
