@@ -17,6 +17,10 @@ code.
 Prax's watching mechanism allows you to create extremely precise, fine-grained
 subscriptions expressed as functions, without any explicit metadata.
 
+It works through active observation: when a function uses the provided data
+source, the watcher remembers its interests and uses this knowledge to filter
+updates.
+
 ## `Watcher(func)`
 
 **[WIP] this is a stub!**
@@ -30,7 +34,7 @@ function reader (read) {
 }
 ```
 
-Wraps it into a watcher, returning a function with the following signature:
+Wraps it into a watcher, returning a function with the compute/effect signature:
 
 ```js
 function watcher (prev, next) {
@@ -52,8 +56,8 @@ watcher(undefined, {one: {two: 2}})
 // prints 2
 
 watcher({one: {two: 2}}, {one: {two: 2, three: 3}})
-// no effect
+// no change at watched path -> no effect
 
 watcher({one: {two: 2}}, {one: {two: 'two'}})
-// prints 'two'
+// change at watched path -> print 'two'
 ```

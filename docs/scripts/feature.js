@@ -73,14 +73,14 @@ function profile (fields) {
   }
 }
 
-function size (value) {
-  return isObject(value) ? value.length || Object.keys(value).length : 0
-}
-
 /**
  * Utils
  */
 
 function negate (value) {
   return !value
+}
+
+function size (value) {
+  return isObject(value) ? value.length || Object.keys(value).length : 0
 }

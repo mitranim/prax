@@ -30,6 +30,7 @@
   * [`not`]({{url(path)}}/#-not-func-)
   * [`ifelse`]({{url(path)}}/#-ifelse-test-left-right-)
   * [`ifthen`]({{url(path)}}/#-ifthen-test-func-)
+  * [`defer`]({{url(path)}}/#-defer-func-)
 * [Bool]({{url(path)}}/#bool)
   * [`is`]({{url(path)}}/#-is-one-other-)
   * [`isPlainObject`]({{url(path)}}/#-isplainobject-value-)
@@ -506,6 +507,43 @@ Like `ifelse` without the `else` clause.
 ```js
 ifthen(test, func)  ->  ifelse(test, func, () => undefined)
 ```
+
+### `defer(func)`
+
+Creates a self-partially-applying version of `func` (see
+[`bind`]({{url(path)}}/#-bind-func-args-)). Calling the returned function is
+equivalent to calling `bind(func, ...)` with the same arguments.
+
+Note that unlike currying, the created function is always executed in exactly
+two calls. The first returns a partially applied function, and the second calls
+the original function.
+
+```js
+function add (a, b, c) {
+  return a + b + c
+}
+
+const addf = defer(add)
+
+// is equivalent to:
+function addf () {
+  return bind(add, ...arguments)
+}
+
+addf(1, 2, 3)()
+// 6
+
+addf(1, 2)(3)
+// 6
+
+addf(1)(2, 3)
+// 6
+
+// demonstrates difference from currying
+addf(1)(2)
+// NaN
+```
+
 
 ## Bool
 

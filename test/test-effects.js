@@ -133,16 +133,19 @@ whenOneOf: {
     // No change -> no effect
     {0: {vals: {one: 1}},
      1: {vals: {one: 1}},
+     2: 'event',
      $: []},
 
     // Change -> identical test results -> no effect
     {0: {vals: {one: 1}},
      1: {vals: {one: 2}},
+     2: 'event',
      $: []},
 
     // Change -> different test results -> effect results
     {0: {vals: {one: 0}},
      1: {vals: {one: 1}},
+     2: 'event',
      $: [['one', 1, true]]}
   )
 }
@@ -155,11 +158,13 @@ match: {
   test(
     match({type: 'out'}, effect),
 
-    {1: {val: 1},
+    {0: nil,
+     1: {val: 1},
      2: {type: 'test'},
      $: nil},
 
-    {1: {val: 1},
+    {0: nil,
+     1: {val: 1},
      2: {type: 'out', key: 'val'},
      $: 1}
   )

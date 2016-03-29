@@ -13,9 +13,12 @@
 
 ## Overview
 
-A mutable `App` object serves as a scaffold for a purely functional application.
-It maintains state, interacts with the impure world, and reacts to external
+An `App` object serves as a scaffold for a purely functional application. It
+maintains state, interacts with the impure world, and reacts to external
 stimuli, spinning its inner pure-functional gears.
+
+An `App` is a mutable reference to a succession of immutable states. It allows
+you to define the application as a pure function of state.
 
 [TODO] explain the event queue.
 
