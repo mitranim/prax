@@ -1,4 +1,1 @@
-'use strict'
-
-var values = require('./dist/compute')
-for (var key in values) exports[key] = values[key]
+module.exports = require('./dist/compute')
