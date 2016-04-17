@@ -2,6 +2,7 @@ import 'simple-pjax'
 import React from 'react'
 import {render, unmountComponentAtNode} from 'react-dom'
 import {slice} from 'prax/lang'
+import {mergeAt} from 'prax/emerge'
 
 // Setup
 
@@ -58,4 +59,12 @@ export function docEvent (module, name, func) {
       document.removeEventListener(name, func)
     })
   }
+}
+
+export function mergeAll (...values) {
+  return values.reduce(mergeTwo)
+}
+
+function mergeTwo (acc, value) {
+  return mergeAt([], acc, value || {})
 }

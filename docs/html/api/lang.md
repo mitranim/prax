@@ -24,7 +24,7 @@
   * [`foldr`]({{url(path)}}/#-foldr-func-accumulator-list-)
   * [`map`]({{url(path)}}/#-map-func-list-)
   * [`indexOf`]({{url(path)}}/#-indexof-value-list-)
-  * [`includes`]({{url(path)}}/#-includes-value-list-)
+  * [`elem`]({{url(path)}}/#-elem-value-list-)
   * [`remove`]({{url(path)}}/#-remove-value-list-)
   * [`last`]({{url(path)}}/#-last-list-)
   * [`flat`]({{url(path)}}/#-flat-list-)
@@ -476,16 +476,16 @@ indexOf(NaN, [3, 2, NaN])
 // 2
 ```
 
-### `includes(value, list)`
+### `elem(value, list)`
 
 Similar to
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes" target="_blank">`Array#includes`</a>,
 but with an FP-friendly argument order.
 
 ```js
-includes(NaN, [3, 2, 1])
+elem(NaN, [3, 2, 1])
 // false
-includes(NaN, [3, 2, NaN])
+elem(NaN, [3, 2, NaN])
 // true
 ```
 

@@ -34,11 +34,7 @@ function hmr () {
       publicPath: '/prax',
       noInfo: true
     }),
-    require('webpack-hot-middleware')(compiler),
-    (req, res, next) => {
-      req.url = req.url.replace(/^\/prax\//, '').replace(/^[/]*/, '/')
-      next()
-    }
+    require('webpack-hot-middleware')(compiler)
   ]
 }
 

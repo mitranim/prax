@@ -1,8 +1,8 @@
-import {mergeAt} from 'prax/emerge'
-import {App, Emit} from 'prax/app'
-import {Watch, WatchNow} from 'prax/watch'
-import {st, stk} from 'prax/reduce'
-import {docEvent} from './utils'
+import {readAt} from 'prax/emerge'
+import {App, EmitMono} from 'prax/app'
+import {WatchNow} from 'prax/watch'
+import {st, stk, stf, stkf} from 'prax/reduce'
+import {mergeAll, docEvent} from './utils'
 
 /**
  * Globals
@@ -17,9 +17,7 @@ const app = App(
   mergeAll(feature.state, window.__app_state__)
 )
 
-export const emit = Emit(app.enque)
-
-export const watch = Watch(app.addEffect)
+export const emit = EmitMono(app.enque)
 
 export const watchNow = WatchNow(app)
 
@@ -47,24 +45,16 @@ docEvent(module, 'keypress', emit(keyCode))
  * Misc
  */
 
-function mergeAll (...values) {
-  return values.reduce(mergeTwo)
-}
-
-function mergeTwo (acc, value) {
-  return mergeAt([], acc, value || {})
-}
-
 if (module.hot) {
   module.hot.dispose(() => {
     window.__app_state__ = app.getMean()
   })
 }
 
-if (window.developmentMode) {
-  window.app = app
-  window.emit = emit
-  window.watch = watch
-  window.st = st
-  window.stk = stk
+window.dev = {...window.dev, app, emit, st, stk, stf, stkf,
+  read () {
+    return readAt(arguments, app.getMean())
+  }
 }
+
+if (window.developmentMode) Object.assign(window, window.dev)
