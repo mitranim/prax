@@ -7,6 +7,11 @@
 
 ## Overview
 
+Source:
+<a href="https://github.com/Mitranim/prax/blob/master/lib/effects.js" target="_blank">
+`lib/effects.js` <span class="fa fa-github"></span>
+</a>
+
 Base effect interface:
 
 ```js

@@ -9,6 +9,11 @@
 
 ## Overview
 
+Source:
+<a href="https://github.com/Mitranim/prax/blob/master/lib/watch.js" target="_blank">
+`lib/watch.js` <span class="fa fa-github"></span>
+</a>
+
 Most subscription systems are coarse-grained: they force you to manually
 subscribe to different objects or events types, or write filtering functions for
 streams. In other words, they require metadata. This produces boring boilerplate

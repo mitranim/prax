@@ -13,6 +13,11 @@
 
 ## Overview
 
+Source:
+<a href="https://github.com/Mitranim/prax/blob/master/lib/app.js" target="_blank">
+`lib/app.js` <span class="fa fa-github"></span>
+</a>
+
 An `App` object serves as a scaffold for a purely functional application. It
 maintains state, interacts with the impure world, and reacts to external
 stimuli, spinning its inner pure-functional gears.

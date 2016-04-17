@@ -7,6 +7,11 @@
 
 ## Overview
 
+Source:
+<a href="https://github.com/Mitranim/prax/blob/master/lib/pattern.js" target="_blank">
+`lib/pattern.js` <span class="fa fa-github"></span>
+</a>
+
 Provides a limited form of pattern testing used in some other Prax modules.
 Together with ES2015 destructuring, it lets you crudely approximate pattern
 matching, a feature common in functional languages but missing from JavaScript.

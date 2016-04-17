@@ -16,6 +16,11 @@
 
 ## Overview
 
+Source:
+<a href="https://github.com/Mitranim/prax/blob/master/lib/reduce.js" target="_blank">
+`lib/reduce.js` <span class="fa fa-github"></span>
+</a>
+
 Base reducer interface:
 
 ```js

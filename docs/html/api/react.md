@@ -2,6 +2,11 @@
 
 ## Overview
 
+Source:
+<a href="https://github.com/Mitranim/prax/blob/master/lib/react.js" target="_blank">
+`lib/react.js` <span class="fa fa-github"></span>
+</a>
+
 Prax has optional React-specific addons. It complements React with:
 * implicit data subscriptions
 * automatic change detection

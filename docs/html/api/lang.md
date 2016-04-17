@@ -47,6 +47,11 @@
 
 ## Overview
 
+Source:
+<a href="https://github.com/Mitranim/prax/blob/master/lib/lang.js" target="_blank">
+`lib/lang.js` <span class="fa fa-github"></span>
+</a>
+
 The `lang` module contains general purpose utility functions.
 
 All examples on this page imply an import:
