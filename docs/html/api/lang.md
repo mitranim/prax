@@ -3,24 +3,13 @@
 ## TOC
 
 * [Overview]({{url(path)}}/#overview)
-* [List]({{url(path)}}/#list)
-  * [`slice`]({{url(path)}}/#-slice-value-start-end-)
-  * [`concat`]({{url(path)}}/#-concat-values-)
-  * [`foldl`]({{url(path)}}/#-foldl-func-accumulator-list-)
-  * [`foldr`]({{url(path)}}/#-foldr-func-accumulator-list-)
-  * [`indexOf`]({{url(path)}}/#-indexof-value-list-)
-  * [`remove`]({{url(path)}}/#-remove-value-list-)
-  * [`last`]({{url(path)}}/#-last-list-)
-  * [`flat`]({{url(path)}}/#-flat-list-)
-  * [`map`]({{url(path)}}/#-map-func-list-)
-* [Object]({{url(path)}}/#object)
-  * [`mapObject`]({{url(path)}}/#-mapobject-func-object-)
-  * [`mapValues`]({{url(path)}}/#-mapvalues-func-object-)
-  * [`mapKeys`]({{url(path)}}/#-mapkeys-func-object-)
 * [Func]({{url(path)}}/#func)
   * [`call`]({{url(path)}}/#-call-func-args-)
   * [`apply`]({{url(path)}}/#-apply-func-args-)
   * [`bind`]({{url(path)}}/#-bind-func-args-)
+  * [`defer`]({{url(path)}}/#-defer-func-)
+  * [`rest`]({{url(path)}}/#-rest-func-)
+  * [`spread`]({{url(path)}}/#-spread-func-)
   * [`pipe`]({{url(path)}}/#-pipe-funcs-)
   * [`seq`]({{url(path)}}/#-seq-funcs-)
   * [`and`]({{url(path)}}/#-and-funcs-)
@@ -28,9 +17,21 @@
   * [`not`]({{url(path)}}/#-not-func-)
   * [`ifelse`]({{url(path)}}/#-ifelse-test-left-right-)
   * [`ifthen`]({{url(path)}}/#-ifthen-test-func-)
-  * [`defer`]({{url(path)}}/#-defer-func-)
-  * [`rest`]({{url(path)}}/#-rest-func-)
-  * [`spread`]({{url(path)}}/#-spread-func-)
+* [List]({{url(path)}}/#list)
+  * [`slice`]({{url(path)}}/#-slice-value-start-end-)
+  * [`concat`]({{url(path)}}/#-concat-values-)
+  * [`foldl`]({{url(path)}}/#-foldl-func-accumulator-list-)
+  * [`foldr`]({{url(path)}}/#-foldr-func-accumulator-list-)
+  * [`map`]({{url(path)}}/#-map-func-list-)
+  * [`indexOf`]({{url(path)}}/#-indexof-value-list-)
+  * [`includes`]({{url(path)}}/#-includes-value-list-)
+  * [`remove`]({{url(path)}}/#-remove-value-list-)
+  * [`last`]({{url(path)}}/#-last-list-)
+  * [`flat`]({{url(path)}}/#-flat-list-)
+* [Object]({{url(path)}}/#object)
+  * [`mapObject`]({{url(path)}}/#-mapobject-func-object-)
+  * [`mapValues`]({{url(path)}}/#-mapvalues-func-object-)
+  * [`mapKeys`]({{url(path)}}/#-mapkeys-func-object-)
 * [Bool]({{url(path)}}/#bool)
   * [`is`]({{url(path)}}/#-is-one-other-)
   * [`isPlainObject`]({{url(path)}}/#-isplainobject-value-)
@@ -50,165 +51,6 @@ All examples on this page imply an import:
 
 ```js
 import {someFunction} from 'prax/lang'
-```
-
-## List
-
-### `slice(value, [start], [end])`
-
-Like
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice" target="_blank">`Array#slice`</a>,
-but with the sliceable as the first argument.
-
-```js
-slice([1, 2, 3], 2)
-// [3]
-slice('hello world', 3, 5)
-// 'lo'
-```
-
-### `concat(...values)`
-
-Like
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat" target="_blank">`Array#concat`</a>,
-but with `this` as the first argument.
-
-```js
-concat([1], [2], 3)
-// [1, 2, 3]
-```
-
-### `foldl(func, accumulator, list)`
-
-Similar to
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce" target="_blank">`Array#reduce`</a>,
-but with an FP-friendly argument order (more suitable for currying and partial
-application).
-
-```js
-function add (a, b) {
-  return a + b
-}
-
-foldl(add, 10, [1, 2, 3])
-// 10 + 1 + 2 + 3 = 16
-```
-
-### `foldr(func, accumulator, list)`
-
-Similar to
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduceRight" target="_blank">`Array#reduceRight`</a>,
-but with an FP-friendly argument order.
-
-```js
-function sub (a, b) {
-  return a - b
-}
-
-foldr(sub, 100, [1, 5, 20])
-// 100 - 20 - 5 - 1 = 74
-```
-
-### `indexOf(value, list)`
-
-Similar to
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf" target="_blank">`Array#indexOf`</a>,
-but with an FP-friendly argument order. Unlike `Array#indexOf`, it detects `NaN`.
-
-```js
-indexOf(1, [3, 2, 1])
-// 2
-indexOf(NaN, [3, 2, NaN])
-// 2
-```
-
-### `remove(value, list)`
-
-Returns a new list with one occurrence of `value` removed. Doesn't change the
-original list. Returns the original if it doesn't include `value`.
-
-```js
-remove('two', ['one', 'two', 'three'])
-// ['one', 'three']
-```
-
-### `last(list)`
-
-Returns the last element of the given list or `undefined`.
-
-```js
-last([1, 2, 3])
-// 3
-last('try me')
-// 'e'
-```
-
-### `flat(list)`
-
-Deeply flattens the given list.
-
-```js
-flat([1, [2], [[3]]])
-// [1, 2, 3]
-```
-
-### `map(func, list)`
-
-Like
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map" target="_blank">`Array#map`</a>,
-but with an FP-friendly argument order.
-
-```js
-function double (a) {
-  return a * 2
-}
-
-map(double, [1, 2, 3])
-// [2, 4, 6]
-```
-
-## Object
-
-### `mapObject(func, object)`
-
-Like [`map`]({{url(path)}}/#-map-func-list-), but takes an object rather than
-a list.
-
-```js
-function inc (a) {
-  return a + 1
-}
-
-mapObject(inc, {one: 1, two: 2})
-// [2, 3]
-```
-
-### `mapValues(func, object)`
-
-Like [`mapObject`]({{url(path)}}/#-mapobject-func-object-), but preserves
-key-value pairing, returning an object rather than an array.
-
-Similar to lodash's `_.mapValues`.
-
-```js
-function bang (a) {
-  return a + '!'
-}
-
-mapValues(bang, {ping: 'ping', pong: 'pong'})
-// {ping: 'ping!', pong: 'pong!'}
-```
-
-### `mapKeys(func, object)`
-
-Like [`mapValues`]({{url(path)}}/#-mapvalues-func-object-), but alters keys
-rather than values.
-
-Similar to lodash's `_.mapKeys`.
-
-```js
-mapKeys(last, {one: 'one', two: 'two'})
-// {e: 'one', o: 'two'}
 ```
 
 ## Func
@@ -232,8 +74,6 @@ call(add, 1, 2)
 // call(add, 1, 2)
 // add.call(null, 1, 2)
 ```
-
-## Func
 
 ### `apply(func, args)`
 
@@ -285,6 +125,78 @@ incMany([1, 2, 3])
 
 // equivalent
 // bind(map, inc) = map.bind(null, inc)
+```
+
+### `defer(func)`
+
+Creates a self-partially-applying version of `func` (see
+[`bind`]({{url(path)}}/#-bind-func-args-)). Calling the returned function is
+equivalent to calling `bind(func, ...)` with the same arguments.
+
+Note that unlike currying, the created function is always executed in exactly
+two calls. The first returns a partially applied function, and the second calls
+the original function.
+
+```js
+function add (a, b, c) {
+  return a + b + c
+}
+
+const addf = defer(add)
+
+// is equivalent to:
+function addf () {
+  return bind(add, ...arguments)
+}
+
+addf(1, 2, 3)()
+// 6
+
+addf(1, 2)(3)
+// 6
+
+addf(1)(2, 3)
+// 6
+
+// demonstrates difference from currying
+addf(1)(2)
+// NaN
+```
+
+### `rest(func)`
+
+Returns a function that collects its arguments and passes them to `func` as a
+whole, as the first argument. An opposite of `spread`.
+
+```js
+rest(slice)(1, 2, 3)
+// [1, 2, 3]
+
+// same without rest:
+slice([1, 2, 3])
+// [1, 2, 3]
+```
+
+### `spread(func)`
+
+Returns a function that takes one list-like argument and spreads it over `func`
+as multiple arguments. An opposite of `rest`.
+
+```js
+function add (a, b) {
+  return a + b
+}
+
+function sum () {
+  return foldl(add, 0, arguments)
+}
+
+spread(sum)([1, 2, 3])
+// 6
+
+// same without spread:
+sum(1, 2, 3)
+// 6
 ```
 
 ### `pipe(...funcs)`
@@ -472,78 +384,177 @@ Like `ifelse` without the `else` clause.
 ifthen(test, func)  ->  ifelse(test, func, () => undefined)
 ```
 
-### `defer(func)`
+## List
 
-Creates a self-partially-applying version of `func` (see
-[`bind`]({{url(path)}}/#-bind-func-args-)). Calling the returned function is
-equivalent to calling `bind(func, ...)` with the same arguments.
+### `slice(value, [start], [end])`
 
-Note that unlike currying, the created function is always executed in exactly
-two calls. The first returns a partially applied function, and the second calls
-the original function.
+Like
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice" target="_blank">`Array#slice`</a>,
+but with the sliceable as the first argument.
 
 ```js
-function add (a, b, c) {
-  return a + b + c
-}
-
-const addf = defer(add)
-
-// is equivalent to:
-function addf () {
-  return bind(add, ...arguments)
-}
-
-addf(1, 2, 3)()
-// 6
-
-addf(1, 2)(3)
-// 6
-
-addf(1)(2, 3)
-// 6
-
-// demonstrates difference from currying
-addf(1)(2)
-// NaN
+slice([1, 2, 3], 2)
+// [3]
+slice('hello world', 3, 5)
+// 'lo'
 ```
 
-### `rest(func)`
+### `concat(...values)`
 
-Returns a function that collects its arguments and passes them to `func` as a
-whole, as the first argument. An opposite of `spread`.
+Like
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat" target="_blank">`Array#concat`</a>,
+but with `this` as the first argument.
 
 ```js
-rest(slice)(1, 2, 3)
-// [1, 2, 3]
-
-// same without rest:
-slice([1, 2, 3])
+concat([1], [2], 3)
 // [1, 2, 3]
 ```
 
-### `spread(func)`
+### `foldl(func, accumulator, list)`
 
-Returns a function that takes one list-like argument and spreads it over `func`
-as multiple arguments. An opposite of `rest`.
+Similar to
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce" target="_blank">`Array#reduce`</a>,
+but with an FP-friendly argument order (more suitable for currying and partial
+application).
 
 ```js
 function add (a, b) {
   return a + b
 }
 
-function sum () {
-  return foldl(add, 0, arguments)
-}
-
-spread(sum)([1, 2, 3])
-// 6
-
-// same without spread:
-sum(1, 2, 3)
-// 6
+foldl(add, 10, [1, 2, 3])
+// 10 + 1 + 2 + 3 = 16
 ```
 
+### `foldr(func, accumulator, list)`
+
+Similar to
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduceRight" target="_blank">`Array#reduceRight`</a>,
+but with an FP-friendly argument order.
+
+```js
+function sub (a, b) {
+  return a - b
+}
+
+foldr(sub, 100, [1, 5, 20])
+// 100 - 20 - 5 - 1 = 74
+```
+
+### `map(func, list)`
+
+Like
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map" target="_blank">`Array#map`</a>,
+but with an FP-friendly argument order.
+
+```js
+function double (a) {
+  return a * 2
+}
+
+map(double, [1, 2, 3])
+// [2, 4, 6]
+```
+
+### `indexOf(value, list)`
+
+Similar to
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf" target="_blank">`Array#indexOf`</a>,
+but with an FP-friendly argument order. Unlike `Array#indexOf`, it detects `NaN`.
+
+```js
+indexOf(1, [3, 2, 1])
+// 2
+indexOf(NaN, [3, 2, NaN])
+// 2
+```
+
+### `includes(value, list)`
+
+Similar to
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes" target="_blank">`Array#includes`</a>,
+but with an FP-friendly argument order.
+
+```js
+includes(NaN, [3, 2, 1])
+// false
+includes(NaN, [3, 2, NaN])
+// true
+```
+
+### `remove(value, list)`
+
+Returns a new list with one occurrence of `value` removed. Doesn't change the
+original list. Returns the original if it doesn't include `value`.
+
+```js
+remove('two', ['one', 'two', 'three'])
+// ['one', 'three']
+```
+
+### `last(list)`
+
+Returns the last element of the given list or `undefined`.
+
+```js
+last([1, 2, 3])
+// 3
+last('try me')
+// 'e'
+```
+
+### `flat(list)`
+
+Deeply flattens the given list.
+
+```js
+flat([1, [2], [[3]]])
+// [1, 2, 3]
+```
+
+## Object
+
+### `mapObject(func, object)`
+
+Like [`map`]({{url(path)}}/#-map-func-list-), but takes an object rather than
+a list.
+
+```js
+function inc (a) {
+  return a + 1
+}
+
+mapObject(inc, {one: 1, two: 2})
+// [2, 3]
+```
+
+### `mapValues(func, object)`
+
+Like [`mapObject`]({{url(path)}}/#-mapobject-func-object-), but preserves
+key-value pairing, returning an object rather than an array.
+
+Similar to lodash's `_.mapValues`.
+
+```js
+function bang (a) {
+  return a + '!'
+}
+
+mapValues(bang, {ping: 'ping', pong: 'pong'})
+// {ping: 'ping!', pong: 'pong!'}
+```
+
+### `mapKeys(func, object)`
+
+Like [`mapValues`]({{url(path)}}/#-mapvalues-func-object-), but alters keys
+rather than values.
+
+Similar to lodash's `_.mapKeys`.
+
+```js
+mapKeys(last, {one: 'one', two: 'two'})
+// {e: 'one', o: 'two'}
+```
 
 ## Bool
 
