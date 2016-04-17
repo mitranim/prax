@@ -33,6 +33,8 @@
   * [`mapValues`]({{url(path)}}/#-mapvalues-func-object-)
   * [`mapKeys`]({{url(path)}}/#-mapkeys-func-object-)
 * [Bool]({{url(path)}}/#bool)
+  * [`f`]({{url(path)}}/#-f-value-)
+  * [`t`]({{url(path)}}/#-t-value-)
   * [`is`]({{url(path)}}/#-is-one-other-)
   * [`isPlainObject`]({{url(path)}}/#-isplainobject-value-)
   * [`isObject`]({{url(path)}}/#-isobject-value-)
@@ -557,6 +559,47 @@ mapKeys(last, {one: 'one', two: 'two'})
 ```
 
 ## Bool
+
+### `f(value)`
+
+Like `!` but considers falsy only the following values:
+
+```js
+undefined null false NaN
+```
+
+```js
+f(NaN)
+// true
+
+!NaN
+// true
+
+f(0)
+// false
+
+!0
+// true
+```
+
+### `t(value)`
+
+Complement of `f`. Works like `!!` or `Boolean` but considers `''` and `0` to
+be truthy.
+
+```js
+t(1)
+// true
+
+!!1
+// true
+
+t(0)
+// true
+
+!!0
+// false
+```
 
 ### `is(one, other)`
 
