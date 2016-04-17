@@ -1,9 +1,7 @@
-import {isObject} from 'prax/lang'
+import {isObject, t} from 'prax/lang'
+import {on, one, manage, upgrade, pass, stk} from 'prax/reduce'
 import {compute} from 'prax/compute'
-import {it} from 'prax/lang'
-import {stk} from 'prax/reduce'
 import {where} from 'prax/effects'
-import {on, one, manage, upgrade, pass} from 'prax/reduce'
 
 /**
  * State
@@ -57,7 +55,7 @@ exports.computers = [
 exports.effects = [
   where(
     [['updating', 'profile']],
-    it,
+    t,
     value => stk('profile/update/done', value.id, value)
   )
 ]

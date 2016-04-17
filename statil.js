@@ -3,7 +3,7 @@
 const hljs = require('highlight.js')
 const marked = require('marked')
 const pt = require('path')
-const flags = require('yargs').boolean('prod').argv
+const prod = process.env.NODE_ENV === 'production'
 
 /*
  * Markdown config
@@ -23,7 +23,7 @@ marked.setOptions({
 
 module.exports = {
   imports: {
-    prod: flags.prod,
+    prod,
     url (path) {
       return pt.join(pt.dirname(path), pt.parse(path).name)
     }

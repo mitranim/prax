@@ -12,7 +12,7 @@ similar to Redux, but much more feature-complete.
 
 ## Example
 
-React component with Prax:
+React view with Prax:
 
 <!--:
 <div class="demo-pair">
@@ -37,7 +37,7 @@ React.render(<Root />, document.getElementById('root'))
 </div>
 :-->
 
-Class-style components are also available, see the [React addons](api/react) API.
+Class-style views are also available, see the [React addons](api/react) API.
 
 ## Compatibility
 

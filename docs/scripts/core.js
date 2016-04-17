@@ -1,6 +1,8 @@
+import {mergeAt} from 'prax/emerge'
 import {App, Emit} from 'prax/app'
 import {Watch, WatchNow} from 'prax/watch'
 import {st, stk} from 'prax/reduce'
+import {docEvent} from './utils'
 
 /**
  * Globals
@@ -12,7 +14,7 @@ const app = App(
   feature.reducers,
   feature.computers,
   feature.effects,
-  feature.state
+  mergeAll(feature.state, window.__app_state__)
 )
 
 export const emit = Emit(app.enque)
@@ -39,11 +41,25 @@ function keyCode (event) {
   return st('keyCode', event.keyCode)
 }
 
-document.addEventListener('keypress', emit(keyCode))
+docEvent(module, 'keypress', emit(keyCode))
 
 /**
  * Misc
  */
+
+function mergeAll (...values) {
+  return values.reduce(mergeTwo)
+}
+
+function mergeTwo (acc, value) {
+  return mergeAt([], acc, value || {})
+}
+
+if (module.hot) {
+  module.hot.dispose(() => {
+    window.__app_state__ = app.getMean()
+  })
+}
 
 if (window.developmentMode) {
   window.app = app
