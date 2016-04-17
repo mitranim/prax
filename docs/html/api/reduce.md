@@ -4,7 +4,7 @@
 
 * [Overview]({{url(path)}}/#overview)
 * [`st`]({{url(path)}}/#-st-type-value-)
-* [`std`]({{url(path)}}/#-std-type-key-value-)
+* [`stk`]({{url(path)}}/#-stk-type-key-value-)
 * [`match`]({{url(path)}}/#-match-pattern-func-)
 * [`on`]({{url(path)}}/#-on-type-func-)
 * [`one`]({{url(path)}}/#-one-type-func-)
@@ -43,21 +43,21 @@ import {...} from 'prax/reduce'
 
 ## `st(type, value)`
 
-Shortcut to a common event format.
+Shortcut to a common event format. Short for **st**andard.
 
 ```js
 st('one')     =  {type: 'one', value: undefined}
 st('two', 2)  =  {type: 'two', value: 2}
 ```
 
-## `std(type, key, value)`
+## `stk(type, key, value)`
 
-Shortcut to a common event format.
+Shortcut to a common event format. Short for **st**andard **k**eyed.
 
 ```js
-std('one')                =  {type: 'one', key: undefined, value: undefined}
-std('two', 2)             =  {type: 'two', key: 2, value: undefined}
-std('three', 3, 'three')  =  {type: 'three', key: 3, value: 'three'}
+stk('one')                =  {type: 'one', key: undefined, value: undefined}
+stk('two', 2)             =  {type: 'two', key: 2, value: undefined}
+stk('three', 3, 'three')  =  {type: 'three', key: 3, value: 'three'}
 ```
 
 ## `match(pattern, func)`
@@ -120,16 +120,16 @@ function pass (state, value, key) {
 
 const x = one('elem', pass)
 
-let state = x({}, std('elem'))
+let state = x({}, stk('elem'))
 // {}
 
-state = x(state, std('elem', 1, {title: 'first'}))
+state = x(state, stk('elem', 1, {title: 'first'}))
 // {1: {title: 'first'}}
 
-state = x(state, std('elem', 1, {time: 'now'}))
+state = x(state, stk('elem', 1, {time: 'now'}))
 // {1: {title: 'first', time: 'now'}}
 
-x(state, std('elem', 2, {title: 'second'}))
+x(state, stk('elem', 2, {title: 'second'}))
 // {1: {title: 'first', time: 'now'}, 2: {title: 'second'}}
 ```
 
@@ -160,7 +160,7 @@ const x = manage(['users'],
 x({}, st('users/set', {1: {name: 'Mira'}}))
 // {users: {1: {name: 'Mira'}}}
 
-x({}, std('user/set', 1, {name: 'Mira'}))
+x({}, stk('user/set', 1, {name: 'Mira'}))
 // {users: {1: {name: 'Mira'}}}
 ```
 
@@ -210,7 +210,7 @@ function user (fields) {
 
 const x = on('user', upgrade(user))
 
-x({id: 1, name: 'Mira'}, std('user', 1, {age: 1000}))
+x({id: 1, name: 'Mira'}, stk('user', 1, {age: 1000}))
 // {id: 1, name: 'Mira', age: 1000, length: 4}
 ```
 

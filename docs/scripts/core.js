@@ -1,6 +1,6 @@
 import {App, Emit} from 'prax/app'
 import {Watch, WatchNow} from 'prax/watch'
-import {st, std} from 'prax/reduce'
+import {st, stk} from 'prax/reduce'
 
 /**
  * Globals
@@ -50,5 +50,5 @@ if (window.developmentMode) {
   window.emit = emit
   window.watch = watch
   window.st = st
-  window.std = std
+  window.stk = stk
 }

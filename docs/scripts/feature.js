@@ -1,7 +1,7 @@
 import {isObject} from 'prax/lang'
 import {compute} from 'prax/compute'
 import {it} from 'prax/lang'
-import {std} from 'prax/reduce'
+import {stk} from 'prax/reduce'
 import {where} from 'prax/effects'
 import {on, one, manage, upgrade, pass} from 'prax/reduce'
 
@@ -58,7 +58,7 @@ exports.effects = [
   where(
     [['updating', 'profile']],
     it,
-    value => std('profile/update/done', value.id, value)
+    value => stk('profile/update/done', value.id, value)
   )
 ]
 

@@ -13,7 +13,7 @@ const test = require('./utils').test
 
 const lib = require(process.cwd() + '/lib/reduce')
 const st = lib.st
-const std = lib.std
+const stk = lib.stk
 const match = lib.match
 const on = lib.on
 const one = lib.one
@@ -39,9 +39,9 @@ st: {
   )
 }
 
-std: {
+stk: {
   test(
-    std,
+    stk,
 
     {0: 'type',
      $: {type: 'type', key: nil, value: nil}},
@@ -77,20 +77,20 @@ match: {
 
 // TODO test object replacement semantics.
 on: {
-  function reducer (state, value) {
-    return state + value
+  function reducer (state, value, key) {
+    return state + value + key
   }
 
   test(
     on('inc', reducer),
 
     {0: 1,
-     1: st('dec', 2),
+     1: stk('dec', 2, 3),
      $: 1},
 
     {0: 1,
-     1: st('inc', 2),
-     $: 3}
+     1: stk('inc', 2, 3),
+     $: 6}
   )
 }
 
@@ -104,15 +104,15 @@ one: {
     one('inc', reducer),
 
     {0: {val: 1, _: 2},
-     1: std('inc'),
+     1: stk('inc'),
      $: {val: 1, _: 2}},
 
     {0: {val: 1, _: 2},
-     1: std('inc', 'val', 3),
+     1: stk('inc', 'val', 3),
      $: {val: '4val', _: 2}},
 
     {0: {0: 1, _: 2},
-     1: std('inc', 0, 3),
+     1: stk('inc', 0, 3),
      $: {0: 4, _: 2}}
   )
 }
