@@ -52,6 +52,17 @@ compute: {
   eq(app.getMean(), negative(3))
 }
 
+compute__stabilising: {
+  function compute (prev, next) {
+    return next < 10 ? next + 1 : next
+  }
+
+  const app = App([pass], [compute], null, 1)
+
+  app.enque(null)
+  eq(app.getMean(), 10)
+}
+
 effects: {
   const app = App()
   const out = []
