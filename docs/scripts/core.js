@@ -2,7 +2,7 @@ import {readAt} from 'prax/emerge'
 import {App, EmitMono} from 'prax/app'
 import {WatchNow} from 'prax/watch'
 import {st, stk, stf, stkf} from 'prax/reduce'
-import {mergeAll, docEvent} from './utils'
+import {mergeAll, domEvent} from './utils'
 
 /**
  * Globals
@@ -39,7 +39,7 @@ function keyCode (event) {
   return st('keyCode', event.keyCode)
 }
 
-docEvent(module, 'keypress', emit(keyCode))
+domEvent(module, document, 'keypress', emit(keyCode))
 
 /**
  * Misc

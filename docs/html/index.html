@@ -8,6 +8,14 @@
 <link rel="stylesheet" href="styles/app.css">
 <link rel="icon" href="data:;base64,=">
 
+{% if (!prod) { %}
+  <script>
+    window.developmentMode = true;
+  </script>
+{% } %}
+
+<script src="app.js"></script>
+
 <body></body>
 
 {{include('partials/nav.html')}}
@@ -15,11 +23,3 @@
 <article>
   {{path === 'index.html' ? include('partials/index.md') : content}}
 </article>
-
-{% if (!prod) { %}
-  <script>
-    window.developmentMode = true;
-  </script>
-{% } %}
-
-<script src="app.js" async></script>
