@@ -7,16 +7,18 @@
   * [`call`]({{url(path)}}/#-call-func-args-)
   * [`apply`]({{url(path)}}/#-apply-func-args-)
   * [`bind`]({{url(path)}}/#-bind-func-args-)
-  * [`defer`]({{url(path)}}/#-defer-func-)
-  * [`rest`]({{url(path)}}/#-rest-func-)
-  * [`spread`]({{url(path)}}/#-spread-func-)
+  * [`flip`]({{url(path)}}/#-flip-func-)
   * [`pipe`]({{url(path)}}/#-pipe-funcs-)
+  * [`comp`]({{url(path)}}/#-comp-funcs-)
   * [`seq`]({{url(path)}}/#-seq-funcs-)
   * [`and`]({{url(path)}}/#-and-funcs-)
   * [`or`]({{url(path)}}/#-or-funcs-)
   * [`not`]({{url(path)}}/#-not-func-)
   * [`ifelse`]({{url(path)}}/#-ifelse-test-left-right-)
   * [`ifthen`]({{url(path)}}/#-ifthen-test-func-)
+  * [`defer`]({{url(path)}}/#-defer-func-)
+  * [`rest`]({{url(path)}}/#-rest-func-)
+  * [`spread`]({{url(path)}}/#-spread-func-)
 * [List]({{url(path)}}/#list)
   * [`slice`]({{url(path)}}/#-slice-value-start-end-)
   * [`concat`]({{url(path)}}/#-concat-values-)
@@ -36,14 +38,21 @@
   * [`f`]({{url(path)}}/#-f-value-)
   * [`t`]({{url(path)}}/#-t-value-)
   * [`is`]({{url(path)}}/#-is-one-other-)
-  * [`isPlainObject`]({{url(path)}}/#-isplainobject-value-)
+  * [`isNumber`]({{url(path)}}/#-isnumber-value-)
+  * [`isString`]({{url(path)}}/#-isstring-value-)
+  * [`isBoolean`]({{url(path)}}/#-isboolean-value-)
+  * [`isSymbol`]({{url(path)}}/#-issymbol-value-)
+  * [`isFunction`]({{url(path)}}/#-isfunction-value-)
   * [`isObject`]({{url(path)}}/#-isobject-value-)
+  * [`isPlainObject`]({{url(path)}}/#-isplainobject-value-)
   * [`isArray`]({{url(path)}}/#-isarray-value-)
   * [`isRegExp`]({{url(path)}}/#-isregexp-value-)
-  * [`isFunction`]({{url(path)}}/#-isfunction-value-)
   * [`isPromise`]({{url(path)}}/#-ispromise-value-)
+  * [`isPrimitive`]({{url(path)}}/#-isprimitive-value-)
+  * [`isNil`]({{url(path)}}/#-isnil-value-)
 * [Misc]({{url(path)}}/#misc)
   * [`it`]({{url(path)}}/#-it-value-)
+  * [`val`]({{url(path)}}/#-val-value-)
 
 ## Overview
 
@@ -134,76 +143,20 @@ incMany([1, 2, 3])
 // bind(map, inc) = map.bind(null, inc)
 ```
 
-### `defer(func)`
+### `flip(func)`
 
-Creates a self-partially-applying version of `func` (see
-[`bind`]({{url(path)}}/#-bind-func-args-)). Calling the returned function is
-equivalent to calling `bind(func, ...)` with the same arguments.
-
-Note that unlike currying, the created function is always executed in exactly
-two calls. The first returns a partially applied function, and the second calls
-the original function.
+Returns a function that passes its arguments to `func` in reverse.
 
 ```js
-function add (a, b, c) {
+function mappend (a, b, c) {
   return a + b + c
 }
 
-const addf = defer(add)
+mappend('left', '-', 'right')
+// 'left-right'
 
-// is equivalent to:
-function addf () {
-  return bind(add, ...arguments)
-}
-
-addf(1, 2, 3)()
-// 6
-
-addf(1, 2)(3)
-// 6
-
-addf(1)(2, 3)
-// 6
-
-// demonstrates difference from currying
-addf(1)(2)
-// NaN
-```
-
-### `rest(func)`
-
-Returns a function that collects its arguments and passes them to `func` as a
-whole, as the first argument. An opposite of `spread`.
-
-```js
-rest(slice)(1, 2, 3)
-// [1, 2, 3]
-
-// same without rest:
-slice([1, 2, 3])
-// [1, 2, 3]
-```
-
-### `spread(func)`
-
-Returns a function that takes one list-like argument and spreads it over `func`
-as multiple arguments. An opposite of `rest`.
-
-```js
-function add (a, b) {
-  return a + b
-}
-
-function sum () {
-  return foldl(add, 0, arguments)
-}
-
-spread(sum)([1, 2, 3])
-// 6
-
-// same without spread:
-sum(1, 2, 3)
-// 6
+flip(mappend)('left', '-', 'right')
+// 'right-left'
 ```
 
 ### `pipe(...funcs)`
@@ -214,25 +167,50 @@ of the given functions, a common tool in functional programming. When called, it
 passes all arguments to the first function, and pipes the output through the
 rest.
 
+Flows values left-to-right, in the direction of reading. See
+[`comp`]({{url(path)}}/#-comp-funcs-) for the opposite direction.
+
 Equivalent to lodash's `_.flow`.
 
 ```js
-function add (a, b, c) {
-  return a + b + c
+function add (a, b) {
+  return a + b
 }
 
 function double (a) {
   return a * 2
 }
 
-function bang (a) {
-  return a + '!'
+double(add(1, 2))
+// (1 + 2) * 2 = 6
+
+pipe(add, double)(1, 2)
+// (1 + 2) * 2 = 6
+```
+
+### `comp(...funcs)`
+
+Returns a new function that represents
+<a href="https://en.wikipedia.org/wiki/Function_composition_(computer_science)" target="_blank">composition</a>
+of the given functions.
+
+Flows values right-to-left, symmetrical to normal nested function calls. See
+[`pipe`]({{url(path)}}/#-pipe-funcs-) for the opposite direction.
+
+```js
+function add (a, b) {
+  return a + b
 }
 
-const x = pipe(add, double, bang)
+function double (a) {
+  return a * 2
+}
 
-x(1, 2, 3)
-// (1 + 2 + 3) * 2 + '!' = '12!'
+double(add(1, 2))
+// (1 + 2) * 2 = 6
+
+comp(double, add)(1, 2)
+// (1 + 2) * 2 = 6
 ```
 
 ### `seq(...funcs)`
@@ -389,6 +367,78 @@ Like `ifelse` without the `else` clause.
 
 ```js
 ifthen(test, func)  ->  ifelse(test, func, () => undefined)
+```
+
+### `defer(func)`
+
+Creates a self-partially-applying version of `func` (see
+[`bind`]({{url(path)}}/#-bind-func-args-)). Calling the returned function is
+equivalent to calling `bind(func, ...)` with the same arguments.
+
+Note that unlike currying, the created function is always executed in exactly
+two calls. The first returns a partially applied function, and the second calls
+the original function.
+
+```js
+function add (a, b, c) {
+  return a + b + c
+}
+
+const addf = defer(add)
+
+// is equivalent to:
+function addf () {
+  return bind(add, ...arguments)
+}
+
+addf(1, 2, 3)()
+// 6
+
+addf(1, 2)(3)
+// 6
+
+addf(1)(2, 3)
+// 6
+
+// demonstrates difference from currying
+addf(1)(2)
+// NaN
+```
+
+### `rest(func)`
+
+Returns a function that collects its arguments and passes them to `func` as a
+whole, as the first argument. An opposite of `spread`.
+
+```js
+rest(slice)(1, 2, 3)
+// [1, 2, 3]
+
+// same without rest:
+slice([1, 2, 3])
+// [1, 2, 3]
+```
+
+### `spread(func)`
+
+Returns a function that takes one list-like argument and spreads it over `func`
+as multiple arguments. An opposite of `rest`.
+
+```js
+function add (a, b) {
+  return a + b
+}
+
+function sum () {
+  return foldl(add, 0, arguments)
+}
+
+spread(sum)([1, 2, 3])
+// 6
+
+// same without spread:
+sum(1, 2, 3)
+// 6
 ```
 
 ## List
@@ -618,20 +668,39 @@ is(NaN, NaN)
 // true
 ```
 
-### `isPlainObject(value)`
-
-True if `value` is a normal, honest-to-goodness object and not something
-fancy-shmancy.
+### `isNumber(value)`
 
 ```js
-isPlainObject({})
+isNumber(1)
 // true
+```
 
-isPlainObject(Object.create(null))
+### `isString(value)`
+
+```js
+isString('blah')
 // true
+```
 
-isPlainObject([])
-// false
+### `isBoolean(value)`
+
+```js
+isBoolean(false)
+// true
+```
+
+### `isSymbol(value)`
+
+```js
+isSymbol(Symbol('blah'))
+// true
+```
+
+### `isFunction(value)`
+
+```js
+isFunction(isFunction)
+// true
 ```
 
 ### `isObject(value)`
@@ -657,6 +726,22 @@ isObject(() => {})
 // false
 ```
 
+### `isPlainObject(value)`
+
+True if `value` is a normal, honest-to-goodness object and not something
+fancy-shmancy.
+
+```js
+isPlainObject({})
+// true
+
+isPlainObject(Object.create(null))
+// true
+
+isPlainObject([])
+// false
+```
+
 ### `isArray(value)`
 
 True if `value` inherits from `Array.prototype`.
@@ -670,13 +755,6 @@ isArray([])
 
 ```js
 isRegExp(/blah/)
-// true
-```
-
-### `isFunction(value)`
-
-```js
-isFunction(() => {})
 // true
 ```
 
@@ -713,6 +791,16 @@ isPromise({then () {}})
 // false
 ```
 
+### `isNil(value)`
+
+Definition:
+
+```js
+function isNil (value) {
+  return value == null
+}
+```
+
 ## Misc
 
 ### `it(value)`
@@ -721,5 +809,22 @@ Identity function: returns its argument unchanged. Useful in boolean contexts.
 
 ```js
 it(1)
+// 1
+```
+
+### `val(value)`
+
+Delayed identity function. Returns a function that always returns the passed
+value.
+
+Equivalent to lodash's `_.constant`.
+
+```js
+const one = val(1)
+
+one()
+// 1
+
+one(100)
 // 1
 ```
