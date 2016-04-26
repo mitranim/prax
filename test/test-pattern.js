@@ -6,7 +6,7 @@
 
 const test = require('./utils').test
 
-const toTest = require(process.cwd() + '/lib/pattern').toTest
+const toTest = require(process.cwd() + '/lib/pattern').test
 
 /** ********************************* Test ***********************************/
 

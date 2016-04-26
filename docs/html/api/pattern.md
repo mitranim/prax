@@ -3,7 +3,7 @@
 ## TOC
 
 * [Overview]({{url(path)}}/#overview)
-* [`toTest`]({{url(path)}}/#-totest-pattern-)
+* [`test`]({{url(path)}}/#-test-pattern-)
 
 ## Overview
 
@@ -19,11 +19,11 @@ matching, a feature common in functional languages but missing from JavaScript.
 Examples on this page imply imports:
 
 ```js
-import {toTest} from 'prax/pattern'
+import {test} from 'prax/pattern'
 import {is, isArray, isObject} from 'prax/lang'
 ```
 
-## `toTest(pattern)`
+## `test(pattern)`
 
 Returns a function that checks a value against the pattern. The nature of the
 function depends on the provided pattern.
@@ -31,31 +31,31 @@ function depends on the provided pattern.
 A function is already a test:
 
 ```js
-toTest(isFinite)  =  isFinite
+test(isFinite)  =  isFinite
 ```
 
-A primitive produces an exact equality test:
+A primitive produces an exact equality test via [`lang/is`](api/lang/#-is-one-other-):
 
 ```js
-toTest(null)    =  x => is(x, null)
-toTest(1)       =  x => is(x, 1)
-toTest(NaN)     =  x => is(x, NaN)
-toTest(false)   =  x => is(x, false)
-toTest('test')  =  x => is(x, 'test')
+test(null)    =  x => is(x, null)
+test(1)       =  x => is(x, 1)
+test(NaN)     =  x => is(x, NaN)
+test(false)   =  x => is(x, false)
+test('test')  =  x => is(x, 'test')
 ```
 
 A regex produces a regex test:
 
 ```js
-toTest(/blah/)  =  x => /blah/.test(x)
+test(/blah/)  =  x => /blah/.test(x)
 ```
 
-An object produces a fuzzy match. Its key-value pairs become tests in their own
-right (recursively). When testing a value, its properties must match them all.
+An object produces a fuzzy test. Its values become tests in their own right
+(recursively). When testing a value, its properties must match them all.
 
 ```js
-toTest({})               =  x => isObject(x)
-toTest({one: /oen!11/})  =  x => isObject(x) && /oen!11/.test(x.one)
-toTest({two: isArray})   =  x => isObject(x) && isArray(x.two)
-toTest({a: {b: 'c'}})    =  x => isObject(x) && isObject(x.a) && is(x.a.b, 'c')
+test({})               =  x => isObject(x)
+test({one: /oen!11/})  =  x => isObject(x) && /oen!11/.test(x.one)
+test({two: isArray})   =  x => isObject(x) && isArray(x.two)
+test({a: {b: 'c'}})    =  x => isObject(x) && isObject(x.a) && is(x.a.b, 'c')
 ```

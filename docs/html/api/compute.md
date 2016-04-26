@@ -29,7 +29,11 @@ Examples on this page show computers as standalone functions, but in an app, you
 should group and pass them to the `App` constructor:
 
 ```js
-App([], [compute(...)])
+const computers = [
+  compute(...)
+]
+
+App([], computers)
 ```
 
 Examples also imply imports:

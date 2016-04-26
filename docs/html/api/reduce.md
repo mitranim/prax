@@ -37,7 +37,12 @@ Examples on this page show reducers as standalone functions, but in an app, you
 should group and pass them to the `App` constructor:
 
 ```js
-App([match(...), on(...)], ...)
+const reducers = [
+  match(...),
+  on(...)
+]
+
+App(reducers, ...)
 ```
 
 Examples also imply imports:
@@ -68,7 +73,7 @@ stk('three', 3, 'three')  =  {type: 'three', key: 3, value: 'three'}
 ## `match(pattern, func)`
 
 Creates a reducer that acts only on events that match the provided pattern, via
-[`toTest`](api/pattern/#-totest-pattern-).
+[`pattern/test`](api/pattern/#-test-pattern-).
 
 ```js
 function reducer (state, event) {
