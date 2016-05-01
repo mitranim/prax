@@ -4,6 +4,7 @@
 
 * [Overview]({{url(path)}}/#overview)
 * [`test`]({{url(path)}}/#-test-pattern-)
+* [Recipes]({{url(path)}}/#recipes)
 
 ## Overview
 
@@ -58,4 +59,29 @@ test({})               =  x => isObject(x)
 test({one: /oen!11/})  =  x => isObject(x) && /oen!11/.test(x.one)
 test({two: isArray})   =  x => isObject(x) && isArray(x.two)
 test({a: {b: 'c'}})    =  x => isObject(x) && isObject(x.a) && is(x.a.b, 'c')
+```
+
+## Recipes
+
+Using `test` and ES2015 destructuring to approximate pattern matching:
+
+```js
+import {ifthen, isNumber} from 'prax/lang'
+import {test} from 'prax/pattern'
+
+// Utility
+
+function match (pattern, func) {
+  return ifthen(test(pattern), func)
+}
+
+// Usage
+
+const x = match({type: 'double', value: isNumber}, ({value}) => value * 2)
+
+x('test')
+// undefined
+
+x({type: 'double', value: 10})
+// 20
 ```

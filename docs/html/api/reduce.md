@@ -193,19 +193,13 @@ function pass (state, value) {
 }
 ```
 
-Useful in function composition contexts:
+Useful when the reducer ignores the pre-existing state:
 
 ```js
-import {pipe, mapKeys, it, mapValues} from 'prax/lang'
+const x = on('data', pass)
 
-const x = on('flags', pipe(
-  pass,
-  bind(mapKeys, it),
-  bind(mapValues, () => true)
-))
-
-x({}, st('flags', [1, 2]))
-// {1: true, 2: true}
+x({value: 'initial data'}, st('data', 100))
+// 100
 ```
 
 ## `upgrade(func)`
@@ -226,9 +220,10 @@ x({id: 1, name: 'Mira'}, stk('user', 1, {age: 1000}))
 
 ## `ifonly(test, func)`
 
-Returns a reducer that uses `func` only if `test` passes. `test` must be a
-function, and is called with the same arguments as `func`. When the test fails,
-the state remains unchanged.
+Returns a function that uses `func` to produce the result if `test` passes. If
+`test` fails, returns its first argument (in reducer context, this means
+existing state). `test` must be a function, and is called with the same
+arguments as `func`.
 
 ```js
 function pos (state, _value) {

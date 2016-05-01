@@ -35,8 +35,8 @@
   * [`mapValues`]({{url(path)}}/#-mapvalues-func-object-)
   * [`mapKeys`]({{url(path)}}/#-mapkeys-func-object-)
 * [Bool]({{url(path)}}/#bool)
-  * [`f`]({{url(path)}}/#-f-value-)
   * [`t`]({{url(path)}}/#-t-value-)
+  * [`f`]({{url(path)}}/#-f-value-)
   * [`is`]({{url(path)}}/#-is-one-other-)
   * [`isNumber`]({{url(path)}}/#-isnumber-value-)
   * [`isString`]({{url(path)}}/#-isstring-value-)
@@ -615,45 +615,52 @@ mapKeys(last, {one: 'one', two: 'two'})
 
 ## Bool
 
-### `f(value)`
-
-Like `!` but considers falsy only the following values:
-
-```js
-undefined null false NaN
-```
-
-```js
-f(NaN)
-// true
-
-!NaN
-// true
-
-f(0)
-// false
-
-!0
-// true
-```
-
 ### `t(value)`
 
-Complement of `f`. Works like `!!` or `Boolean` but considers `''` and `0` to
-be truthy.
+Like `!!` or `Boolean` but considers only `undefined, null, false, NaN` to be
+falsy. Consequently, `''` and `0` are considered truthy.
 
 ```js
-t(1)
-// true
+[undefined, null, false, NaN, '', 0].map(t)
+// [false, false, false, false, true, true]
+```
 
-!!1
-// true
+Comparison with `!!`:
 
-t(0)
-// true
+```md
+  value      |   !!    |    t
+---------------------------------
+  undefined  |  false  |  false
+  null       |  false  |  false
+  false      |  false  |  false
+  NaN        |  false  |  false
+  ''         |  false  |  true
+  0          |  false  |  true
+  <other>    |  true   |  true
+```
 
-!!0
-// false
+### `f(value)`
+
+Complement of `t`. Like `!` but considers only `undefined, null, false, NaN` to
+be falsy. Consequently, `''` and `0` are considered truthy.
+
+```js
+[undefined, null, false, NaN, '', 0].map(f)
+// [true, true, true, true, false, false]
+```
+
+Comparison with `!`:
+
+```md
+  value      |    !    |    f
+---------------------------------
+  undefined  |  true   |  true
+  null       |  true   |  true
+  false      |  true   |  true
+  NaN        |  true   |  true
+  ''         |  true   |  false
+  0          |  true   |  false
+  <other>    |  false  |  false
 ```
 
 ### `is(one, other)`
@@ -814,8 +821,8 @@ it(1)
 
 ### `val(value)`
 
-Delayed identity function. Returns a function that always returns the passed
-value.
+"Constant" function. Returns a function that always returns the passed value.
+Useful when dealing with functional APIs when values are known in advance.
 
 Equivalent to lodash's `_.constant`.
 
