@@ -1,59 +1,54 @@
 import 'simple-pjax'
 import React from 'react'
-import {mount, unmount, domEvent, onload} from './utils'
-import {KeyCode} from './classes'
-import {auto} from './core'
+import {render, unmountComponentAtNode} from 'react-dom'
 
-const views = {
-  '[data-state]': auto(stateView),
-  '[data-profile]': auto(profileView),
-  '[data-key-code]': KeyCode
+// This must be executed before evaluating other modules.
+if (module.hot) {
+  module.hot.accept(err => {
+    console.warn('Exception during HMR update.', err)
+  })
 }
 
 /**
- * Reactive views as pure functions
+ * Views
  */
 
-function stateView (props, read) {
-  return (
-    <pre className='pad hljs'>{JSON.stringify(read(), null, 2)}</pre>
-  )
-}
+const {State, Profile} = require('./views')
+const {KeyCode} = require('./classes')
 
-function profileView (props, read) {
-  return (
-    <div>
-      <p>profiles: {JSON.stringify(read('profiles'))}</p>
-    </div>
-  )
+const views = {
+  '[data-state]': State,
+  '[data-profile]': Profile,
+  '[data-key-code]': KeyCode
 }
 
 /**
  * Setup/Teardown
  */
 
+const {slice} = require('prax/lang')
+const {domEvent, onload} = require('./utils')
+
 const nodes = []
 
 function setup () {
-  for (const selector in views) mount(selector, views[selector], nodes)
+  for (const selector in views) {
+    const View = views[selector]
+    slice(document.querySelectorAll(selector)).forEach(element => {
+      render(<View />, element)
+      nodes.push(element)
+    })
+  }
 }
 
 function teardown () {
-  unmount(nodes)
+  nodes.splice(0).forEach(unmountComponentAtNode)
 }
 
-domEvent(module, document, 'simple-pjax-after-transition', setup)
 domEvent(module, document, 'simple-pjax-before-transition', teardown)
 
+domEvent(module, document, 'simple-pjax-after-transition', setup)
+
+if (module.hot) module.hot.dispose(teardown)
+
 onload(setup)
-
-/**
- * Dev
- */
-
-if (module.hot) {
-  module.hot.accept(err => {
-    console.error('Exception during HMR update, page refresh required.', err)
-  })
-  module.hot.dispose(teardown)
-}
