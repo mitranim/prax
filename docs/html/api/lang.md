@@ -20,13 +20,14 @@
   * [`rest`]({{url(path)}}/#-rest-func-)
   * [`spread`]({{url(path)}}/#-spread-func-)
 * [List]({{url(path)}}/#list)
-  * [`slice`]({{url(path)}}/#-slice-value-start-end-)
-  * [`concat`]({{url(path)}}/#-concat-values-)
   * [`foldl`]({{url(path)}}/#-foldl-func-accumulator-list-)
   * [`foldr`]({{url(path)}}/#-foldr-func-accumulator-list-)
   * [`map`]({{url(path)}}/#-map-func-list-)
   * [`indexOf`]({{url(path)}}/#-indexof-value-list-)
   * [`elem`]({{url(path)}}/#-elem-value-list-)
+  * [`slice`]({{url(path)}}/#-slice-value-start-end-)
+  * [`append`]({{url(path)}}/#-append-values-)
+  * [`prepend`]({{url(path)}}/#-prepend-values-)
   * [`remove`]({{url(path)}}/#-remove-value-list-)
   * [`last`]({{url(path)}}/#-last-list-)
   * [`flat`]({{url(path)}}/#-flat-list-)
@@ -443,30 +444,6 @@ sum(1, 2, 3)
 
 ## List
 
-### `slice(value, [start], [end])`
-
-Like
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice" target="_blank">`Array#slice`</a>,
-but with the sliceable as the first argument.
-
-```js
-slice([1, 2, 3], 2)
-// [3]
-slice('hello world', 3, 5)
-// 'lo'
-```
-
-### `concat(...values)`
-
-Like
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat" target="_blank">`Array#concat`</a>,
-but with `this` as the first argument.
-
-```js
-concat([1], [2], 3)
-// [1, 2, 3]
-```
-
 ### `foldl(func, accumulator, list)`
 
 Similar to
@@ -537,6 +514,37 @@ elem(NaN, [3, 2, 1])
 // false
 elem(NaN, [3, 2, NaN])
 // true
+```
+
+### `slice(value, [start], [end])`
+
+Like
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice" target="_blank">`Array#slice`</a>,
+but with the sliceable as the first argument.
+
+```js
+slice([1, 2, 3], 2)
+// [3]
+slice('hello world', 3, 5)
+// 'lo'
+```
+
+### `append(value, list)`
+
+Returns a copy of `list` with `value` appended to the end.
+
+```js
+append(3, [1, 2])
+// [1, 2, 3]
+```
+
+### `prepend(value, list)`
+
+Returns a copy of `list` with `value` prepended at the start.
+
+```js
+prepend(1, [2, 3])
+// [1, 2, 3]
 ```
 
 ### `remove(value, list)`
