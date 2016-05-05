@@ -4,6 +4,7 @@
 
 * [Overview]({{url(path)}}/#overview)
 * [`test`]({{url(path)}}/#-test-pattern-)
+* [`mask`]({{url(path)}}/#-mask-pattern-)
 * [Recipes]({{url(path)}}/#recipes)
 
 ## Overview
@@ -59,6 +60,46 @@ test({})               =  x => isObject(x)
 test({one: /oen!11/})  =  x => isObject(x) && /oen!11/.test(x.one)
 test({two: isArray})   =  x => isObject(x) && isArray(x.two)
 test({a: {b: 'c'}})    =  x => isObject(x) && isObject(x.a) && is(x.a.b, 'c')
+```
+
+## `mask(pattern)`
+
+Returns a function that overlays the pattern on any value. The nature of the
+result depends on the provided pattern.
+
+A function is already a mask:
+
+```js
+mask(isFinite)  =  isFinite
+```
+
+A primitive becomes a function that always returns that primitive:
+
+```js
+mask(null)    =  () => null
+mask(1)       =  () => 1
+mask(NaN)     =  () => NaN
+mask(false)   =  () => false
+mask('mask')  =  () => 'mask'
+```
+
+A regex produces a regex test:
+
+```js
+mask(/blah/)  =  x => /blah/.test(x)
+```
+
+An object produces a mask that treats included properties as masks in their own
+right (recursively) and hides other properties.
+
+For simplicity, these examples show property access via `.`, but internally it's
+done more safely.
+
+```js
+mask({})               =  _ => ({})
+mask({one: /oen!11/})  ≈  x => ({one: /oen!11/.test(x.one)})
+mask({two: isArray})   ≈  x => ({two: isArray(x.two)})
+mask({a: {b: 'c'}})    ≈  x => ({a: {b: 'c'}})
 ```
 
 ## Recipes
