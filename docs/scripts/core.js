@@ -48,6 +48,7 @@ domEvent(module, document, 'keypress', emit(keyCode))
 if (module.hot) {
   module.hot.dispose(() => {
     window.__app_state__ = app.getMean()
+    app.die()
   })
 }
 
