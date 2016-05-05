@@ -16,19 +16,19 @@
   * [`not`]({{url(path)}}/#-not-func-)
   * [`ifelse`]({{url(path)}}/#-ifelse-test-left-right-)
   * [`ifthen`]({{url(path)}}/#-ifthen-test-func-)
-  * [`defer`]({{url(path)}}/#-defer-func-)
+  * [`defer`]({{url(path)}}/#-defer-func-args-)
   * [`rest`]({{url(path)}}/#-rest-func-)
   * [`spread`]({{url(path)}}/#-spread-func-)
 * [List]({{url(path)}}/#list)
   * [`foldl`]({{url(path)}}/#-foldl-func-accumulator-list-)
   * [`foldr`]({{url(path)}}/#-foldr-func-accumulator-list-)
   * [`map`]({{url(path)}}/#-map-func-list-)
-  * [`indexOf`]({{url(path)}}/#-indexof-value-list-)
-  * [`elem`]({{url(path)}}/#-elem-value-list-)
+  * [`indexOf`]({{url(path)}}/#-indexof-list-value-)
+  * [`includes`]({{url(path)}}/#-includes-list-value-)
   * [`slice`]({{url(path)}}/#-slice-value-start-end-)
-  * [`append`]({{url(path)}}/#-append-values-)
-  * [`prepend`]({{url(path)}}/#-prepend-values-)
-  * [`remove`]({{url(path)}}/#-remove-value-list-)
+  * [`append`]({{url(path)}}/#-append-list-value-)
+  * [`prepend`]({{url(path)}}/#-prepend-list-value-)
+  * [`remove`]({{url(path)}}/#-remove-list-value-)
   * [`last`]({{url(path)}}/#-last-list-)
   * [`flat`]({{url(path)}}/#-flat-list-)
 * [Object]({{url(path)}}/#object)
@@ -370,15 +370,13 @@ Like `ifelse` without the `else` clause.
 ifthen(test, func)  ->  ifelse(test, func, () => undefined)
 ```
 
-### `defer(func)`
+### `defer(func, ...args)`
 
-Creates a self-partially-applying version of `func` (see
-[`bind`]({{url(path)}}/#-bind-func-args-)). Calling the returned function is
-equivalent to calling `bind(func, ...)` with the same arguments.
-
-Note that unlike currying, the created function is always executed in exactly
-two calls. The first returns a partially applied function, and the second calls
-the original function.
+Similar to
+<a href="https://en.wikipedia.org/wiki/Currying" target="_blank">currying</a>,
+but the original function is invoked after exactly two calls, regardless of
+how many arguments were passed. Extra arguments passed to `defer` are prepended
+to the rest.
 
 ```js
 function add (a, b, c) {
@@ -401,7 +399,8 @@ addf(1, 2)(3)
 addf(1)(2, 3)
 // 6
 
-// demonstrates difference from currying
+// with curry, this would have returned an intermediary function
+// with defer, two calls always reach the original
 addf(1)(2)
 // NaN
 ```
@@ -490,29 +489,27 @@ map(double, [1, 2, 3])
 // [2, 4, 6]
 ```
 
-### `indexOf(value, list)`
+### `indexOf(list, value)`
 
 Similar to
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf" target="_blank">`Array#indexOf`</a>,
-but with an FP-friendly argument order. Unlike `Array#indexOf`, it detects `NaN`.
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf" target="_blank">`Array#indexOf`</a>. Unlike `Array#indexOf`, it detects `NaN`.
 
 ```js
-indexOf(1, [3, 2, 1])
+indexOf([3, 2, 1], 1)
 // 2
-indexOf(NaN, [3, 2, NaN])
+indexOf([3, 2, NaN], NaN)
 // 2
 ```
 
-### `elem(value, list)`
+### `includes(list, value)`
 
 Similar to
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes" target="_blank">`Array#includes`</a>,
-but with an FP-friendly argument order.
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes" target="_blank">`Array#includes`</a>.
 
 ```js
-elem(NaN, [3, 2, 1])
+includes([3, 2, 1], NaN)
 // false
-elem(NaN, [3, 2, NaN])
+includes([3, 2, NaN], NaN)
 // true
 ```
 
@@ -529,31 +526,31 @@ slice('hello world', 3, 5)
 // 'lo'
 ```
 
-### `append(value, list)`
+### `append(list, value)`
 
 Returns a copy of `list` with `value` appended to the end.
 
 ```js
-append(3, [1, 2])
+append([1, 2], 3)
 // [1, 2, 3]
 ```
 
-### `prepend(value, list)`
+### `prepend(list, value)`
 
 Returns a copy of `list` with `value` prepended at the start.
 
 ```js
-prepend(1, [2, 3])
+prepend([2, 3], 1)
 // [1, 2, 3]
 ```
 
-### `remove(value, list)`
+### `remove(list, value)`
 
 Returns a new list with one occurrence of `value` removed. Doesn't change the
 original list. Returns the original if it doesn't include `value`.
 
 ```js
-remove('two', ['one', 'two', 'three'])
+remove(['one', 'two', 'three'], 'two')
 // ['one', 'three']
 ```
 
