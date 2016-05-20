@@ -1,4 +1,4 @@
-import {mergeAt} from 'prax/emerge'
+import {patchAt} from 'prax/emerge'
 
 export function onload (callback) {
   if (/loaded|complete|interactive/.test(document.readyState)) {
@@ -25,5 +25,5 @@ export function mergeAll (...values) {
 }
 
 function mergeTwo (acc, value) {
-  return mergeAt([], acc, value || {})
+  return patchAt([], acc, value || {})
 }

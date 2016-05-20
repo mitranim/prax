@@ -9,7 +9,7 @@
 * [`on`]({{url(path)}}/#-on-type-func-)
 * [`one`]({{url(path)}}/#-one-type-func-)
 * [`manage`]({{url(path)}}/#-manage-path-funcs-)
-* [`manageNonStrict`]({{url(path)}}/#-managenonstrict-path-funcs-)
+* [`managePatch`]({{url(path)}}/#-managepatch-path-funcs-)
 * [`pass`]({{url(path)}}/#-pass-)
 * [`upgrade`]({{url(path)}}/#-upgrade-func-)
 * [`ifonly`]({{url(path)}}/#-ifonly-test-func-)
@@ -174,10 +174,10 @@ x({}, stk('user/set', 1, {name: 'Mira'}))
 // {users: {1: {name: 'Mira'}}}
 ```
 
-## `manageNonStrict(path, ...funcs)`
+## `managePatch(path, ...funcs)`
 
 Like `manage`, but with merge semantics rather than replacement semantics.
-Reducers under `manageNonStrict` may return patches rather than complete
+Reducers under `managePatch` may return patches rather than complete
 objects.
 
 [TODO] examples.

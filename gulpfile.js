@@ -4,7 +4,7 @@
 
 const $ = require('gulp-load-plugins')()
 const del = require('del')
-const exec = require('child_process').exec
+const {exec} = require('child_process')
 const gulp = require('gulp')
 const statilConfig = require('./statil')
 const webpack = require('webpack')

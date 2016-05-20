@@ -4,9 +4,9 @@
 
 /** ***************************** Dependencies *******************************/
 
-const test = require('./utils').test
+const {test} = require('./utils')
 
-const toTest = require(process.cwd() + '/lib/pattern').test
+const {test: toTest} = require(process.cwd() + '/lib/pattern')
 
 /** ********************************* Test ***********************************/
 

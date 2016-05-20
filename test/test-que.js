@@ -8,12 +8,9 @@
 
 /** ***************************** Dependencies *******************************/
 
-const utils = require('./utils')
-const eq = utils.eq
-const deq = utils.deq
-const ignore = utils.ignore
+const {eq, deq, ignore} = require('./utils')
 
-const Que = require(process.cwd() + '/lib/que').Que
+const {Que} = require(process.cwd() + '/lib/que')
 
 /** ********************************* Test ***********************************/
 

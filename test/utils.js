@@ -2,7 +2,7 @@
 
 /* eslint-disable no-self-compare, block-spacing */
 
-const deepEqual = require('emerge').deepEqual
+const {deepEqual} = require('emerge')
 
 exports.testWith = testWith
 function testWith (compare, func) {

@@ -4,7 +4,7 @@
 
 * [Overview]({{url(path)}}/#overview)
 * [`compute`]({{url(path)}}/#-compute-path-sources-formula-)
-* [`computeNonStrict`]({{url(path)}}/#-computenonstrict-path-sources-formula-)
+* [`computePatch`]({{url(path)}}/#-computepatch-path-sources-formula-)
 
 ## Overview
 
@@ -84,7 +84,7 @@ Be careful about data size. Because `compute` runs on every change in `sources`,
 recalculating a large, frequently changing collection will cost too much CPU
 time. In this case, you'll probably need to write a different tool.
 
-## `computeNonStrict(path, sources, formula)`
+## `computePatch(path, sources, formula)`
 
 Like `compute`, but uses merge semantics instead of replacement semantics.
 The formula may return patches (partial objects).
@@ -94,7 +94,7 @@ function patchName (value) {
   return {name: value}
 }
 
-const x = computeNonStrict(['user'], [['test']], patchName)
+const x = computePatch(['user'], [['test']], patchName)
 
 x(null, {test: 'test', user: {id: 1}})
 // {test: 'test', user: {id: 1, name: 'test'}}

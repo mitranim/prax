@@ -39,5 +39,9 @@ function hmr () {
 }
 
 function extend () {
-  return [].reduce.call(arguments, Object.assign, {})
+  return [].reduce.call(arguments, assign, {})
+}
+
+function assign (left, right) {
+  return Object.assign(left, right)
 }

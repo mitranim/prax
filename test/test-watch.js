@@ -11,10 +11,9 @@
 
 /** ***************************** Dependencies *******************************/
 
-const test = require('./utils').test
+const {test} = require('./utils')
 
-const lib = require(process.cwd() + '/lib/watch')
-const Watcher = lib.Watcher
+const {Watcher} = require(process.cwd() + '/lib/watch')
 
 /** ********************************* Test ***********************************/
 

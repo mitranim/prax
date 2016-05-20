@@ -9,15 +9,11 @@
 
 /** ***************************** Dependencies *******************************/
 
-const test = require('./utils').test
+const {test} = require('./utils')
 
-const apply = require(process.cwd() + '/lib/lang').apply
+const {apply} = require(process.cwd() + '/lib/lang')
 
-const lib = require(process.cwd() + '/lib/effects')
-const where = lib.where
-const when = lib.when
-const whenOneOf = lib.whenOneOf
-const match = lib.match
+const {where, when, whenOneOf, match} = require(process.cwd() + '/lib/effects')
 
 /** ********************************* Test ***********************************/
 

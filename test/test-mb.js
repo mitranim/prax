@@ -4,9 +4,9 @@
 
 /** ***************************** Dependencies *******************************/
 
-const eq = require('./utils').eq
+const {eq} = require('./utils')
 
-const Mb = require(process.cwd() + '/lib/mb').Mb
+const {Mb} = require(process.cwd() + '/lib/mb')
 
 /** ********************************* Test ***********************************/
 

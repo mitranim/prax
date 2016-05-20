@@ -11,15 +11,12 @@
 
 /** ***************************** Dependencies *******************************/
 
-const utils = require('./utils')
-const eq = utils.eq
-const deq = utils.deq
-const throws = utils.throws
+const {eq, deq, throws} = require('./utils')
 
-const pass = require(process.cwd() + '/lib/reduce').pass
-const pipe = require(process.cwd() + '/lib/lang').pipe
+const {pass} = require(process.cwd() + '/lib/reduce')
+const {pipe} = require(process.cwd() + '/lib/lang')
 
-const App = require(process.cwd() + '/lib/app').App
+const {App} = require(process.cwd() + '/lib/app')
 
 /** ********************************* Test ***********************************/
 

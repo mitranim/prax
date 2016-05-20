@@ -9,14 +9,11 @@
 
 /** ***************************** Dependencies *******************************/
 
-const test = require('./utils').test
+const {test} = require('./utils')
 
-const emerge = require('emerge')
-const replaceAt = emerge.replaceAt
+const {putAt} = require('emerge')
 
-const lib = require(process.cwd() + '/lib/compute')
-const compute = lib.compute
-const computeNonStrict = lib.computeNonStrict
+const {compute, computePatch} = require(process.cwd() + '/lib/compute')
 
 /** ********************************* Test ***********************************/
 
@@ -32,7 +29,7 @@ compute: {
        $: prev},
 
       {0: prev,
-       1: replaceAt(['inc'], prev, 2),
+       1: putAt(['inc'], prev, 2),
        $: {one: 1, inc: 2, sum: 3}}
     )
   }
@@ -48,24 +45,24 @@ compute: {
        $: prev},
 
       {0: prev,
-       1: replaceAt(['source'], prev, {one: 3}),
+       1: putAt(['source'], prev, {one: 3}),
        $: {source: {one: 3}, target: {one: 3}}}
     )
   }
 }
 
-computeNonStrict: {
+computePatch: {
   const prev = {source: {one: 1}, target: {test: 1}}
 
   test(
-    computeNonStrict(['target'], [['source']], it),
+    computePatch(['target'], [['source']], it),
 
     {0: prev,
      1: prev,
      $: prev},
 
     {0: prev,
-     1: replaceAt(['source'], prev, {one: 3}),
+     1: putAt(['source'], prev, {one: 3}),
      $: {source: {one: 3}, target: {test: 1, one: 3}}}
   )
 }

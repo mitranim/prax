@@ -9,18 +9,10 @@
 
 /** ***************************** Dependencies *******************************/
 
-const test = require('./utils').test
+const {test} = require('./utils')
 
-const lib = require(process.cwd() + '/lib/reduce')
-const st = lib.st
-const stk = lib.stk
-const match = lib.match
-const on = lib.on
-const one = lib.one
-const manage = lib.manage
-const manageNonStrict = lib.manageNonStrict
-const upgrade = lib.upgrade
-const ifonly = lib.ifonly
+const {st, stk, match, on, one, manage, managePatch, upgrade,
+       ifonly} = require(process.cwd() + '/lib/reduce')
 
 /** ********************************* Test ***********************************/
 
@@ -146,8 +138,8 @@ manage: {
   )
 }
 
-manageNonStrict: {
-  const reducers = manageNonStrict(['val'],
+managePatch: {
+  const reducers = managePatch(['val'],
     on('inc', add),
     on('dec', sub),
     on('set', pass)
