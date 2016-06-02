@@ -1,6 +1,6 @@
 {
   "name": "prax",
-  "version": "0.0.54",
+  "version": "0.0.55",
   "main": "dist/index.js",
   "scripts": {
     "start": "gulp",
@@ -28,7 +28,7 @@
     "url": "https://github.com/Mitranim/prax.git"
   },
   "dependencies": {
-    "emerge": "^0.0.21"
+    "emerge": "^0.0.22"
   },
   "devDependencies": {
     "babel-core": "^6.7.6",
@@ -69,6 +69,7 @@
     "react": "^15.0.1",
     "react-dom": "^15.0.1",
     "simple-pjax": "^0.3.0",
+    "standard": "^7.1.0",
     "stylific-lite": "0.0.1",
     "transform-loader": "^0.2.3",
     "webpack": "^1.13.0",

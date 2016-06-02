@@ -52,7 +52,7 @@
   * [`isPrimitive`]({{url(path)}}/#-isprimitive-value-)
   * [`isNil`]({{url(path)}}/#-isnil-value-)
 * [Misc]({{url(path)}}/#misc)
-  * [`it`]({{url(path)}}/#-it-value-)
+  * [`id`]({{url(path)}}/#-id-value-)
   * [`val`]({{url(path)}}/#-val-value-)
 
 ## Overview
@@ -815,12 +815,12 @@ function isNil (value) {
 
 ## Misc
 
-### `it(value)`
+### `id(value)`
 
 Identity function: returns its argument unchanged. Useful in boolean contexts.
 
 ```js
-it(1)
+id(1)
 // 1
 ```
 

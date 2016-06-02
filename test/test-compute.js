@@ -38,7 +38,7 @@ compute: {
     const prev = {source: {one: 1}, target: {test: 1}}
 
     test(
-      compute(['target'], [['source']], it),
+      compute(['target'], [['source']], id),
 
       {0: prev,
        1: prev,
@@ -55,7 +55,7 @@ computePatch: {
   const prev = {source: {one: 1}, target: {test: 1}}
 
   test(
-    computePatch(['target'], [['source']], it),
+    computePatch(['target'], [['source']], id),
 
     {0: prev,
      1: prev,
@@ -75,6 +75,6 @@ function add (a, b) {
   return a + b
 }
 
-function it (value) {
+function id (value) {
   return value
 }
