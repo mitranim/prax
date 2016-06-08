@@ -1,7 +1,6 @@
 'use strict'
 
-/* eslint-disable block-spacing, no-empty-label, no-label-var, no-labels,
-   no-inner-declarations */
+/* eslint-disable no-inner-declarations */
 
 /**
  * TODO
@@ -11,12 +10,11 @@
 
 /** ***************************** Dependencies *******************************/
 
+const {pipe} = require('fpx')
 const {eq, deq, throws} = require('./utils')
 
-const {pass} = require(process.cwd() + '/lib/reduce')
-const {pipe} = require(process.cwd() + '/lib/lang')
-
-const {App} = require(process.cwd() + '/lib/app')
+const {pass} = require('../lib/words')
+const {App} = require('../lib/app')
 
 /** ********************************* Test ***********************************/
 

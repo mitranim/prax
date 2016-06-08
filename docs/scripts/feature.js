@@ -1,7 +1,5 @@
-import {isObject, t} from 'prax/lang'
-import {on, one, manage, upgrade, pass, stk} from 'prax/reduce'
-import {compute} from 'prax/compute'
-import {where} from 'prax/effects'
+const {isObject, id, val, on, one, manage, upgrade, pass, stk,
+       compute, where} = require('prax')
 
 /**
  * State
@@ -24,8 +22,8 @@ exports.reducers = [
   ),
 
   manage(['visibility'],
-    one('show', () => true),
-    one('hide', () => false),
+    one('show', val(true)),
+    one('hide', val(false)),
     one('toggle', negate)
   ),
 
@@ -36,7 +34,7 @@ exports.reducers = [
 
   manage(['updating', 'profile'],
     on('profile/update', pass),
-    on('profile/update/done', () => null)
+    on('profile/update/done', val(null))
   )
 ]
 
@@ -55,7 +53,7 @@ exports.computers = [
 exports.effects = [
   where(
     [['updating', 'profile']],
-    t,
+    id,
     value => stk('profile/update/done', value.id, value)
   )
 ]

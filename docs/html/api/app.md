@@ -5,9 +5,10 @@
 * [Overview]({{url(path)}}/#overview)
 * [`App`]({{url(path)}}/#-app-reducers-computers-effects-initialstate-)
   * [`App#enque`]({{url(path)}}/#-app-enque-events-)
-  * [`App#addEffect`]({{url(path)}}/#-app-addeffect-func-)
+  * [`App#addEffect`]({{url(path)}}/#-app-addeffect-fun-)
   * [`App#getPrev`]({{url(path)}}/#-app-getprev-)
   * [`App#getMean`]({{url(path)}}/#-app-getmean-)
+  * [`App#die`]({{url(path)}}/#-app-die-)
 * [`EmitMono`]({{url(path)}}/#-emitmono-enque-)
 * [`Emit`]({{url(path)}}/#-emit-enque-)
 
@@ -22,8 +23,8 @@ An `App` object serves as a scaffold for a purely functional application. It
 maintains state, interacts with the impure world, and reacts to external
 stimuli, spinning its inner pure-functional gears.
 
-An `App` is a mutable reference to a succession of immutable states. It allows
-you to define the application as a pure function of state.
+An `App` is a mutable reference to a linear timeline of immutable states. It
+allows you to define most parts of the application as pure functions of data.
 
 [TODO] explain the event queue.
 
@@ -35,9 +36,9 @@ All arguments are optional. The first three arguments (lists of functions) may
 be deeply nested; the app flattens them automatically.
 
 ```js
-import {App} from 'prax/app'
+const {App} = require('prax/app')
 
-import {reducers, computers, effects, defaults} from 'features/my-feature'
+const {reducers, computers, effects, defaults} = require('features/my-feature')
 
 const app = App(reducers, computers, effects, defaults)
 ```
@@ -91,7 +92,7 @@ The app is always idle when the queue is empty, and vice versa.
 
 <!--: </div> :-->
 
-### `App#addEffect(func)`
+### `App#addEffect(fun)`
 
 Registers a new effect and returns a function that de-registers it when called.
 
@@ -140,6 +141,11 @@ the app substitutes its `mean` state for `next`.
 const meanState = app.getMean()
 console.log(meanState)
 ```
+
+### `App#die()`
+
+Renders the app inert: it will no longer receive events. Use this when disposing
+an app that may still asynchronously receive events you don't care about.
 
 ## `EmitMono(enque)`
 

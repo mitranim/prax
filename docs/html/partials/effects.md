@@ -1,16 +1,12 @@
-{% extend('api.html', {title: 'effects'}) %}
+## Effects
 
-## TOC
-
-* [Overview]({{url(path)}}/#overview)
 * [`when`]({{url(path)}}/#-when-predicate-effect-)
+* [TODO] `where`
+* [TODO] `whenOneOf`
+* [TODO] `match`
+* [TODO] Recipes with `and+changed+give`
 
-## Overview
-
-Source:
-<a href="https://github.com/Mitranim/prax/blob/master/lib/effects.js" target="_blank">
-`lib/effects.js` <span class="fa fa-github"></span>
-</a>
+Utils for writing effects.
 
 Base effect interface:
 
@@ -22,11 +18,11 @@ function effect (prev, mean, event) {
 ```
 
 This module provides abstractions over the base interface, letting you write
-short, specialised effects. All of them are pure higher-order functions, so you
+short, specialised effects. Most of them are pure higher-order functions, so you
 can design yours for your own needs.
 
-These utils focus mostly on _data events_: the idea that you should act not on
-inbound events themselves, but on changes in the application state.
+These utils focus mostly on _data events_: responding to changes in the
+application state rather than events.
 
 Examples on this page show effects as standalone functions, but in an app, you
 should group and pass them to the `App` constructor:
@@ -35,13 +31,7 @@ should group and pass them to the `App` constructor:
 App([], [], [when(...)])
 ```
 
-Examples also imply imports:
-
-```js
-import {...} from 'prax/effects'
-```
-
-## `when(predicate, effect)`
+### `when(predicate, effect)`
 
 Format:
 
@@ -53,8 +43,6 @@ effect(result)   ->  event | [event] | void
 Examples:
 
 ```js
-import {st} from 'prax/reduce'
-
 function userId (read) {
   return read('user', 'id')
 }

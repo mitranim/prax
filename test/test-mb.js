@@ -1,12 +1,10 @@
 'use strict'
 
-/* eslint-disable no-empty-label, no-labels */
-
 /** ***************************** Dependencies *******************************/
 
 const {eq} = require('./utils')
 
-const {Mb} = require(process.cwd() + '/lib/mb')
+const {Mb} = require('../lib/mb')
 
 /** ********************************* Test ***********************************/
 

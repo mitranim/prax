@@ -1,7 +1,6 @@
 'use strict'
 
-/* eslint-disable no-empty-label, no-label-var, no-labels, key-spacing,
-   block-spacing, no-multi-spaces, no-inner-declarations, no-undef-init */
+/* eslint-disable no-inner-declarations */
 
 /**
  * TODO better readability
@@ -11,17 +10,17 @@
 
 const {test} = require('./utils')
 
-const {st, stk, match, on, one, manage, managePatch, upgrade,
-       ifonly} = require(process.cwd() + '/lib/reduce')
+const w = require('../lib/words')
 
 /** ********************************* Test ***********************************/
 
+function plus (a, b) {return a + b}
+function minus (a, b) {return a - b}
+function pass (_, x) {return x}
 const nil = undefined
 
 st: {
-  test(
-    st,
-
+  test(w.st,
     {0: 'type',
      $: {type: 'type', value: nil}},
 
@@ -32,9 +31,7 @@ st: {
 }
 
 stk: {
-  test(
-    stk,
-
+  test(w.stk,
     {0: 'type',
      $: {type: 'type', key: nil, value: nil}},
 
@@ -49,14 +46,12 @@ stk: {
   )
 }
 
-match: {
+onEvent: {
   function reducer (state, event) {
     return state + event.value
   }
 
-  test(
-    match({type: 'inc', value: Number.isInteger}, reducer),
-
+  test(w.onEvent({type: 'inc', value: Number.isInteger}, reducer),
     {0: 1,
      1: {type: 'inc'},
      $: 1},
@@ -67,21 +62,31 @@ match: {
   )
 }
 
+onType: {
+  function reducer (state, event) {
+    return state + event.value
+  }
+
+  test(w.onType('inc', reducer),
+    {0: 1,
+     1: w.st('inc', 2),
+     $: 3}
+  )
+}
+
 // TODO test object replacement semantics.
 on: {
   function reducer (state, value, key) {
     return state + value + key
   }
 
-  test(
-    on('inc', reducer),
-
+  test(w.on('inc', reducer),
     {0: 1,
-     1: stk('dec', 2, 3),
+     1: w.stk('dec', 2, 3),
      $: 1},
 
     {0: 1,
-     1: stk('inc', 2, 3),
+     1: w.stk('inc', 2, 3),
      $: 6}
   )
 }
@@ -92,85 +97,78 @@ one: {
     return state + value + key
   }
 
-  test(
-    one('inc', reducer),
+  test(w.one('inc', reducer),
 
     {0: {val: 1, _: 2},
-     1: stk('inc'),
+     1: w.stk('inc'),
      $: {val: 1, _: 2}},
 
     {0: {val: 1, _: 2},
-     1: stk('inc', 'val', 3),
+     1: w.stk('inc', 'val', 3),
      $: {val: '4val', _: 2}},
 
     {0: {0: 1, _: 2},
-     1: stk('inc', 0, 3),
+     1: w.stk('inc', 0, 3),
      $: {0: 4, _: 2}}
   )
 }
 
 manage: {
-  const reducers = manage(['val'],
-    on('inc', add),
-    on('dec', sub),
-    on('set', pass)
+  const reducers = w.manage(['val'],
+    w.on('inc', plus),
+    w.on('dec', minus),
+    w.on('set', pass)
   )
 
   function reduce (prev, event) {
-    return reducers.reduce((next, func) => func(next, event), prev)
+    return reducers.reduce((next, fun) => fun(next, event), prev)
   }
 
-  test(
-    reduce,
-
+  test(reduce,
     {0: {val: 1, _: 2},
-     1: st('inc', 3),
+     1: w.st('inc', 3),
      $: {val: 4, _: 2}},
 
     {0: {val: 4, _: 2},
-     1: st('dec', 3),
+     1: w.st('dec', 3),
      $: {val: 1, _: 2}},
 
     // Completely replaces objects.
     {0: {val: {a: 1}, _: 2},
-     1: st('set', {b: 2}),
+     1: w.st('set', {b: 2}),
      $: {val: {b: 2}, _: 2}}
   )
 }
 
 managePatch: {
-  const reducers = managePatch(['val'],
-    on('inc', add),
-    on('dec', sub),
-    on('set', pass)
+  const reducers = w.managePatch(['val'],
+    w.on('inc', plus),
+    w.on('dec', minus),
+    w.on('set', pass)
   )
 
   function reduce (prev, event) {
-    return reducers.reduce((next, func) => func(next, event), prev)
+    return reducers.reduce((next, fun) => fun(next, event), prev)
   }
 
-  test(
-    reduce,
-
+  test(reduce,
     {0: {val: 1, _: 2},
-     1: st('inc', 3),
+     1: w.st('inc', 3),
      $: {val: 4, _: 2}},
 
     {0: {val: 4, _: 2},
-     1: st('dec', 3),
+     1: w.st('dec', 3),
      $: {val: 1, _: 2}},
 
     // Merges objects.
     {0: {val: {a: 1}, _: 2},
-     1: st('set', {b: 2}),
+     1: w.st('set', {b: 2}),
      $: {val: {a: 1, b: 2}, _: 2}}
   )
 }
 
 upgrade: {
-  test(
-    upgrade(pass),
-
+  test(w.upgrade(pass),
     {0: {val: 1},
      1: {val: 2},
      $: nil}
@@ -180,9 +178,7 @@ upgrade: {
     return value.val
   }
 
-  test(
-    upgrade(reducer),
-
+  test(w.upgrade(reducer),
     {0: {val: 1},
      1: {},
      $: 1},
@@ -195,46 +191,4 @@ upgrade: {
      1: {val: 2},
      $: 2}
   )
-}
-
-ifonly: {
-  test(
-    ifonly(both(Number.isInteger), add),
-
-    {0: NaN,
-     1: 1,
-     $: NaN},
-
-    {0: {},
-     1: 1,
-     $: {}},
-
-    {0: 1,
-     1: NaN,
-     $: 1},
-
-    {0: 1,
-     1: 2,
-     $: 3}
-  )
-}
-
-/**
- * Utils
- */
-
-function add (a, b) {
-  return a + b
-}
-
-function sub (a, b) {
-  return a - b
-}
-
-function pass (_, x) {
-  return x
-}
-
-function both (func) {
-  return (a, b) => Boolean(func(a) && func(b))
 }

@@ -1,4 +1,4 @@
-import {patchAt} from 'prax/emerge'
+const {foldl, patchAt} = require('prax')
 
 export function onload (callback) {
   if (/loaded|complete|interactive/.test(document.readyState)) {
@@ -11,17 +11,17 @@ export function onload (callback) {
   }
 }
 
-export function domEvent (module, target, name, func) {
-  target.addEventListener(name, func)
+export function domEvent (module, target, name, fun) {
+  target.addEventListener(name, fun)
   if (module.hot) {
     module.hot.dispose(() => {
-      target.removeEventListener(name, func)
+      target.removeEventListener(name, fun)
     })
   }
 }
 
-export function mergeAll (...values) {
-  return values.reduce(mergeTwo)
+export function merge () {
+  return foldl(mergeTwo, undefined, arguments)
 }
 
 function mergeTwo (acc, value) {

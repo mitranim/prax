@@ -1,5 +1,5 @@
-import React from 'react'
-import {reactiveRender} from './core'
+const React = require('react')
+const {reactiveRender} = require('./core')
 
 // Demonstrates reactive `render`. This view stays in sync with the app
 // data accessed in its `render` method. (This also works with ES6-style

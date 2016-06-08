@@ -1,1 +1,2 @@
-module.exports = require('./dist/pattern')
+// Backwards compat
+module.exports = require('fpx')

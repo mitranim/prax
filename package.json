@@ -1,6 +1,6 @@
 {
   "name": "prax",
-  "version": "0.0.56",
+  "version": "0.0.57",
   "main": "dist/index.js",
   "scripts": {
     "start": "gulp",
@@ -28,7 +28,8 @@
     "url": "https://github.com/Mitranim/prax.git"
   },
   "dependencies": {
-    "emerge": "^0.0.23"
+    "emerge": "^0.0.24",
+    "fpx": "0.0.2"
   },
   "devDependencies": {
     "babel-core": "^6.7.6",
@@ -52,6 +53,7 @@
     "browser-sync": "^2.12.3",
     "del": "^2.2.0",
     "envify": "^3.4.0",
+    "eslint": "^2.11.1",
     "font-awesome": "^4.6.1",
     "gulp": "gulpjs/gulp#4.0",
     "gulp-autoprefixer": "^3.1.0",
@@ -69,14 +71,10 @@
     "react": "^15.0.1",
     "react-dom": "^15.0.1",
     "simple-pjax": "^0.3.0",
-    "standard": "^7.1.0",
     "stylific-lite": "0.0.1",
     "transform-loader": "^0.2.3",
     "webpack": "^1.13.0",
     "webpack-dev-middleware": "^1.6.1",
     "webpack-hot-middleware": "^2.10.0"
-  },
-  "standard": {
-    "parser": "babel-eslint"
   }
 }

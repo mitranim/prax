@@ -1,23 +1,20 @@
-import {readAt} from 'prax/emerge'
-import {App, EmitMono} from 'prax/app'
-import {WatchNow} from 'prax/watch'
-import {st, stk, stf, stkf} from 'prax/reduce'
-import {mergeAll, domEvent} from './utils'
+const {App, EmitMono: Emit, WatchNow, st, stk, stf, stkf, getIn} = require('prax')
+const {merge, domEvent} = require('./utils')
 
 /**
  * Globals
  */
 
-import * as feature from './feature'
+const feature = require('./feature')
 
 const app = App(
   feature.reducers,
   feature.computers,
   feature.effects,
-  mergeAll(feature.state, window.__app_state__)
+  merge(feature.state, window.__app_state__)
 )
 
-export const emit = EmitMono(app.enque)
+export const emit = Emit(app.enque)
 
 export const watchNow = WatchNow(app)
 
@@ -25,8 +22,8 @@ export const watchNow = WatchNow(app)
  * Render Utils
  */
 
-import {Component} from 'react'
-import {Auto, ReactiveRender} from 'prax/react'
+const {Component} = require('react')
+const {Auto, ReactiveRender} = require('prax/react')
 
 export const auto = Auto(Component, watchNow)
 export const reactiveRender = ReactiveRender(watchNow)
@@ -54,8 +51,8 @@ if (module.hot) {
 
 window.dev = {...window.dev, app, emit, st, stk, stf, stkf,
   read () {
-    return readAt(arguments, app.getMean())
+    return getIn(app.getMean(), arguments)
   }
 }
 
-if (window.developmentMode) Object.assign(window, window.dev)
+if (window.devMode) Object.assign(window, window.dev)

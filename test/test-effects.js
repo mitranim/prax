@@ -1,7 +1,6 @@
 'use strict'
 
-/* eslint-disable no-empty-label, no-label-var, no-labels, key-spacing,
-   block-spacing, no-multi-spaces, no-inner-declarations, no-undef-init */
+/* eslint-disable no-inner-declarations */
 
 /**
  * TODO better readability
@@ -9,11 +8,10 @@
 
 /** ***************************** Dependencies *******************************/
 
+const {apply} = require('fpx')
 const {test} = require('./utils')
 
-const {apply} = require(process.cwd() + '/lib/lang')
-
-const {where, when, whenOneOf, match} = require(process.cwd() + '/lib/effects')
+const {where, when, whenOneOf, match} = require('../lib/words')
 
 /** ********************************* Test ***********************************/
 
@@ -108,7 +106,7 @@ when: {
 }
 
 whenOneOf: {
-  function predicate (value, key) {
+  function predicate (value) {
     return value > 0
   }
 

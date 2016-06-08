@@ -21,7 +21,12 @@ require('./test-compute')
 require('./test-effects')
 require('./test-watch')
 
-console.log(`[${pad(new Date().getHours())}:${pad(new Date().getMinutes())}:${pad(new Date().getSeconds())}] Finished test without errors.`)
+console.log(`${time()} Finished test without errors.`)
+
+function time () {
+  const now = new Date()
+  return `[${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}]`
+}
 
 function pad (val) {
   return typeof val !== 'string'

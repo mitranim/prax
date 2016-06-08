@@ -1,5 +1,11 @@
 {% extend('api.html', {title: 'react'}) %}
 
+## TOC
+
+* [Overview]({{url(path)}}/#overview)
+* [`Auto`]({{url(path)}}/#-auto-)
+* [TODO] `ReactiveRender`
+
 ## Overview
 
 Source:
@@ -7,57 +13,41 @@ Source:
 `lib/react.js` <span class="fa fa-github"></span>
 </a>
 
-Prax has optional React-specific addons. It complements React with:
-* implicit data subscriptions
-* automatic change detection
-* views as pure functions
+Prax has optional React utils that enable _implicit subscriptions_.
 
-Prax frees you from manual subscriptions and triggers that permeate Flux apps,
-while helping to eliminate unnecessary re-renders.
+Prax-based views look like pure functions, but behind the scenes, they establish
+precise subscriptions for fine-grained updates, using React to its fullest.
 
-## `auto`
+## `Auto`
 
-React `0.14` introduced an option to write views as functions:
-
-```js
-import React from 'react'
-
-const MyView = props => (<div>...</div>)
-```
-
-This is currently useless and misleading. React re-renders these views
-unconditionally, and you can't use `shouldComponentUpdate` and `forceUpdate` for
-finer-grained updates. Rendering a tree of these things is probably slower than
-bashing together a string and calling `document.body.innerHTML = ...`.
-
-In contrast, function views in Prax are actually useful.
+Creates a view factory that converts "pure function" views into full-featured
+React classes. Views created by `auto` implicitly subscribe to the data accessed
+by the view function, and update when it's changed. They also use
+`shouldComponentUpdate` to reject unnecessary parent renders.
 
 ```js
-import {App} from 'prax/app'
-import {WatchNow} from 'prax/watch'
-import {Auto} from 'prax/react'
-import {Component} from 'react'
+const {Component} = require('react')
+const {App, WatchNow} = require('prax')
+const {Auto} = require('prax/react')
 
 const app = App()
 const auto = Auto(Component, WatchNow(app))
 
 const ReactiveView = auto((props, read) => (
   <div>
-    {read('one', props.one)}
-    {read('two', props.two)}
-  </div>
-))
-
-// Deconstructing props reduces the amount of typing:
-auto(({one, two}, read) => (
-  <div>
-    {read('one', one)}
-    {read('two', two)}
+    {read('one', props.someKey)}
+    {read('two', props.someKey)}
   </div>
 ))
 ```
 
-In this example, instances of `ReactiveView` will automatically subscribe
-to app data at paths `['one', props.one]` and `['one', props.two]`. They will
-automatically re-render when that data is changed. If `props` change, the
-subscriptions will automatically change.
+In this example, `ReactiveView` will automatically subscribe to application data
+accessed through `read`, and automatically re-render when that data is changed.
+If `props` change, the subscriptions will also change.
+
+**Note**: this is very different from function-style views introduced in React
+`0.14`. React re-renders them unconditionally, and you can't use
+`shouldComponentUpdate` and `forceUpdate` for finer-grained updates. Rendering a
+tree of "pure function" views is probably slower than bashing together a string
+and calling `document.body.innerHTML = ...`. In contrast, `Auto` views re-render
+only on changes in the data they _really_ use.

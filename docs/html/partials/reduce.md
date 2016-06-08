@@ -1,25 +1,16 @@
-{% extend('api.html', {title: 'reduce'}) %}
+## Reduce
 
-## TOC
-
-* [Overview]({{url(path)}}/#overview)
 * [`st`]({{url(path)}}/#-st-type-value-)
 * [`stk`]({{url(path)}}/#-stk-type-key-value-)
-* [`match`]({{url(path)}}/#-match-pattern-func-)
-* [`on`]({{url(path)}}/#-on-type-func-)
-* [`one`]({{url(path)}}/#-one-type-func-)
-* [`manage`]({{url(path)}}/#-manage-path-funcs-)
-* [`managePatch`]({{url(path)}}/#-managepatch-path-funcs-)
+* [`match`]({{url(path)}}/#-match-pattern-fun-)
+* [`on`]({{url(path)}}/#-on-type-fun-)
+* [`one`]({{url(path)}}/#-one-type-fun-)
+* [`manage`]({{url(path)}}/#-manage-path-funs-)
+* [`managePatch`]({{url(path)}}/#-managepatch-path-funs-)
 * [`pass`]({{url(path)}}/#-pass-)
-* [`upgrade`]({{url(path)}}/#-upgrade-func-)
-* [`ifonly`]({{url(path)}}/#-ifonly-test-func-)
+* [`upgrade`]({{url(path)}}/#-upgrade-fun-)
 
-## Overview
-
-Source:
-<a href="https://github.com/Mitranim/prax/blob/master/lib/reduce.js" target="_blank">
-`lib/reduce.js` <span class="fa fa-github"></span>
-</a>
+Utils for writing reducers.
 
 Base reducer interface:
 
@@ -45,13 +36,7 @@ const reducers = [
 App(reducers, ...)
 ```
 
-Examples also imply imports:
-
-```js
-import {...} from 'prax/reduce'
-```
-
-## `st(type, value)`
+### `st(type, value)`
 
 Shortcut to a common event format. Short for **st**andard.
 
@@ -60,7 +45,7 @@ st('one')     =  {type: 'one', value: undefined}
 st('two', 2)  =  {type: 'two', value: 2}
 ```
 
-## `stk(type, key, value)`
+### `stk(type, key, value)`
 
 Shortcut to a common event format. Short for **st**andard **k**eyed.
 
@@ -70,10 +55,10 @@ stk('two', 2)             =  {type: 'two', key: 2, value: undefined}
 stk('three', 3, 'three')  =  {type: 'three', key: 3, value: 'three'}
 ```
 
-## `match(pattern, func)`
+### `match(pattern, fun)`
 
 Creates a reducer that acts only on events that match the provided pattern, via
-[`pattern/test`](api/pattern/#-test-pattern-).
+<a href="http://mitranim.com/fpx/#-test-pattern-" target="_blank">`fpx/test`</a>.
 
 ```js
 function reducer (state, event) {
@@ -91,12 +76,12 @@ function (state, event) {
 }
 ```
 
-## `on(type, func)`
+### `on(type, fun)`
 
 Creates a reducer that acts only on events with the given `type`.
 
-The signature of `func` is not `(state, event)` but `(state, value)`. The
-reducer extracts `value` from the event.
+The signature of `fun` is not `(state, event)` but `(state, value, key)`. The
+reducer extracts `value` and `key` from the event.
 
 ```js
 function reducer (state, value) {
@@ -112,12 +97,12 @@ x({}, st('test', 'value'))
 // {test: 'value'}
 ```
 
-## `one(type, func)`
+### `one(type, fun)`
 
 Creates a reducer that acts only on events with the given `type` and a `key`.
 It manages an individual element under the `key` provided by each event.
 
-The signature of `func` is not `(state, event)` but `(element, value, key)`,
+The signature of `fun` is not `(state, event)` but `(element, value, key)`,
 where `element = state[key]`. The reducer extracts `key` and `value` from the
 event and merges the result back into `state` under that key.
 
@@ -143,12 +128,12 @@ x(state, stk('elem', 2, {title: 'second'}))
 // {1: {title: 'first', time: 'now'}, 2: {title: 'second'}}
 ```
 
-## `manage(path, ...funcs)`
+### `manage(path, ...funs)`
 
 Takes a property path (a list of keys) and any number of functions. Returns a
 list of reducers created by mounting each function on `path`.
 
-Each func has the normal reducer signature `(state, event)`, but manages only
+Each `fun` has the normal reducer signature `(state, event)`, but manages only
 the part of state located at the given path.
 
 ```js
@@ -174,7 +159,7 @@ x({}, stk('user/set', 1, {name: 'Mira'}))
 // {users: {1: {name: 'Mira'}}}
 ```
 
-## `managePatch(path, ...funcs)`
+### `managePatch(path, ...funs)`
 
 Like `manage`, but with merge semantics rather than replacement semantics.
 Reducers under `managePatch` may return patches rather than complete
@@ -182,7 +167,7 @@ objects.
 
 [TODO] examples.
 
-## `pass`
+### `pass`
 
 Shortcut for a common operation under `on` and `one`: using the event value and
 ignoring other arguments. Definition:
@@ -202,7 +187,7 @@ x({value: 'initial data'}, st('data', 100))
 // 100
 ```
 
-## `upgrade(func)`
+### `upgrade(fun)`
 
 Shortcut for a common operation under `one`: pre-merging the state and event's
 value before passing the result to the reducer.
@@ -216,29 +201,4 @@ const x = on('user', upgrade(user))
 
 x({id: 1, name: 'Mira'}, stk('user', 1, {age: 1000}))
 // {id: 1, name: 'Mira', age: 1000, length: 4}
-```
-
-## `ifonly(test, func)`
-
-Returns a function that uses `func` to produce the result if `test` passes. If
-`test` fails, returns its first argument (in reducer context, this means
-existing state). `test` must be a function, and is called with the same
-arguments as `func`.
-
-```js
-function pos (state, _value) {
-  return state > 0
-}
-
-function dec (state, _value) {
-  return state - 1
-}
-
-const x = on('dec', ifonly(pos, dec))
-
-x(-1, st('dec'))
-// -1
-
-x(2, st('dec'))
-// 1
 ```

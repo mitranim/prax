@@ -1,5 +1,5 @@
-import React from 'react'
-import {auto} from './core'
+const React = require('react')
+const {auto} = require('./core')
 
 /**
  * Reactive views as pure functions

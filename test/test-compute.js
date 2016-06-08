@@ -1,19 +1,15 @@
 'use strict'
 
-/* eslint-disable no-empty-label, no-label-var, no-labels, key-spacing,
-   block-spacing */
-
 /**
  * TODO better readability
  */
 
 /** ***************************** Dependencies *******************************/
 
+const {putAt} = require('emerge')
 const {test} = require('./utils')
 
-const {putAt} = require('emerge')
-
-const {compute, computePatch} = require(process.cwd() + '/lib/compute')
+const {compute, computePatch} = require('../lib/words')
 
 /** ********************************* Test ***********************************/
 

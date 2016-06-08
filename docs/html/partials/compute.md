@@ -1,12 +1,9 @@
-{% extend('api.html', {title: 'compute'}) %}
+## Compute
 
-## TOC
-
-* [Overview]({{url(path)}}/#overview)
 * [`compute`]({{url(path)}}/#-compute-path-sources-formula-)
 * [`computePatch`]({{url(path)}}/#-computepatch-path-sources-formula-)
 
-## Overview
+Utils for writing computers.
 
 [TODO expound]:
 
@@ -36,13 +33,7 @@ const computers = [
 App([], computers)
 ```
 
-Examples also imply imports:
-
-```js
-import {...} from 'prax/compute'
-```
-
-## `compute(path, sources, formula)`
+### `compute(path, sources, formula)`
 
 Creates a computer that manages the value at `path`, writing the result of
 calling `formula` (a pure function) with the arguments defined by `sources`.
@@ -84,7 +75,7 @@ Be careful about data size. Because `compute` runs on every change in `sources`,
 recalculating a large, frequently changing collection will cost too much CPU
 time. In this case, you'll probably need to write a different tool.
 
-## `computePatch(path, sources, formula)`
+### `computePatch(path, sources, formula)`
 
 Like `compute`, but uses merge semantics instead of replacement semantics.
 The formula may return patches (partial objects).

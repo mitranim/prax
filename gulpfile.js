@@ -55,7 +55,10 @@ gulp.task('lib:compile', () => (
 
 gulp.task('lib:minify', () => (
   gulp.src(src.dist)
-    .pipe($.uglify())
+    .pipe($.uglify({
+      mangle: true,
+      compress: {screw_ie8: true}
+    }))
     .pipe($.rename(path => {
       path.extname = '.min.js'
     }))
@@ -93,7 +96,8 @@ gulp.task('docs:html:compile', () => (
 gulp.task('docs:html:build', gulp.series('docs:html:clear', 'docs:html:compile'))
 
 gulp.task('docs:html:watch', () => {
-  $.watch(src.docHtml, gulp.series('docs:html:build'))
+  // No html:clear because it confuses browsersync's file watcher
+  $.watch(src.docHtml, gulp.series('docs:html:compile'))
 })
 
 /* -------------------------------- Scripts ---------------------------------*/

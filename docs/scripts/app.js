@@ -1,6 +1,6 @@
-import 'simple-pjax'
-import React from 'react'
-import {render, unmountComponentAtNode} from 'react-dom'
+if (!window.devMode) require('simple-pjax')
+const React = require('react')
+const {render, unmountComponentAtNode} = require('react-dom')
 
 // This must be executed before evaluating other modules.
 if (module.hot) {
@@ -26,7 +26,7 @@ const views = {
  * Setup/Teardown
  */
 
-const {slice} = require('prax/lang')
+const {slice} = require('fpx')
 const {domEvent, onload} = require('./utils')
 
 const nodes = []
@@ -52,3 +52,11 @@ domEvent(module, document, 'simple-pjax-after-transition', setup)
 if (module.hot) module.hot.dispose(teardown)
 
 onload(setup)
+
+/**
+ * Dev
+ */
+
+window.dev = {...window.dev, ...require('prax')}
+
+if (window.devMode) Object.assign(window, window.dev)

@@ -10,7 +10,6 @@ const prod = process.env.NODE_ENV === 'production'
  */
 
 marked.setOptions({
-  smartypants: true,
   highlight (code, lang) {
     const result = lang ? hljs.highlight(lang, code) : hljs.highlightAuto(code)
     return result.value

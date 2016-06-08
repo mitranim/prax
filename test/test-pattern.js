@@ -1,12 +1,12 @@
 'use strict'
 
-/* eslint-disable one-var, no-multi-spaces, comma-dangle */
+// Deprecated test
 
 /** ***************************** Dependencies *******************************/
 
 const {test} = require('./utils')
 
-const {test: toTest} = require(process.cwd() + '/lib/pattern')
+const {test: toTest} = require('fpx')
 
 /** ********************************* Test ***********************************/
 

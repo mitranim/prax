@@ -1,7 +1,6 @@
 'use strict'
 
-/* eslint-disable no-empty-label, no-label-var, no-labels, key-spacing,
-   block-spacing, no-multi-spaces, no-inner-declarations, no-undef-init */
+/* eslint-disable no-inner-declarations */
 
 /**
  * TODO better readability
@@ -13,7 +12,7 @@
 
 const {test} = require('./utils')
 
-const {Watcher} = require(process.cwd() + '/lib/watch')
+const {Watcher} = require('../lib/words')
 
 /** ********************************* Test ***********************************/
 

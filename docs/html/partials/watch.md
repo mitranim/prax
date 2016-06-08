@@ -1,34 +1,34 @@
-{% extend('api.html', {title: 'watch'}) %}
+## Watch
 
-## TOC
-
-* [Overview]({{url(path)}}/#overview)
-* [[WIP] `Watcher`]({{url(path)}}/#-watcher-func-)
+* [`Watcher`]({{url(path)}}/#-watcher-fun-)
 * [TODO] `Watch`
 * [TODO] `WatchNow`
 
-## Overview
+Utils for detecting changes in the data tree.
 
-Source:
-<a href="https://github.com/Mitranim/prax/blob/master/lib/watch.js" target="_blank">
-`lib/watch.js` <span class="fa fa-github"></span>
-</a>
+Prax lets you "watch" the application state, detecting changes with extreme
+efficiency. Factors that make it possible:
+
+* The state is an immutable value. On any change, we recreate the entire tree.
+* We treat the state as a _persistent_ data structure. Adjacent versions share
+as much structure as possible. This enables change detection via `!==`:
+unequality guarantees change.
+(See the <a href="https://github.com/Mitranim/emerge" target="_blank">Emerge</a> library.)
+* On each state transition, _both_ versions of the state (`prev`/`next`) are
+provided to subscribers.
+
+## `Watcher(fun)`
 
 Most subscription systems are coarse-grained: they force you to manually
 subscribe to different objects or events types, or write filtering functions for
 streams. In other words, they require metadata. This produces boring boilerplate
 code.
 
-Prax's watching mechanism allows you to create extremely precise, fine-grained
-subscriptions expressed as functions, without any explicit metadata.
+`Watcher` allows you to create extremely precise, fine-grained subscriptions
+expressed as functions, without any explicit metadata.
 
-It works through active observation: when a function uses the provided data
-source, the watcher remembers its interests and uses this knowledge to filter
-updates.
-
-## `Watcher(func)`
-
-**[WIP] this is a stub!**
+It uses active observation: when a function uses the provided data source, the
+watcher remembers its interests and uses this knowledge to filter updates.
 
 Takes a function with the following signature:
 

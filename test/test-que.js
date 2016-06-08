@@ -1,7 +1,5 @@
 'use strict'
 
-/* eslint-disable no-empty-label, no-labels, block-spacing */
-
 /**
  * TODO descriptive tests
  */
@@ -10,7 +8,7 @@
 
 const {eq, deq, ignore} = require('./utils')
 
-const {Que} = require(process.cwd() + '/lib/que')
+const {Que} = require('../lib/que')
 
 /** ********************************* Test ***********************************/
 
