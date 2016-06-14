@@ -57,6 +57,8 @@ onload(setup)
  * Dev
  */
 
-window.dev = {...window.dev, ...require('prax')}
+const prax = require('prax')
+
+window.dev = {...window.dev, prax, ...prax}
 
 if (window.devMode) Object.assign(window, window.dev)

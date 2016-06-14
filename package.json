@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "emerge": "^0.0.24",
-    "fpx": "0.0.2"
+    "fpx": "0.0.4"
   },
   "devDependencies": {
     "babel-core": "^6.7.6",

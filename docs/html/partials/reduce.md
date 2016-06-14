@@ -2,7 +2,8 @@
 
 * [`st`]({{url(path)}}/#-st-type-value-)
 * [`stk`]({{url(path)}}/#-stk-type-key-value-)
-* [`match`]({{url(path)}}/#-match-pattern-fun-)
+* [`onEvent`]({{url(path)}}/#-onevent-pattern-fun-)
+* [`onType`]({{url(path)}}/#-ontype-type-fun-)
 * [`on`]({{url(path)}}/#-on-type-fun-)
 * [`one`]({{url(path)}}/#-one-type-fun-)
 * [`manage`]({{url(path)}}/#-manage-path-funs-)
@@ -29,7 +30,7 @@ should group and pass them to the `App` constructor:
 
 ```js
 const reducers = [
-  match(...),
+  onEvent(...),
   on(...)
 ]
 
@@ -55,7 +56,7 @@ stk('two', 2)             =  {type: 'two', key: 2, value: undefined}
 stk('three', 3, 'three')  =  {type: 'three', key: 3, value: 'three'}
 ```
 
-### `match(pattern, fun)`
+### `onEvent(pattern, fun)`
 
 Creates a reducer that acts only on events that match the provided pattern, via
 <a href="http://mitranim.com/fpx/#-test-pattern-" target="_blank">`fpx/test`</a>.
@@ -66,11 +67,32 @@ function reducer (state, event) {
 }
 
 // this:
-match({type: 'num', key: isNumber}, reducer)
+onEvent({type: 'num', key: isNumber}, reducer)
 
 // is equivalent to:
 function (state, event) {
   return isObject(event) && is(event.type, 'num') && isNumber(event.key)
+    ? reducer(state, event)
+    : state
+}
+```
+
+### `onType(type, fun)`
+
+Creates a reducer that acts only on events with a matching `type`, via
+<a href="http://mitranim.com/fpx/#-test-pattern-" target="_blank">`fpx/test`</a>.
+
+```js
+function reducer (state, event) {
+  return {...state, num: event.value}
+}
+
+// this:
+onType(/num/, reducer)
+
+// is equivalent to:
+function (state, event) {
+  return isObject(event) && /num/.test(event.type)
     ? reducer(state, event)
     : state
 }
