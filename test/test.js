@@ -15,6 +15,7 @@ require.extensions['.js'] = (module, path) => {
 require('./test-mb')
 require('./test-pattern')
 require('./test-que')
+require('./test-app-core')
 require('./test-app')
 require('./test-reduce')
 require('./test-compute')

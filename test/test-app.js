@@ -10,8 +10,8 @@
 
 /** ***************************** Dependencies *******************************/
 
-const {pipe} = require('fpx')
-const {eq, deq, throws} = require('./utils')
+const {pipe, add} = require('fpx')
+const {eq, deq} = require('./utils')
 
 const {pass} = require('../lib/words')
 const {App} = require('../lib/app')
@@ -47,7 +47,7 @@ compute: {
   eq(app.getMean(), negative(3))
 }
 
-compute__stabilising: {
+compute_stabilising: {
   function compute (prev, next) {
     return next < 10 ? next + 1 : next
   }
@@ -71,8 +71,6 @@ effects: {
   deq(out, [1])
 }
 
-// prev === getPrev()
-// mean === getMean()
 stateInEffects: {
   const app = App(
     [pass],
@@ -90,38 +88,30 @@ stateInEffects: {
   eq(app.getMean(), 2)
 }
 
-effectValues: {
-  const stack = [1, 2]
-  const out = []
+enqueEffectReturns: {
+  const pending = ['second msg']
+  const processed = []
+
   const app = App(
-    [(_, event) => {out.push(event)}],
+    [function reducer (_, event) {
+      processed.push(event)
+    }],
     null,
-    [() => stack.shift()]
+    [function effect () {
+      return pending.shift()
+    }]
   )
 
-  app.enque(null)
+  app.enque('first msg')
 
-  deq(stack, [])
-  deq(out, [null, 1, 2])
-}
-
-dataPhasePurity: {
-  const app = App([enqueOne], [enqueOne])
-
-  function enqueOne () {
-    app.enque(1)
-  }
-
-  throws(function enque () {app.enque(null)})
+  deq(pending, [])
+  // msg returned by effect must have been enqued
+  deq(processed, ['first msg', 'second msg'])
 }
 
 /**
  * Utils
  */
-
-function add (a, b) {
-  return a + b
-}
 
 function negative (value) {
   return value < 0 ? value : -value
