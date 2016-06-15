@@ -10,10 +10,10 @@ Prax lets you "watch" the application state, detecting changes with extreme
 efficiency. Factors that make it possible:
 
 * The state is an immutable value. On any change, we recreate the entire tree.
-* We treat the state as a _persistent_ data structure. Adjacent versions share
-as much structure as possible. This enables change detection via `!==`:
-unequality guarantees change.
-(See the <a href="https://github.com/Mitranim/emerge" target="_blank">Emerge</a> library.)
+* We treat the state as a _persistent_ data structure with _structural sharing_.
+  Adjacent versions share as many references as possible. This enables change
+  detection via `!==`, where pointer unequality guarantees change.
+  (See the <a href="https://github.com/Mitranim/emerge" target="_blank">Emerge</a> library.)
 * On each state transition, _both_ versions of the state (`prev`/`next`) are
 provided to subscribers.
 

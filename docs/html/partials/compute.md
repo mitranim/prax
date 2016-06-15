@@ -1,7 +1,7 @@
 ## Compute
 
-* [`compute`]({{url(path)}}/#-compute-path-sources-formula-)
-* [`computePatch`]({{url(path)}}/#-computepatch-path-sources-formula-)
+* [`compute`]({{url(path)}}/#-compute-path-cursors-formula-)
+* [`computePatch`]({{url(path)}}/#-computepatch-path-cursors-formula-)
 
 Utils for writing computers.
 
@@ -33,13 +33,13 @@ const computers = [
 App([], computers)
 ```
 
-### `compute(path, sources, formula)`
+### `compute(path, cursors, formula)`
 
 Creates a computer that manages the value at `path`, writing the result of
-calling `formula` (a pure function) with the arguments defined by `sources`.
+calling `formula` (a pure function) with the arguments defined by `cursors`.
 
-This is like Excel: you choose a cell (`path`), source data (`sources`), and a
-formula. It gets recalculated automatically on relevant changes.
+This is like Excel: you choose a cell (`path`), pointers to data (`cursors`),
+and a formula. It gets recalculated automatically on relevant changes.
 
 ```js
 function sum (a, b) {
@@ -52,40 +52,39 @@ x(null, {one: 1, other: 2})
 // {one: 1, other: 2, sum: 3}
 ```
 
-Each `source` may be a path (a list of keys), or a function. In the latter case,
-it receives the value from the previous source and must return a path. This
-allows to resolve paths dynamically.
+Each `cursor` may be a path or a function that reads a value from anywhere in
+the state.
 
 ```js
-function other (path) {
-  return ['other'].concat(path)
+const {scan} = require('prax')
+
+function getRight (value) {
+  return scan(value, 'right', 'nested')
 }
 
-function sum (a, b) {
-  return a + b
-}
+function add (a, b) {return a + b}
 
-const x = compute(['sum'], [['one'], other], sum)
+const x = compute(['added'], [['left'], getRight], add)
 
-x(null, {one: 1, other: {1: 2}})
-// {one: 1, other: {1: 2}, sum: 3}
+x(null, {left: 1, right: {nested: 2}})
+// {left: 1, right: {nested: 2}, added: 3}
 ```
 
-Be careful about data size. Because `compute` runs on every change in `sources`,
-recalculating a large, frequently changing collection will cost too much CPU
-time. In this case, you'll probably need to write a different tool.
+Be careful about data size. Because `compute` runs on every change in `cursors`,
+recalculating a large, frequently changing collection might cost too much CPU
+time. In that case, you'll probably need a smarter function.
 
-### `computePatch(path, sources, formula)`
+### `computePatch(path, cursors, formula)`
 
 Like `compute`, but uses merge semantics instead of replacement semantics.
 The formula may return patches (partial objects).
 
 ```js
-function patchName (value) {
+function namePatch (value) {
   return {name: value}
 }
 
-const x = computePatch(['user'], [['test']], patchName)
+const x = computePatch(['user'], [['test']], namePatch)
 
 x(null, {test: 'test', user: {id: 1}})
 // {test: 'test', user: {id: 1, name: 'test'}}

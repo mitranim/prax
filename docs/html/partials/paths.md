@@ -1,46 +1,47 @@
 ## Paths
 
-* [`readSources`]({{url(path)}}/#-readsources-sources-value-)
-* [`pathsChanged`]({{url(path)}}/#-pathschanged-paths-prev-next-)
+* [`readCursors`]({{url(path)}}/#-readcursors-cursors-value-)
+* [`cursorsChanged`]({{url(path)}}/#-cursorschanged-cursors-prev-next-)
 * [`changed`]({{url(path)}}/#-changed-)
-* [`pan`]({{url(path)}}/#-pan-sources-fun-)
-* [`give`]({{url(path)}}/#-give-sources-fun-)
+* [`pan`]({{url(path)}}/#-pan-cursors-fun-)
+* [`give`]({{url(path)}}/#-give-cursors-fun-)
 
 Utils for:
-* resolving paths into values
+* resolving paths and functions into values
 * change detection
 
-### `readSources(sources, value)`
+### `readCursors(cursors, value)`
 
-Takes a list of sources, which may be paths or functions, and maps them against
+Takes a list of cursors, which may be paths or functions, and maps them against
 `value`, returning the list of results.
 
-Sources can be paths:
+Cursors can be paths:
 
 ```js
-const sources = [['a'], ['b', 'c']]
+const cursors = [['a'], ['b', 'c']]
 
 const value = {a: 'shallow', {b: {c: 'nested'}}}
 
-readSources(sources, value)
+readCursors(cursors, value)
 // ['shallow', 'nested']
 ```
 
-They can also be functions. A function source is called with the result of the
-previous source.
+They can also be functions.
 
 ```js
-const sources = [['a'], key => ['b', key]]
+const {scan} = require('prax')
+
+const cursors = [['a'], value => scan(value, 'b', 'c')]
 
 const value = {a: 'c', {b: {c: 'nested'}}}
 
-readSources(sources, value)
+readCursors(cursors, value)
 // ['c', 'nested']
 ```
 
-### `pathsChanged(paths, prev, next)`
+### `cursorsChanged(cursors, prev, next)`
 
-True if any path among `paths` is different between `prev` and `next`.
+True if `prev` and `next` differ for any cursor among `cursors`.
 
 Uses
 <a href="http://mitranim.com/fpx/#-is-one-other-" target="_blank">`fpx/is`</a>
@@ -50,9 +51,9 @@ this enables extremely efficient change detection.
 
 ```js
 // https://github.com/Mitranim/emerge#putatpath-prev-value
-const {putAt, pathsChanged} = require('prax')
+const {putAt, cursorsChanged} = require('prax')
 
-const paths = [['one', 'two']]
+const cursors = [['one', 'two']]
 
 const prev = {one: {two: [2]}}
 
@@ -60,19 +61,19 @@ const prev = {one: {two: [2]}}
 // next === prev  ->  true
 const next = putAt(['one', 'two'], prev, [2])
 
-pathsChanged(paths, prev, next)
+cursorsChanged(cursors, prev, next)
 // false
 
 const next0 = putAt(['one', 'two'], prev, [3])
 
-pathsChanged(paths, prev, next)
+cursorsChanged(cursors, prev, next)
 // true
 ```
 
 ### `changed`
 
 <a href="http://mitranim.com/fpx/#-defer-fun-args-" target="_blank">Deferred</a>
-version of `pathsChanged`. Useful in function composition contexts.
+version of `cursorsChanged`. Useful in function composition contexts.
 
 ```js
 const one = ['one']
@@ -87,23 +88,23 @@ x({}, {one: 1})
 // true
 ```
 
-### `pan(sources, fun)`
+### `pan(cursors, fun)`
 
-Creates a function that resolves `sources` against a value, passing results
+Creates a function that resolves `cursors` against a value, passing results
 to `fun` as separate arguments. Useful in function composition contexts.
 
 ```js
 function plus (a, b) {return a + b}
 
-const sources = [['one'], ['two', 'three']]
+const cursors = [['one'], ['two', 'three']]
 
-const report = pan(sources, plus)
+const report = pan(cursors, plus)
 
 report({one: 1, two: {three: 3}})
 // 3
 ```
 
-### `give(sources, fun)`
+### `give(cursors, fun)`
 
 Like `pan` but ignores its first argument, resolving values against the _second_
 argument. Useful when composing effects.
@@ -111,9 +112,9 @@ argument. Useful when composing effects.
 ```js
 function plus (a, b) {return a + b}
 
-const sources = [['one'], ['two', 'three']]
+const cursors = [['one'], ['two', 'three']]
 
-const report = give(sources, plus)
+const report = give(cursors, plus)
 
 report(null, {one: 1, two: {three: 3}})
 // 3
