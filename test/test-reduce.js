@@ -14,6 +14,7 @@ const w = require('../lib/words')
 
 /** ********************************* Test ***********************************/
 
+function id (a) {return a}
 function plus (a, b) {return a + b}
 function minus (a, b) {return a - b}
 function pass (_, x) {return x}
@@ -174,21 +175,21 @@ upgrade: {
      $: nil}
   )
 
-  function reducer (value) {
-    return value.val
-  }
-
-  test(w.upgrade(reducer),
-    {0: {val: 1},
-     1: {},
-     $: 1},
-
-    {0: {},
+  test(w.upgrade(id),
+    {0: null,
      1: {val: 1},
-     $: 1},
+     $: {val: 1}},
+
+    {0: {one: 1},
+     1: {two: 2},
+     $: {one: 1, two: 2}},
 
     {0: {val: 1},
-     1: {val: 2},
-     $: 2}
+     1: '',
+     $: {val: 1}},
+
+    {0: {val: 1},
+     1: null,
+     $: undefined}
   )
 }
