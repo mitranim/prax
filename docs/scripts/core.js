@@ -1,32 +1,49 @@
-const {App, EmitMono: Emit, WatchNow, st, stk, stf, stkf, getIn} = require('prax')
+const {Que, App, getIn, bind, comp, flat, st, stk} = require('prax')
 const {merge, domEvent} = require('./utils')
 
 /**
- * Globals
+ * Features
  */
 
-const feature = require('./feature')
+const feats = [
+  require('./feature')
+]
+
+const extract = key => flat(feats.map(feat => feat[key]).filter(Boolean))
+
+/**
+ * Que
+ */
+
+const que = getIn(window, ['dev', 'que']) || Que()
+
+export const {enque} = que
+
+export const emit = bind(comp, enque)
+
+/**
+ * App
+ */
 
 const app = App(
-  feature.reducers,
-  feature.computers,
-  feature.effects,
-  merge(feature.state, window.__app_state__)
+  que,
+  merge(...extract('state'), getIn(window, ['dev', 'app', 'mean'])),
+  extract('reducers'),
+  extract('computers'),
+  extract('effects')
 )
 
-export const emit = Emit(app.enque)
-
-export const watchNow = WatchNow(app)
+que.consumer = app.main
 
 /**
  * Render Utils
  */
 
 const {Component} = require('react')
-const {Auto, ReactiveRender} = require('prax/react')
+const {Auto, ReactiveRender, WatchNow} = require('prax/react')
 
-export const auto = Auto(Component, watchNow)
-export const reactiveRender = ReactiveRender(watchNow)
+export const auto = Auto(Component, WatchNow(app))
+export const reactiveRender = ReactiveRender(WatchNow(app))
 
 /**
  * Init
@@ -42,16 +59,12 @@ domEvent(module, document, 'keypress', emit(keyCode))
  * Misc
  */
 
-if (module.hot) {
-  module.hot.dispose(() => {
-    window.__app_state__ = app.getMean()
-    app.die()
-  })
-}
-
-window.dev = {...window.dev, app, emit, st, stk, stf, stkf,
+window.dev = {...window.dev, que, enque, app, st, stk,
   read () {
-    return getIn(app.getMean(), arguments)
+    return getIn(app.mean, arguments)
+  },
+  set (...path) {
+    enque({type: 'set', path, value: path.pop()})
   }
 }
 

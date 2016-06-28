@@ -1,1 +1,1 @@
-module.exports = require('./dist/compute')
+module.exports = require('./dist/words')

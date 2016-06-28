@@ -1,1 +1,1 @@
-module.exports = require('./dist/reduce')
+module.exports = require('./dist/bc/reduce')

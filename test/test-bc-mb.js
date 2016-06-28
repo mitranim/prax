@@ -4,7 +4,7 @@
 
 const {eq} = require('./utils')
 
-const {Mb} = require('../lib/mb')
+const {Mb} = require('../lib/bc/mb')
 
 /** ********************************* Test ***********************************/
 

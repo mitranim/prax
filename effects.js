@@ -1,1 +1,1 @@
-module.exports = require('./dist/effects')
+module.exports = require('./dist/words')

@@ -1,1 +1,1 @@
-module.exports = require('./dist/watch')
+module.exports = require('./dist/words')

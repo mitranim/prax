@@ -13,8 +13,7 @@ if (module.hot) {
  * Views
  */
 
-const {State, Profile} = require('./views')
-const {KeyCode} = require('./classes')
+const {State, Profile, KeyCode} = require('./views')
 
 const views = {
   '[data-state]': State,

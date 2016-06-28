@@ -1,6 +1,7 @@
 'use strict'
 
 // Deprecated test
+// Patterns have been moved to fpx
 
 /** ***************************** Dependencies *******************************/
 

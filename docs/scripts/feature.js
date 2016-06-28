@@ -1,5 +1,5 @@
-const {isObject, id, val, on, one, manage, upgrade, pass, stk,
-       compute, where} = require('prax')
+const {scan, putAt, patchAt, pipe, val, isObject, isList,
+       onEvent, onType, compute} = require('prax')
 
 /**
  * State
@@ -8,8 +8,7 @@ const {isObject, id, val, on, one, manage, upgrade, pass, stk,
 exports.state = {
   keyCode: 0,
   profiles: {},
-  visibility: {},
-  updating: {}
+  visibility: {}
 }
 
 /**
@@ -17,25 +16,18 @@ exports.state = {
  */
 
 exports.reducers = [
-  manage(['keyCode'],
-    on('keyCode', pass)
-  ),
+  // For REPL only
+  onEvent({type: 'set', path: isList}, (state, {path, value}) => (
+    putAt(path, state, value)
+  )),
 
-  manage(['visibility'],
-    one('show', val(true)),
-    one('hide', val(false)),
-    one('toggle', negate)
-  ),
+  onType('keyCode', to(['keyCode'], passVal)),
 
-  manage(['profiles'],
-    one('profile', upgrade(profile)),
-    one('profile/update/done', upgrade(profile))
-  ),
+  onType('show', toOne(['visibility'], val(true))),
+  onType('hide', toOne(['visibility'], val(null))),
+  onType('toggle', zoomOne(['visibility'], negate)),
 
-  manage(['updating', 'profile'],
-    on('profile/update', pass),
-    on('profile/update/done', val(null))
-  )
+  onType('profile', zoomOne(['profiles'], pipe(passVal, profile)))
 ]
 
 /**
@@ -44,18 +36,6 @@ exports.reducers = [
 
 exports.computers = [
   compute(['profileCount'], [['profiles']], size)
-]
-
-/**
- * Effects
- */
-
-exports.effects = [
-  where(
-    [['updating', 'profile']],
-    id,
-    value => stk('profile/update/done', value.id, value)
-  )
 ]
 
 /**
@@ -74,9 +54,33 @@ function profile (fields) {
  */
 
 function negate (value) {
-  return !value
+  return !value || null
 }
 
 function size (value) {
-  return isObject(value) ? value.length || Object.keys(value).length : 0
+  return isList(value)
+    ? value.length
+    : isObject(value)
+    ? Object.keys(value).length
+    : 0
+}
+
+function to (path, fun) {
+  return (state, event) => putAt(path, state, fun(state, event))
+}
+
+function passVal (_state, event) {
+  return scan(event, 'value')
+}
+
+function toOne (path, fun) {
+  return onEvent({key: Boolean}, (state, event) => (
+    patchAt([...path, event.key], state, fun(state, event))
+  ))
+}
+
+function zoomOne (path, fun) {
+  return toOne(path, (state, event) => (
+    fun(scan(state, ...path, event.key), event)
+  ))
 }

@@ -1,1 +1,1 @@
-module.exports = require('./dist/mb')
+module.exports = require('./dist/bc/mb')

@@ -12,14 +12,13 @@ require.extensions['.js'] = (module, path) => {
   )
 }
 
-require('./test-mb')
-require('./test-pattern')
-require('./test-que')
-require('./test-app-core')
+require('./test-bc-mb')
 require('./test-app')
-require('./test-reduce')
 require('./test-compute')
 require('./test-effects')
+require('./test-pattern')
+require('./test-que')
+require('./test-reduce')
 require('./test-watch')
 
 console.log(`${time()} Finished test without errors.`)

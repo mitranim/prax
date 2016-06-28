@@ -1,1 +1,1 @@
-module.exports = require('./dist/compare')
+module.exports = require('./dist/words')

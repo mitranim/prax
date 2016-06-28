@@ -4,9 +4,9 @@
 
 * [Overview]({{url(path)}}/#overview)
 * [`Que`]({{url(path)}}/#-que-)
-  * [`Que#setConsumer`]({{url(path)}}/#-que-setconsumer-fun-)
-  * [`Que#push`]({{url(path)}}/#-que-push-events-)
-  * [`Que#die`]({{url(path)}}/#-que-die-)
+  * [`Que#consumer`]({{url(path)}}/#-que-consumer-)
+  * [`Que#push`]({{url(path)}}/#-que-enque-events-)
+* [`Emit`]({{url(path)}}/#-emit-enque-)
 
 ## Overview
 
@@ -15,85 +15,89 @@ Source:
 `lib/que.js` <span class="fa fa-github"></span>
 </a>
 
-Don't bother reading if you're not interested in Prax internals.
-
 Unbounded FIFO queue with one consumer. Flushes synchronously and linearly, even
-in the face of exceptions. Used internally by [`App`](api/app/) to ensure
-linear event timeline.
+in the face of exceptions. Used with [`App`](api/app/) to ensure linear timeline
+of events and state transitions.
 
-## `Que()`
+## `Que([consumer])`
 
 Basic:
 
 ```js
 const {Que} = require('prax/que')
 
-const que = Que()
+const consumer = console.log.bind(console)
 
-que.setConsumer(console.log.bind(console))
+const que = Que(consumer)
 
-que.push('event0', 'event1', 'event2')
+que.enque('event0', 'event1', 'event2')
 // event0
 // event1
 // event2
-
-que.die()
-
-que.push(10, 20)
-// nothing
 ```
 
 An exception in the consumer affects only the current tick, doesn't stop the
 subsequent ticks:
 
 ```js
-const que = Que()
+const que = Que(consumer)
 
-que.setConsumer(event => {
+function consumer (event) {
   if (!event) throw Error(`Expected truthy value, got: ${event}`)
   console.log(event)
-})
+}
 
-que.push('event0', null, 'event2')
+que.enque('event0', null, 'event2')
 // event0
 // event2
 // Uncaught Error: Expected truthy value, got: null
 ```
 
-### `Que#setConsumer(fun)`
+### `que.consumer`
 
-A que starts inert. This method attaches a function to process qued events.
+You can create an inert que and set the consumer later. You can also change the
+consumer at any time.
 
 ```js
 const que = Que()
 
-que.setConsumer(console.log.bind(console))
+que.consumer = console.log.bind(console)
+
+que.consumer = console.info.bind(console)
 ```
 
-### `Que#push(...events)`
+### `Que#enque(...events)`
 
-Enqueues each event. If the consumer function is set, this will immediately
-attempt to flush the que.
+Schedules each event. If the consumer function is set, this will immediately
+attempt to flush the que, consuming each event.
 
-If `push` is called when the que is idle, the flush is guaranteed to finish
-before `push` returns. Any new events pushed _during_ the flush will also be
-processed as part of the flush. When `push` returns, the que is idle again.
+If `enque` is called when the que is idle, it's guaranteed to fully flush before
+`enque` returns. Any new events pushed _during_ the flush are also consumed.
+When `enque` returns, the que is idle again.
 
-If `push` is called _during_ a flush, the new events are enqueued after all
-currently pending events. When `push` returns, they're still waiting to be
+If `enque` is called _during_ a flush, the new events are scheduled after all
+currently pending events. When `enque` returns, they're still waiting to be
 processed.
 
 ```js
-que.push('event0', 'event1', 'event2')
+que.enque('event0', 'event1', 'event2')
 ```
 
-### `Que#die()`
+## `Emit(enque)`
 
-Empties the internal buffer and removes the consumer function. Use this when
-disposing a que that may still asynchronously receive events you don't care
-about.
+Creates a "delayed" version of `que.enque` that passes arguments to a
+user-supplied function and schedules the result.
+
+This allows to hide imperative invocations of `enque` behind pure functions that
+return events.
 
 ```js
-que.die()
-que.push('event')  // ineffective
+const emit = Emit(que.enque)
+
+function clickEvent ({type, button}) {
+  return {type, value: button}
+}
+
+// schedules `{type: 'click', value: 0}` on each LMB click
+document.addEventListener('click', emit(clickEvent))
 ```

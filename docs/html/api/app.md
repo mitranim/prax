@@ -3,14 +3,11 @@
 ## TOC
 
 * [Overview]({{url(path)}}/#overview)
-* [`App`]({{url(path)}}/#-app-reducers-computers-effects-initialstate-)
-  * [`App#enque`]({{url(path)}}/#-app-enque-events-)
+* [`App`]({{url(path)}}/#-app-que-initialstate-reducers-computers-effects-)
+  * [`App#prev`]({{url(path)}}/#-app-prev-)
+  * [`App#mean`]({{url(path)}}/#-app-mean-)
   * [`App#addEffect`]({{url(path)}}/#-app-addeffect-fun-)
-  * [`App#getPrev`]({{url(path)}}/#-app-getprev-)
-  * [`App#getMean`]({{url(path)}}/#-app-getmean-)
-  * [`App#die`]({{url(path)}}/#-app-die-)
-* [`EmitMono`]({{url(path)}}/#-emitmono-enque-)
-* [`Emit`]({{url(path)}}/#-emit-enque-)
+* [`enque`]({{url(path)}}/#-enque-events-)
 
 ## Overview
 
@@ -26,26 +23,36 @@ stimuli, spinning its inner pure-functional gears.
 An `App` is a mutable reference to a linear timeline of immutable states. It
 allows you to define most parts of the application as pure functions of data.
 
-[TODO] explain the event queue.
+[TODO] explain the linear timeline.
 
-## `App(reducers, computers, effects, initialState)`
+## `App(que, initialState, reducers, computers, effects)`
 
 Creates an application object.
 
-All arguments are optional. The first three arguments (lists of functions) may
-be deeply nested; the app flattens them automatically.
+  * `que` must be a [`Que`](api/que/) object
+  * `initialState` is automatically converted into an immutable data structure
+  * `reducers`, `computers` and `effects` must be lists of functions
 
 ```js
-const {App} = require('prax/app')
+const {Que, App} = require('prax')
 
-const {reducers, computers, effects, defaults} = require('features/my-feature')
+const que = Que()
 
-const app = App(reducers, computers, effects, defaults)
+const {state, reducers, computers, effects} = require('features/my-feature')
+
+const app = App(que, state, reducers, computers, effects)
+
+// Must manually connect app to event que.
+que.consumer = app.main
 ```
 
 Format:
 
 ```hs
+que :: Que
+
+initialState :: any
+
 reducers :: [Reducer]
 
   where Reducer = ƒ(state, event) -> state
@@ -58,39 +65,30 @@ effects :: [Effect]
 
   where Effect = ƒ(prev state, next state, event) -> events
   where events :: any | [any] | Promise any | [Promise any] | void
-
-initialState :: any
 ```
 
-### `App#enque(...events)`
+### `app.prev`
 
-Adds events to the app's internal event queue. They will be processed one by one
-as soon as the app becomes idle.
-
-Events are arbitrary JavaScript values. You decide on their format when writing
-reducers.
+Previous application state. Initially `undefined`.
 
 ```js
-const event0 = 'init'
-const event1 = {type: 'ajax', key: 'user'}
-app.enque(event0, event1)
+console.log(app.prev)
 ```
 
-<!--: <div class="notes"> :-->
+### `app.mean`
 
-### Technical notes
+Current application state. The name `mean` refers to the fact that at any given
+time, the app has up to three values of state:
 
-The queue is synchronous. If you call `app.enque` when the app is idle (at the
-top of the stack in a task or microtask callback), it's guaranteed to finish
-before control returns to the callsite.
+`prev -> mean -> next`
 
-The queue is asynchronous. If you call `app.enque` when the app is busy (inside
-an effect), it's guaranteed to delay the new events until the current queue
-becomes empty.
+The `next` state exists during the data phase: it's passed to reducers and
+computers, and gets replaced by their return value. When the data phase ends,
+the app substitutes its `mean` state for `next`.
 
-The app is always idle when the queue is empty, and vice versa.
-
-<!--: </div> :-->
+```js
+console.log(app.mean)
+```
 
 ### `App#addEffect(fun)`
 
@@ -115,73 +113,45 @@ const unsub = app.addEffect(effect)
 unsub()
 ```
 
-### `App#getPrev()`
+## `enque(...events)`
 
-Returns the previous app state.
-
-```js
-const prevState = app.getPrev()
-console.log(prevState)
-```
-
-### `App#getMean()`
-
-Returns the current application state.
-
-The name `mean` refers to the fact that at any given time, the app has up to
-three values of state:
-
-`prev -> mean -> next`
-
-The `next` state exists during the data phase: it's passed to reducers and
-computers, and gets replaced by their return value. When the data phase ends,
-the app substitutes its `mean` state for `next`.
+The app receives events from a event que. When creating the app, you set its
+`main` method as the que's event consumer.
 
 ```js
-const meanState = app.getMean()
-console.log(meanState)
+const {Que, App} = require('prax')
+
+const que = Que()
+
+const app = App(que)
+
+que.consumer = app.main
 ```
 
-### `App#die()`
-
-Renders the app inert: it will no longer receive events. Use this when disposing
-an app that may still asynchronously receive events you don't care about.
-
-## `EmitMono(enque)`
-
-Creates a "delayed" version of `app.enque` that passes arguments to a
-user-supplied function and enqueues the result.
-
-This allows to hide imperative invocations of `enque` behind pure functions that
-return events.
+Then you use `que.enque` to schedule events to be handled by the app. Events are
+arbitrary JavaScript values. You decide on their format when writing reducers.
 
 ```js
-const emit = EmitMono(app.enque)
-
-function clickEvent ({type, button}) {
-  return {type, value: button}
-}
-
-// enqueues `{type: 'click', value: 0}` on each LMB click
-document.addEventListener('click', emit(clickEvent))
+const event0 = 'init'
+const event1 = {type: 'ajax', key: 'user'}
+que.enque(event0, event1)
 ```
 
-## `Emit(enque)`
+If your development environment has HMR (hot module replacement), you should
+create only one que and reuse it when re-creating the app. This ensures that
+events from asynchronous activities, such as HTTP requests, are automatically
+routed to the current app instance.
 
-Similar to `EmitMono`, but accepts both functions and plain values.
+<!--: <div class="notes"> :-->
 
-```js
-const emit = Emit(app.enque)
+### Technical notes
 
-function down ({type, keyCode}) {
-  return {type, value: keyCode}
-}
+The queue is synchronous. If you call `enque` when que/app is idle (at the top
+of the stack in a JS task/microtask callback), it's guaranteed to finish before
+control returns to the callsite.
 
-const up = {type: 'keyup'}
+The queue may appear asynchronous. If you call `enque` when que/app is busy
+(inside an effect), it's guaranteed to delay the new events until the currently
+pending events are processed.
 
-// enqueues `{type: 'keydown', value: N}` on each keypress
-document.addEventListener('keydown', emit(down))
-
-// enqueues `{type: 'keyup'}` on each keypress
-document.addEventListener('keyup', emit(up))
-```
+<!--: </div> :-->

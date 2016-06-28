@@ -1,4 +1,4 @@
-const {foldl, patchAt} = require('prax')
+const {patchAt, foldl, isObject} = require('prax')
 
 export function onload (callback) {
   if (/loaded|complete|interactive/.test(document.readyState)) {
@@ -25,5 +25,5 @@ export function merge () {
 }
 
 function mergeTwo (acc, value) {
-  return patchAt([], acc, value || {})
+  return patchAt([], acc, (isObject(value) ? value : {}))
 }
