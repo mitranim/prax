@@ -4,9 +4,9 @@
 
 * [Overview]({{url(path)}}/#overview)
 * [`App`]({{url(path)}}/#-app-que-initialstate-reducers-computers-effects-)
-  * [`App#prev`]({{url(path)}}/#-app-prev-)
-  * [`App#mean`]({{url(path)}}/#-app-mean-)
-  * [`App#addEffect`]({{url(path)}}/#-app-addeffect-fun-)
+  * [`app.prev`]({{url(path)}}/#-app-prev-)
+  * [`app.mean`]({{url(path)}}/#-app-mean-)
+  * [`app.addEffect`]({{url(path)}}/#-app-addeffect-fun-)
 * [`enque`]({{url(path)}}/#-enque-events-)
 
 ## Overview
@@ -90,7 +90,7 @@ the app substitutes its `mean` state for `next`.
 console.log(app.mean)
 ```
 
-### `App#addEffect(fun)`
+### `app.addEffect(fun)`
 
 Registers a new effect and returns a function that de-registers it when called.
 
@@ -115,7 +115,7 @@ unsub()
 
 ## `enque(...events)`
 
-The app receives events from a event que. When creating the app, you set its
+The app receives events from an event que. When creating the app, you set its
 `main` method as the que's event consumer.
 
 ```js

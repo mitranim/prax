@@ -3,9 +3,9 @@
 ## TOC
 
 * [Overview]({{url(path)}}/#overview)
-* [`Que`]({{url(path)}}/#-que-)
-  * [`Que#consumer`]({{url(path)}}/#-que-consumer-)
-  * [`Que#push`]({{url(path)}}/#-que-enque-events-)
+* [`Que`]({{url(path)}}/#-que-baseconsumer-)
+  * [`que.consumer`]({{url(path)}}/#-que-consumer-)
+  * [`que.enque`]({{url(path)}}/#-que-enque-events-)
 * [`Emit`]({{url(path)}}/#-emit-enque-)
 
 ## Overview
@@ -19,16 +19,17 @@ Unbounded FIFO queue with one consumer. Flushes synchronously and linearly, even
 in the face of exceptions. Used with [`App`](api/app/) to ensure linear timeline
 of events and state transitions.
 
-## `Que([consumer])`
+## `Que([baseConsumer])`
 
-Basic:
+Creates a que with the given consumer function. The consumer is optional, but
+you must [set]({{url(path)}}/#-que-consumer-) it before calling `enque`.
+
+Basic use:
 
 ```js
 const {Que} = require('prax/que')
 
-const consumer = console.log.bind(console)
-
-const que = Que(consumer)
+const que = Que(console.log.bind(console))
 
 que.enque('event0', 'event1', 'event2')
 // event0
@@ -66,7 +67,7 @@ que.consumer = console.log.bind(console)
 que.consumer = console.info.bind(console)
 ```
 
-### `Que#enque(...events)`
+### `que.enque(...events)`
 
 Schedules each event. If the consumer function is set, this will immediately
 attempt to flush the que, consuming each event.
