@@ -1,5 +1,5 @@
 const React = require('react')
-const {auto, reactiveRender} = require('./core')
+const {auto, reactiveClass} = require('./core')
 
 /**
  * Reactive views as pure functions.
@@ -27,12 +27,12 @@ function profileView (props, read) {
  * Reactive class-style view. Stays in sync with the data accessed in `render`.
  */
 
-export const KeyCode = reactiveRender(React.createClass({
-  render (read) {
+export const KeyCode = reactiveClass({
+  render (props, read) {
     return (
       <div>
         <p>last pressed key's code: {read('keyCode')}</p>
       </div>
     )
   }
-}))
+})

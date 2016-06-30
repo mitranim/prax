@@ -4,7 +4,7 @@
 
 * [Overview]({{url(path)}}/#overview)
 * [`Auto`]({{url(path)}}/#-auto-)
-* [TODO] `ReactiveRender`
+* [TODO] `ReactiveClass`
 
 ## Overview
 
@@ -26,12 +26,12 @@ by the view function, and update when it's changed. They also use
 `shouldComponentUpdate` to reject unnecessary parent renders.
 
 ```js
-const {Component} = require('react')
+const {createClass} = require('react')
 const {App, WatchNow} = require('prax')
 const {Auto} = require('prax/react')
 
 const app = App()
-const auto = Auto(Component, WatchNow(app))
+const auto = Auto(WatchNow(app), createClass)
 
 const ReactiveView = auto((props, read) => (
   <div>

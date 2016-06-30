@@ -39,11 +39,11 @@ que.consumer = app.main
  * Render Utils
  */
 
-const {Component} = require('react')
-const {Auto, ReactiveRender, WatchNow} = require('prax/react')
+const {createClass} = require('react')
+const {Auto, ReactiveClass, WatchNow} = require('prax/react')
 
-export const auto = Auto(Component, WatchNow(app))
-export const reactiveRender = ReactiveRender(WatchNow(app))
+export const auto = Auto(WatchNow(app), createClass)
+export const reactiveClass = ReactiveClass(WatchNow(app), createClass)
 
 /**
  * Init
