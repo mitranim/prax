@@ -5,10 +5,10 @@
 const {deepEqual} = require('emerge')
 
 exports.testWith = testWith
-function testWith (compare, fun) {
-  for (const config of slice(arguments, 2)) {
+function testWith (compare, fun, ...configs) {
+  for (const config of configs) {
     const args = toList(config)
-    const result = fun.apply(null, args)
+    const result = fun(...args)
     if (!compare(result, config.$)) {
       throw Error(`Function:\n  ${blue(inspect(fun))}\n` +
                   `Arguments:\n  ${blue(inspect(args))}\n` +
@@ -20,7 +20,7 @@ function testWith (compare, fun) {
 
 exports.test = test
 function test () {
-  testWith.apply(null, [deepEqual].concat(slice(arguments)))
+  testWith(deepEqual, ...arguments)
 }
 
 exports.eq = eq
@@ -48,11 +48,10 @@ function ndeq (a, b) {
 }
 
 exports.throws = throws
-function throws (fun) {
+function throws (fun, ...args) {
   let error
   let value
-  const args = slice(arguments, 1)
-  try {value = fun.apply(null, args)} catch (err) {error = err}
+  try {value = fun(...args)} catch (err) {error = err}
   if (!error) {
     throw Error(`Function:\n  ${blue(inspect(fun))}\n` +
                               `Arguments:\n  ${blue(inspect(args))}\n` +
@@ -78,7 +77,7 @@ function toList (object) {
 }
 
 function len (object) {
-  return Math.max.apply(Math, indices(object)) + 1
+  return Math.max(...indices(object)) + 1
 }
 
 function indices (object) {

@@ -8,7 +8,6 @@
 
 /** ***************************** Dependencies *******************************/
 
-const {apply} = require('fpx')
 const {test} = require('./utils')
 
 const {where, when, whenOneOf, match} = require('../lib/words')
@@ -57,7 +56,7 @@ where: {
 //   * always runs the predicate when first called, even if the state hasn't changed
 when: {
   function predicate (read) {
-    return apply(read, val) === apply(read, ctrl)
+    return read(...val) === read(...ctrl)
   }
 
   function effect (result) {
