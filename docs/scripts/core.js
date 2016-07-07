@@ -1,4 +1,4 @@
-const {Que, App, getIn, bind, comp, flat, st, stk} = require('prax')
+const {Que, App, getIn, pipe, flat, st, stk} = require('prax')
 const {merge, domEvent} = require('./utils')
 
 /**
@@ -18,8 +18,6 @@ const extract = key => flat(feats.map(feat => feat[key]).filter(Boolean))
 const que = getIn(window, ['dev', 'que']) || Que()
 
 export const {enque} = que
-
-export const emit = bind(comp, enque)
 
 /**
  * App
@@ -53,7 +51,7 @@ function keyCode (event) {
   return st('keyCode', event.keyCode)
 }
 
-domEvent(module, document, 'keypress', emit(keyCode))
+domEvent(module, document, 'keypress', pipe(keyCode, enque))
 
 /**
  * Misc

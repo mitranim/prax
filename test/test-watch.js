@@ -86,3 +86,17 @@ Watcher__path_change: {
      $: 2}
   )
 }
+
+// App passes `app.que.enque` to effects as 4th argument.
+// Watcher must pass it as 2nd.
+Watcher__pass_send: {
+  function reader (read, send) {
+    return send(read('key'))
+  }
+
+  test(Watcher(reader),
+    {1: {key: 10},
+     3: val => val * 2,
+     $: 20}
+  )
+}

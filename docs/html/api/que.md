@@ -6,7 +6,6 @@
 * [`Que`]({{url(path)}}/#-que-baseconsumer-)
   * [`que.consumer`]({{url(path)}}/#-que-consumer-)
   * [`que.enque`]({{url(path)}}/#-que-enque-events-)
-* [`Emit`]({{url(path)}}/#-emit-enque-)
 
 ## Overview
 
@@ -82,23 +81,4 @@ processed.
 
 ```js
 que.enque('event0', 'event1', 'event2')
-```
-
-## `Emit(enque)`
-
-Creates a "delayed" version of `que.enque` that passes arguments to a
-user-supplied function and schedules the result.
-
-This allows to hide imperative invocations of `enque` behind pure functions that
-return events.
-
-```js
-const emit = Emit(que.enque)
-
-function clickEvent ({type, button}) {
-  return {type, value: button}
-}
-
-// schedules `{type: 'click', value: 0}` on each LMB click
-document.addEventListener('click', emit(clickEvent))
 ```
