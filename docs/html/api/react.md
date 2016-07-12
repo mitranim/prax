@@ -27,21 +27,20 @@ by the view function, and update when it's changed. They also use
 
 ```js
 const {createClass} = require('react')
-const {App, WatchNow} = require('prax')
+const {App} = require('prax')
 const {Auto} = require('prax/react')
 
 const app = App()
-const auto = Auto(WatchNow(app), createClass)
+const auto = Auto(app, createClass)
 
-const ReactiveView = auto((props, read) => (
-  <div>
-    {read('one', props.someKey)}
-    {read('two', props.someKey)}
-  </div>
+const MyView = auto((props, read, send) => (
+  <button onClick={() => send('some-event')}>
+    {read('labels', props.someKey)}
+  </button>
 ))
 ```
 
-In this example, `ReactiveView` will automatically subscribe to application data
+In this example, `MyView` will automatically subscribe to application data
 accessed through `read`, and automatically re-render when that data is changed.
 If `props` change, the subscriptions will also change.
 

@@ -38,10 +38,10 @@ que.consumer = app.main
  */
 
 const {createClass} = require('react')
-const {Auto, ReactiveClass, WatchNow} = require('prax/react')
+const {Auto, ReactiveClass} = require('prax/react')
 
-export const auto = Auto(WatchNow(app), createClass)
-export const reactiveClass = ReactiveClass(WatchNow(app), createClass)
+export const auto = Auto(app, createClass)
+export const reactiveClass = ReactiveClass(app, createClass)
 
 /**
  * Init

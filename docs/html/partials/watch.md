@@ -1,8 +1,6 @@
 ## Watch
 
 * [`Watcher`]({{url(path)}}/#-watcher-fun-)
-* [TODO] `Watch`
-* [TODO] `WatchNow`
 
 Utils for detecting changes in the data tree.
 

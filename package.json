@@ -1,6 +1,6 @@
 {
   "name": "prax",
-  "version": "0.0.62",
+  "version": "0.0.63",
   "main": "dist/index.js",
   "scripts": {
     "start": "gulp",
@@ -29,14 +29,13 @@
   },
   "dependencies": {
     "emerge": "^0.0.24",
-    "fpx": "0.0.6"
+    "fpx": "0.0.7"
   },
   "devDependencies": {
     "babel-core": "^6.7.6",
     "babel-eslint": "^6.0.2",
     "babel-loader": "^6.2.4",
     "babel-plugin-check-es2015-constants": "^6.7.2",
-    "babel-plugin-syntax-jsx": "^6.5.0",
     "babel-plugin-transform-es2015-arrow-functions": "^6.5.2",
     "babel-plugin-transform-es2015-block-scoped-functions": "^6.6.5",
     "babel-plugin-transform-es2015-block-scoping": "^6.7.1",
