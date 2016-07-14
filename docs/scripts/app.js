@@ -7,6 +7,9 @@ if (module.hot) {
   module.hot.accept(err => {
     console.warn('Exception during HMR update.', err)
   })
+  module.hot.dispose(() => {
+    console.clear()
+  })
 }
 
 /**
