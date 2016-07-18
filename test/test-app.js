@@ -108,7 +108,7 @@ enqueEffectReturns: {
   const que = Que()
   const app = App(
     que,
-    undefined,
+    null,
     [function reducer (_, event) {
       processed.push(event)
     }],
@@ -122,6 +122,7 @@ enqueEffectReturns: {
   que.enque('first msg')
 
   deq(pending, [])
+
   // msg returned by effect must have been enqued
   deq(processed, ['first msg', 'second msg'])
 }

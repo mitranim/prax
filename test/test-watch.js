@@ -87,9 +87,9 @@ Watcher__path_change: {
   )
 }
 
-// App passes `app.que.enque` to effects as 4th argument.
+// App passes self to effects as 4th argument.
 // Watcher must pass it as 2nd.
-Watcher__pass_send: {
+Watcher__pass_4th: {
   function reader (read, send) {
     return send(read('key'))
   }
