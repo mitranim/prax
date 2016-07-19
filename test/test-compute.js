@@ -13,6 +13,9 @@ const {compute, computePatch} = require('../lib/words')
 
 /** ********************************* Test ***********************************/
 
+function add (a, b) {return a + b}
+function id (value) {return value}
+
 compute: {
   primitives: {
     const prev = {one: 1, inc: 1}
@@ -61,16 +64,4 @@ computePatch: {
      1: putAt(['source'], prev, {one: 3}),
      $: {source: {one: 3}, target: {test: 1, one: 3}}}
   )
-}
-
-/**
- * Utils
- */
-
-function add (a, b) {
-  return a + b
-}
-
-function id (value) {
-  return value
 }

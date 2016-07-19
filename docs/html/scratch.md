@@ -40,17 +40,17 @@
 
       reduce
 
-        state = ƒ(state, event)
+        state = ƒ(state, event, app)
 
       compute
 
-        state = ƒ(prev state, state)
+        state = ƒ(prev state, next state, app)
 
     Effect Phase
 
       side effects
 
-        events = ƒ(prev state, state, event)
+        events = ƒ(prev state, next state, event, app)
 
         events -> queue
 

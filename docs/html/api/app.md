@@ -55,15 +55,15 @@ initialState :: any
 
 reducers :: [Reducer]
 
-  where Reducer = ƒ(state, event) -> state
+  where Reducer = ƒ(state, event, app) -> state
 
 computers :: [Computer]
 
-  where Computer = ƒ(prev state, next state) -> state
+  where Computer = ƒ(prev state, next state, app) -> state
 
 effects :: [Effect]
 
-  where Effect = ƒ(prev state, next state, event) -> events
+  where Effect = ƒ(prev state, next state, event, app) -> events
   where events :: any | [any] | Promise any | [Promise any] | void
 ```
 
@@ -101,7 +101,7 @@ The primary purpose of this method is to dynamically subscribe and unsubscribe
 views.
 
 ```js
-function effect (prev, next, event) {
+function effect (prev, next, event, app) {
   // do some side effects
   // optionally return an event
   if (Date.now() % 2) return 'my-event'
