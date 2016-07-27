@@ -64,19 +64,6 @@ compute_stabilising: {
   eq(app.mean, 10)
 }
 
-compute_app_arg: {
-  function third (prev, next, {enque}) {
-    return enque
-  }
-
-  const que = Que()
-  const app = App(que, null, null, [third])
-  que.consumer = app.main
-
-  que.enque(null)
-  eq(app.mean, app.enque)
-}
-
 effects: {
   const que = Que()
   const app = App(que)

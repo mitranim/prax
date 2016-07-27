@@ -16,7 +16,7 @@ Utils for writing reducers.
 Base reducer interface:
 
 ```js
-function reducer (state, event, app) {
+function reducer (state, event) {
   return state
 }
 ```
@@ -62,7 +62,7 @@ Creates a reducer that acts only on events that match the provided pattern, via
 <a href="http://mitranim.com/fpx/#-test-pattern-" target="_blank">`fpx/test`</a>.
 
 ```js
-function reducer (state, event, app) {
+function reducer (state, event) {
   return {...state, num: event.value}
 }
 
@@ -70,9 +70,9 @@ function reducer (state, event, app) {
 onEvent({type: 'num', key: isNumber}, reducer)
 
 // is equivalent to:
-function (state, event, app) {
+function (state, event) {
   return isObject(event) && is(event.type, 'num') && isNumber(event.key)
-    ? reducer(state, event, app)
+    ? reducer(state, event)
     : state
 }
 ```
@@ -83,7 +83,7 @@ Creates a reducer that acts only on events with a matching `type`, via
 <a href="http://mitranim.com/fpx/#-test-pattern-" target="_blank">`fpx/test`</a>.
 
 ```js
-function reducer (state, event, app) {
+function reducer (state, event) {
   return {...state, num: event.value}
 }
 
@@ -91,9 +91,9 @@ function reducer (state, event, app) {
 onType(/num/, reducer)
 
 // is equivalent to:
-function (state, event, app) {
+function (state, event) {
   return isObject(event) && /num/.test(event.type)
-    ? reducer(state, event, app)
+    ? reducer(state, event)
     : state
 }
 ```
@@ -102,7 +102,7 @@ function (state, event, app) {
 
 Creates a reducer that acts only on events with the given `type`.
 
-The signature of `fun` is not `(state, event, app)` but `(state, value, key, app)`.
+The signature of `fun` is not `(state, event)` but `(state, value, key)`.
 The reducer extracts `value` and `key` from the event.
 
 ```js
@@ -124,14 +124,14 @@ x({}, st('test', 'value'))
 Creates a reducer that acts only on events with the given `type` and a `key`.
 It manages an individual element under the `key` provided by each event.
 
-The signature of `fun` is not `(state, event, app)` but `(element, value, key, app)`,
+The signature of `fun` is not `(state, event)` but `(element, value, key)`,
 where `element = state[key]`. The reducer extracts `key` and `value` from the
 event and merges the result back into `state` under that key.
 
 Due to merge semantics, the function may also return partial objects, patches.
 
 ```js
-function pass (state, value, key, app) {
+function pass (state, value, key) {
   return value
 }
 
@@ -155,7 +155,7 @@ x(state, stk('elem', 2, {title: 'second'}))
 Takes a property path (a list of keys) and any number of functions. Returns a
 list of reducers created by mounting each function on `path`.
 
-Each `fun` has the normal reducer signature `(state, event, app)`, but manages only
+Each `fun` has the normal reducer signature `(state, event)`, but manages only
 the part of state located at the given path.
 
 ```js

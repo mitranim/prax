@@ -55,11 +55,11 @@ initialState :: any
 
 reducers :: [Reducer]
 
-  where Reducer = ƒ(state, event, app) -> state
+  where Reducer = ƒ(state, event) -> state
 
 computers :: [Computer]
 
-  where Computer = ƒ(prev state, next state, app) -> state
+  where Computer = ƒ(prev state, next state) -> state
 
 effects :: [Effect]
 

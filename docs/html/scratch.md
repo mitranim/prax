@@ -40,11 +40,11 @@
 
       reduce
 
-        state = ƒ(state, event, app)
+        state = ƒ(state, event)
 
       compute
 
-        state = ƒ(prev state, next state, app)
+        state = ƒ(prev state, next state)
 
     Effect Phase
 

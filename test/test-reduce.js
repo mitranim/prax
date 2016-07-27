@@ -48,8 +48,8 @@ stk: {
 }
 
 onEvent: {
-  function reducer (state, event, app) {
-    return state + event.value + app
+  function reducer (state, event) {
+    return state + event.value
   }
 
   test(w.onEvent({type: 'inc', value: Number.isInteger}, reducer),
@@ -59,28 +59,26 @@ onEvent: {
 
     {0: 1,
      1: {type: 'inc', value: 2},
-     2: 3,
-     $: 6}
+     $: 3}
   )
 }
 
 onType: {
-  function reducer (state, event, app) {
-    return state + event.value + app
+  function reducer (state, event) {
+    return state + event.value
   }
 
   test(w.onType('inc', reducer),
     {0: 1,
      1: w.st('inc', 2),
-     2: 3,
-     $: 6}
+     $: 3}
   )
 }
 
 // TODO test object replacement semantics.
 on: {
-  function reducer (state, value, key, app) {
-    return state + value + key + app
+  function reducer (state, value, key) {
+    return state + value + key
   }
 
   test(w.on('inc', reducer),
@@ -90,15 +88,14 @@ on: {
 
     {0: 1,
      1: w.stk('inc', 2, 3),
-     2: 4,
-     $: 10}
+     $: 6}
   )
 }
 
 // TODO test merge semantics.
 one: {
-  function reducer (state, value, key, app) {
-    return state + value + key + app
+  function reducer (state, value, key) {
+    return state + value + key
   }
 
   test(w.one('inc', reducer),
@@ -108,13 +105,11 @@ one: {
 
     {0: {val: 1, _: 2},
      1: w.stk('inc', 'val', 3),
-     2: 4,
-     $: {val: '4val4', _: 2}},
+     $: {val: '4val', _: 2}},
 
     {0: {0: 1, _: 2},
      1: w.stk('inc', 0, 3),
-     2: 4,
-     $: {0: 8, _: 2}}
+     $: {0: 4, _: 2}}
   )
 }
 
