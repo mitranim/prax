@@ -4,7 +4,7 @@
 
 * [Overview]({{url(path)}}/#overview)
 * [`App`]({{url(path)}}/#-app-que-reducers-computers-effects-)
-  * [`app.enque`]({{url(path)}}/#-appenque-events-)
+  * [`app.enque`]({{url(path)}}/#-app-enque-events-)
   * [`app.prev`]({{url(path)}}/#-app-prev-)
   * [`app.mean`]({{url(path)}}/#-app-mean-)
   * [`app.addEffect`]({{url(path)}}/#-app-addeffect-fun-)
