@@ -3,11 +3,11 @@
 ## TOC
 
 * [Overview]({{url(path)}}/#overview)
-* [`App`]({{url(path)}}/#-app-que-initialstate-reducers-computers-effects-)
+* [`App`]({{url(path)}}/#-app-que-reducers-computers-effects-)
+  * [`app.enque`]({{url(path)}}/#-appenque-events-)
   * [`app.prev`]({{url(path)}}/#-app-prev-)
   * [`app.mean`]({{url(path)}}/#-app-mean-)
   * [`app.addEffect`]({{url(path)}}/#-app-addeffect-fun-)
-* [`enque`]({{url(path)}}/#-enque-events-)
 
 ## Overview
 
@@ -25,33 +25,28 @@ allows you to define most parts of the application as pure functions of data.
 
 [TODO] explain the linear timeline.
 
-## `App(que, initialState, reducers, computers, effects)`
+## `App(que, reducers, computers, effects)`
 
 Creates an application object.
 
   * `que` must be a [`Que`](api/que/) object
-  * `initialState` is automatically converted into an immutable data structure
   * `reducers`, `computers` and `effects` must be lists of functions
 
 ```js
 const {Que, App} = require('prax')
 
-const que = Que()
-
 const {state, reducers, computers, effects} = require('features/my-feature')
 
-const app = App(que, state, reducers, computers, effects)
+const app = App(Que(), reducers, computers, effects)
 
 // Must manually connect app to event que.
-que.consumer = app.main
+app.que.consumer = app.main
 ```
 
 Format:
 
 ```hs
 que :: Que
-
-initialState :: any
 
 reducers :: [Reducer]
 
@@ -90,6 +85,48 @@ the app substitutes its `mean` state for `next`.
 console.log(app.mean)
 ```
 
+### `app.enque(...events)`
+
+The app receives events from an event que. When creating the app, you set its
+`main` method as the que's event consumer.
+
+```js
+const {Que, App} = require('prax')
+
+const app = App(Que())
+
+app.que.consumer = app.main
+```
+
+Then you use `app.enque` or `app.que.enque` to schedule events to be handled by
+the app. Events are arbitrary JavaScript values. You decide on their format when
+writing reducers.
+
+```js
+const event0 = 'init'
+const event1 = {type: 'ajax', key: 'user'}
+app.enque(event0, event1)
+```
+
+If your development environment has HMR (hot module replacement), you should
+create only one que and reuse it when re-creating the app. This ensures that
+events from asynchronous activities, such as HTTP requests, are automatically
+routed to the current app instance.
+
+<!--: <div class="notes"> :-->
+
+### Technical notes
+
+The queue is synchronous. If you call `enque` when que/app is idle (at the top
+of the stack in a JS task/microtask callback), it's guaranteed to finish before
+control returns to the callsite.
+
+The queue may appear asynchronous. If you call `enque` when que/app is busy
+(inside an effect), it's guaranteed to delay the new events until the currently
+pending events are processed.
+
+<!--: </div> :-->
+
 ### `app.addEffect(fun)`
 
 Registers a new effect and returns a function that de-registers it when called.
@@ -112,46 +149,3 @@ const unsub = app.addEffect(effect)
 // later
 unsub()
 ```
-
-## `enque(...events)`
-
-The app receives events from an event que. When creating the app, you set its
-`main` method as the que's event consumer.
-
-```js
-const {Que, App} = require('prax')
-
-const que = Que()
-
-const app = App(que)
-
-que.consumer = app.main
-```
-
-Then you use `que.enque` to schedule events to be handled by the app. Events are
-arbitrary JavaScript values. You decide on their format when writing reducers.
-
-```js
-const event0 = 'init'
-const event1 = {type: 'ajax', key: 'user'}
-que.enque(event0, event1)
-```
-
-If your development environment has HMR (hot module replacement), you should
-create only one que and reuse it when re-creating the app. This ensures that
-events from asynchronous activities, such as HTTP requests, are automatically
-routed to the current app instance.
-
-<!--: <div class="notes"> :-->
-
-### Technical notes
-
-The queue is synchronous. If you call `enque` when que/app is idle (at the top
-of the stack in a JS task/microtask callback), it's guaranteed to finish before
-control returns to the callsite.
-
-The queue may appear asynchronous. If you call `enque` when que/app is busy
-(inside an effect), it's guaranteed to delay the new events until the currently
-pending events are processed.
-
-<!--: </div> :-->

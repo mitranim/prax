@@ -28,7 +28,7 @@ Examples on this page show effects as standalone functions, but in an app, you
 should group and pass them to the `App` constructor:
 
 ```js
-App([], [], [when(...)])
+App(Que(), [], [], [when(...)])
 ```
 
 ### `when(predicate, effect)`

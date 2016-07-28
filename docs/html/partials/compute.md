@@ -30,7 +30,7 @@ const computers = [
   compute(...)
 ]
 
-App([], computers)
+App(Que(), [], computers)
 ```
 
 ### `compute(path, cursors, formula)`

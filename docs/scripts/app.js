@@ -1,4 +1,5 @@
 if (!window.devMode) require('simple-pjax')
+
 const React = require('react')
 const {render, unmountComponentAtNode} = require('react-dom')
 

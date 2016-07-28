@@ -16,10 +16,11 @@ exports.state = {
  */
 
 exports.reducers = [
-  // For REPL only
   onEvent({type: 'set', path: isList}, (state, {path, value}) => (
     putAt(path, state, value)
   )),
+
+  onType('init', (state, {value}) => putAt([], state, value)),
 
   onType('keyCode', to(['keyCode'], passVal)),
 

@@ -27,10 +27,10 @@ by the view function, and update when it's changed. They also use
 
 ```js
 const {createClass} = require('react')
-const {App} = require('prax')
+const {Que, App} = require('prax')
 const {Auto} = require('prax/react')
 
-const app = App()
+const app = App(Que())
 const auto = Auto(app, createClass)
 
 const MyView = auto((props, read, send) => (

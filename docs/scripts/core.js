@@ -1,4 +1,4 @@
-const {Que, App, getIn, pipe, flat, st, stk} = require('prax')
+const {Que, App, migrateApp, getIn, pipe, flat, st, stk} = require('prax')
 const {merge, domEvent} = require('./utils')
 
 /**
@@ -12,26 +12,17 @@ const feats = [
 const extract = key => flat(feats.map(feat => feat[key]).filter(Boolean))
 
 /**
- * Que
- */
-
-const que = getIn(window, ['dev', 'que']) || Que()
-
-export const {enque} = que
-
-/**
  * App
  */
 
-const app = App(
-  que,
-  merge(...extract('state'), getIn(window, ['dev', 'app', 'mean'])),
+const app = migrateApp(
+  getIn(window, ['dev', 'app']) || App(Que()),
   extract('reducers'),
   extract('computers'),
   extract('effects')
 )
 
-que.consumer = app.main
+app.que.consumer = app.main
 
 /**
  * Render Utils
@@ -51,18 +42,20 @@ function keyCode (event) {
   return st('keyCode', event.keyCode)
 }
 
-domEvent(module, document, 'keypress', pipe(keyCode, enque))
+domEvent(module, document, 'keypress', pipe(keyCode, app.enque))
+
+app.enque(st('init', merge(...extract('state'), app.mean)))
 
 /**
  * Misc
  */
 
-window.dev = {...window.dev, que, enque, app, st, stk,
+window.dev = {...window.dev, app, st, stk,
   read () {
     return getIn(app.mean, arguments)
   },
   set (...path) {
-    enque({type: 'set', path, value: path.pop()})
+    app.enque({type: 'set', path, value: path.pop()})
   }
 }
 

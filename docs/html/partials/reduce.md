@@ -34,7 +34,7 @@ const reducers = [
   on(...)
 ]
 
-App(reducers, ...)
+App(Que(), reducers, ...)
 ```
 
 ### `st(type, value)`
