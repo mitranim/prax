@@ -4,7 +4,7 @@
 
 * [Overview]({{url(path)}}/#overview)
 * [`App`]({{url(path)}}/#-app-que-reducers-computers-effects-)
-  * [`app.enque`]({{url(path)}}/#-app-enque-events-)
+  * [`app.enque`]({{url(path)}}/#-app-enque-event-)
   * [`app.prev`]({{url(path)}}/#-app-prev-)
   * [`app.mean`]({{url(path)}}/#-app-mean-)
   * [`app.addEffect`]({{url(path)}}/#-app-addeffect-fun-)
@@ -85,7 +85,7 @@ the app substitutes its `mean` state for `next`.
 console.log(app.mean)
 ```
 
-### `app.enque(...events)`
+### `app.enque(event)`
 
 The app receives events from an event que. When creating the app, you set its
 `main` method as the que's event consumer.

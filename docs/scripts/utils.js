@@ -1,6 +1,6 @@
 const {patchAt, foldl, isObject} = require('prax')
 
-export function onload (callback) {
+export function onload (document, callback) {
   if (/loaded|complete|interactive/.test(document.readyState)) {
     callback()
   } else {

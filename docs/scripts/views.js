@@ -1,21 +1,16 @@
 const React = require('react')
-const {auto, reactiveClass} = require('./core')
 
 /**
  * Reactive views as pure functions.
  */
 
-export const State = auto(stateView)
-
-function stateView (props, read) {
+export function State (props, read) {
   return (
     <pre className='pad hljs'>{JSON.stringify(read(), null, 2)}</pre>
   )
 }
 
-export const Profile = auto(profileView)
-
-function profileView (props, read) {
+export function Profile (props, read) {
   return (
     <div>
       <p>profiles: {JSON.stringify(read('profiles'))}</p>
@@ -24,10 +19,10 @@ function profileView (props, read) {
 }
 
 /**
- * Reactive class-style view. Stays in sync with the data accessed in `render`.
+ * Reactive view written in class style.
  */
 
-export const KeyCode = reactiveClass({
+export const KeyCode = {
   render (props, read) {
     return (
       <div>
@@ -35,4 +30,4 @@ export const KeyCode = reactiveClass({
       </div>
     )
   }
-})
+}

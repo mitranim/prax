@@ -29,6 +29,7 @@ const views = {
  * Setup/Teardown
  */
 
+require('./core')
 const {slice} = require('fpx')
 const {domEvent, onload} = require('./utils')
 
@@ -48,13 +49,13 @@ function teardown () {
   nodes.splice(0).forEach(unmountComponentAtNode)
 }
 
+if (module.hot) module.hot.dispose(teardown)
+
+onload(document, setup)
+
 domEvent(module, document, 'simple-pjax-before-transition', teardown)
 
 domEvent(module, document, 'simple-pjax-after-transition', setup)
-
-if (module.hot) module.hot.dispose(teardown)
-
-onload(setup)
 
 /**
  * Dev

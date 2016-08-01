@@ -5,7 +5,7 @@
 * [Overview]({{url(path)}}/#overview)
 * [`Que`]({{url(path)}}/#-que-baseconsumer-)
   * [`que.consumer`]({{url(path)}}/#-que-consumer-)
-  * [`que.enque`]({{url(path)}}/#-que-enque-events-)
+  * [`que.enque`]({{url(path)}}/#-que-enque-event-)
 
 ## Overview
 
@@ -66,7 +66,7 @@ que.consumer = console.log.bind(console)
 que.consumer = console.info.bind(console)
 ```
 
-### `que.enque(...events)`
+### `que.enque(event)`
 
 Schedules each event. If the consumer function is set, this will immediately
 attempt to flush the que, consuming each event.

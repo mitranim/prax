@@ -29,10 +29,9 @@ app.que.consumer = app.main
  */
 
 const {createClass} = require('react')
-const {Auto, ReactiveClass} = require('prax/react')
+const {ReactiveClass, hackCreateElement, ToClass} = require('prax/react')
 
-export const auto = Auto(app, createClass)
-export const reactiveClass = ReactiveClass(app, createClass)
+hackCreateElement(ToClass(ReactiveClass(app, createClass)))
 
 /**
  * Init

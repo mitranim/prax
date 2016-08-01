@@ -57,7 +57,7 @@ compute_stabilising: {
   app.que.consumer = app.main
   app.mean = 1
 
-  app.enque(null)
+  app.enque(0)
   eq(app.mean, 10)
 }
 

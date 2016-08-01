@@ -19,9 +19,9 @@ exports.reducers = [
     putAt(path, state, value)
   )),
 
-  onType('init', putTo([], eventValue)),
+  onType('init', putTo([], passValue)),
 
-  onType('keyCode', putTo(['keyCode'], eventValue)),
+  onType('keyCode', putTo(['keyCode'], passValue)),
 
   onEvent({type: 'profile', value: {id: exists}}, setProfile)
 ]
@@ -57,6 +57,6 @@ function putTo (path, fun) {
   return (state, event) => putAt(path, state, fun(state, event))
 }
 
-function eventValue (_state, event) {
+function passValue (_state, event) {
   return scan(event, 'value')
 }

@@ -18,7 +18,8 @@ push: {
 
   que.consumer = out.push.bind(out)
 
-  que.enque(1, 2)
+  que.enque(1)
+  que.enque(2)
   que.enque(3)
 
   deq(out, [1, 2, 3])
@@ -36,9 +37,10 @@ linearity: {
   const out = []
 
   que.consumer = event => {
-    if (!out.length) {
+    if (event === 1) {
       // This must not call the consumer immediately.
-      que.enque(2, 3)
+      que.enque(2)
+      que.enque(3)
       que.enque(4)
       eq(out.length, 0)
     }
@@ -55,11 +57,19 @@ exceptions: {
   const out = []
 
   que.consumer = event => {
+    if (event === 1) {
+      que.enque(2)
+      que.enque(3)
+      que.enque(4)
+    }
+
     if (event % 2) throw Error()
     out.push(event)
   }
 
-  ignore(() => {que.enque(1, 2, 3, 4)})
+  ignore(() => {
+    que.enque(1)
+  })
 
   deq(out, [2, 4])
 }
