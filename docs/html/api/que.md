@@ -30,10 +30,8 @@ const {Que} = require('prax/que')
 
 const que = Que(console.log.bind(console))
 
-que.enque('event0', 'event1', 'event2')
+que.enque('event0')
 // event0
-// event1
-// event2
 ```
 
 An exception in the consumer affects only the current tick, doesn't stop the
@@ -43,14 +41,16 @@ subsequent ticks:
 const que = Que(consumer)
 
 function consumer (event) {
-  if (!event) throw Error(`Expected truthy value, got: ${event}`)
+  if (event === 1) {
+    que.enque(2)
+    throw Error('First and only failure')
+  }
   console.log(event)
 }
 
-que.enque('event0', null, 'event2')
-// event0
-// event2
-// Uncaught Error: Expected truthy value, got: null
+que.enque(1)
+// 2
+// Error: First and only failure
 ```
 
 ### `que.consumer`
@@ -68,8 +68,8 @@ que.consumer = console.info.bind(console)
 
 ### `que.enque(event)`
 
-Schedules each event. If the consumer function is set, this will immediately
-attempt to flush the que, consuming each event.
+Schedules the event. If the consumer function is set, this will immediately
+attempt to flush the que, consuming all events.
 
 If `enque` is called when the que is idle, it's guaranteed to fully flush before
 `enque` returns. Any new events pushed _during_ the flush are also consumed.
@@ -80,5 +80,6 @@ currently pending events. When `enque` returns, they're still waiting to be
 processed.
 
 ```js
-que.enque('event0', 'event1', 'event2')
+que.enque('event0')
+que.enque('event1')
 ```

@@ -105,7 +105,8 @@ writing reducers.
 ```js
 const event0 = 'init'
 const event1 = {type: 'ajax', key: 'user'}
-app.enque(event0, event1)
+app.enque(event0)
+app.enque(event1)
 ```
 
 If your development environment has HMR (hot module replacement), you should
