@@ -26,7 +26,7 @@ you must [set]({{url(path)}}/#-que-consumer-) it before calling `enque`.
 Basic use:
 
 ```js
-const {Que} = require('prax/que')
+const {Que} = require('prax')
 
 const que = Que(console.log.bind(console))
 

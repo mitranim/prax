@@ -2,7 +2,8 @@
 
 /* eslint-disable no-empty */
 
-const {deepEqual} = require('emerge')
+const {is} = Object
+const {equal} = require('emerge')
 
 exports.testWith = testWith
 function testWith (compare, fun, ...configs) {
@@ -20,31 +21,27 @@ function testWith (compare, fun, ...configs) {
 
 exports.test = test
 function test () {
-  testWith(deepEqual, ...arguments)
+  testWith(equal, ...arguments)
 }
 
 exports.eq = eq
 function eq (a, b) {
-  test(equal, {0: a, 1: b, $: true})
+  test(is, {0: a, 1: b, $: true})
 }
 
 exports.neq = neq
 function neq (a, b) {
-  test(equal, {0: a, 1: b, $: false})
-}
-
-function equal (a, b) {
-  return a === b || a !== a && b !== b
+  test(is, {0: a, 1: b, $: false})
 }
 
 exports.deq = deq
 function deq (a, b) {
-  test(deepEqual, {0: a, 1: b, $: true})
+  test(equal, {0: a, 1: b, $: true})
 }
 
 exports.ndeq = ndeq
 function ndeq (a, b) {
-  test(deepEqual, {0: a, 1: b, $: false})
+  test(equal, {0: a, 1: b, $: false})
 }
 
 exports.throws = throws

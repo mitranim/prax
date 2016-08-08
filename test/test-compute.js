@@ -34,34 +34,34 @@ compute: {
   }
 
   objects: {
-    const prev = {source: {one: 1}, target: {test: 1}}
+    const prev = {from: {one: 1}, to: {test: 1}}
 
     test(
-      compute(['target'], [['source']], id),
+      compute(['to'], [['from']], id),
 
       {0: prev,
        1: prev,
        $: prev},
 
       {0: prev,
-       1: putAt(['source'], prev, {one: 3}),
-       $: {source: {one: 3}, target: {one: 3}}}
+       1: putAt(['from'], prev, {one: 3}),
+       $: {from: {one: 3}, to: {one: 3}}}
     )
   }
 }
 
 computePatch: {
-  const prev = {source: {one: 1}, target: {test: 1}}
+  const prev = {from: {one: 1}, to: {test: 1}}
 
   test(
-    computePatch(['target'], [['source']], id),
+    computePatch(['to'], [['from']], id),
 
     {0: prev,
      1: prev,
      $: prev},
 
     {0: prev,
-     1: putAt(['source'], prev, {one: 3}),
-     $: {source: {one: 3}, target: {test: 1, one: 3}}}
+     1: putAt(['from'], prev, {one: 3}),
+     $: {from: {one: 3}, to: {test: 1, one: 3}}}
   )
 }

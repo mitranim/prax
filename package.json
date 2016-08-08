@@ -1,6 +1,6 @@
 {
   "name": "prax",
-  "version": "0.0.70",
+  "version": "0.0.71",
   "main": "dist/index.js",
   "scripts": {
     "start": "gulp",
@@ -28,7 +28,7 @@
     "url": "https://github.com/Mitranim/prax.git"
   },
   "dependencies": {
-    "emerge": "^0.0.24",
+    "emerge": "^0.0.25",
     "fpx": "0.0.8"
   },
   "devDependencies": {
