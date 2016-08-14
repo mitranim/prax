@@ -1,7 +1,7 @@
 'use strict'
 
 function reexport (foreign) {
-  for (const key in foreign) exports[key] = foreign[key]
+  for (var key in foreign) exports[key] = foreign[key]
 }
 
 reexport(require('../'))
