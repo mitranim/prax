@@ -48,7 +48,7 @@ const init = pipe(juxt(...extract('init')), spread(seq))
 
 const teardown = init(env)
 
-module.hot.dispose(teardown)
+if (module.hot) module.hot.dispose(teardown)
 
 // Apply new default state, but prioritise built-up state.
 env.swap(state => merge(...extract('state'), state))
