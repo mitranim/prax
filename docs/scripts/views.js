@@ -1,33 +1,32 @@
 const React = require('react')
+const {putIn} = require('prax')
 
-/**
- * Reactive views as pure functions.
- */
+export function Root (props, {read, env}) {
+  console.log('-- rendering Root')
 
-export function State (props, read) {
-  return (
-    <pre className='pad hljs'>{JSON.stringify(read(), null, 2)}</pre>
-  )
-}
-
-export function Profile (props, read) {
   return (
     <div>
-      <p>profiles: {JSON.stringify(read('profiles'))}</p>
+      <pre>{JSON.stringify(read(), null, 2)}</pre>
+      <button onClick={() => env.send(['inc'])}>
+        increment
+      </button>
+      <button onClick={() => env.send(['dec'])}>
+        decrement
+      </button>
+      <button onClick={() => env.send(['net/user/sync'])}>
+        load user
+      </button>
+      <Input path={['text']} />
     </div>
   )
 }
 
-/**
- * Reactive view written in class style.
- */
+function Input ({path}, {read, env}) {
+  console.log('-- rendering Input')
 
-export const KeyCode = {
-  render (props, read) {
-    return (
-      <div>
-        <p>last pressed key's code: {read('keyCode')}</p>
-      </div>
-    )
-  }
+  return (
+    <input value={read(...path) || ''}
+           onChange={event => env.swap(putIn, path, event.target.value)}
+           />
+  )
 }

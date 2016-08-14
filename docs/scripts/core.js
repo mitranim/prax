@@ -1,61 +1,68 @@
-const {Que, App, migrateApp, getIn, pipe, flat, st, stk} = require('prax')
-const {merge, domEvent} = require('./utils')
+const {putIn, Ref, defonce, seq, pipe, juxt, spread, flat, id} = require('prax')
+const {merge, Ws} = require('./utils')
 
-/**
- * Features
- */
-
-const feats = [
-  require('./feature')
+const features = [
+  require('./mock-feature')
 ]
 
-const extract = key => flat(feats.map(feat => feat[key]).filter(Boolean))
+const extract = key => flat(features.map(x => x[key]).filter(id))
 
 /**
- * App
+ * Env
  */
 
-const app = migrateApp(
-  getIn(window, ['dev', 'app']) || App(Que()),
-  extract('reducers'),
-  extract('computers'),
-  extract('effects')
-)
+export const env = defonce(['dev', 'env'], Ref)
 
-app.que.consumer = app.main
+env.ws = defonce(['dev', 'ws'], Ws, 'wss:///', env)
 
-/**
- * Render Utils
- */
+env.watches = {
+  static: seq(...extract('watches'))
+}
 
-const {createClass} = require('react')
-const {ReactiveClass, hackCreateElement, ToClass} = require('prax/react')
+env.effects = extract('effects')
 
-hackCreateElement(ToClass(ReactiveClass(app, createClass)))
+env.send = function send (msg) {
+  env.enque(() => {
+    env.effects.forEach(fun => {fun(env, msg)})
+  })
+}
+
+// /**
+//  * Bc
+//  */
+
+// const {joinComputers} = require('prax/bc')
+// const {swap} = require('prax')
+
+// const computer = joinComputers(env.computers = extract('computers'))
+
+// env.swap = (mod, ...args) => {
+//   swap(env, prev => computer(prev, mod(prev, ...args)))
+// }
 
 /**
  * Init
  */
 
-function keyCode (event) {
-  return st('keyCode', event.keyCode)
-}
+const init = pipe(juxt(...extract('init')), spread(seq))
 
-domEvent(module, document, 'keypress', pipe(keyCode, app.enque))
+const teardown = init(env)
 
-app.enque(st('init', merge(...extract('state'), app.mean)))
+module.hot.dispose(teardown)
+
+// Apply new default state, but prioritise built-up state.
+env.swap(state => merge(...extract('state'), state))
 
 /**
- * Misc
+ * Dev
  */
 
-window.dev = {...window.dev, app, st, stk,
-  read () {
-    return getIn(app.mean, arguments)
-  },
-  set (...path) {
-    app.enque({type: 'set', path, value: path.pop()})
-  }
-}
+window.dev = {...window.dev, env}
 
-if (window.devMode) Object.assign(window, window.dev)
+if (window.devMode) {
+  Object.assign(window, window.dev, {
+    set (...path) {
+      env.swap(putIn, path, path.pop())
+    }
+  })
+}

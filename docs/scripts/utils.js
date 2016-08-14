@@ -1,21 +1,13 @@
-const {patchAt, foldl, isObject} = require('prax')
+const {patchIn, foldl, isObject, isFunction, validate} = require('prax')
 
-export function onload (document, callback) {
+export function onload (document, fun) {
+  validate(isFunction, fun)
   if (/loaded|complete|interactive/.test(document.readyState)) {
-    callback()
+    setTimeout(fun)
   } else {
     document.addEventListener('DOMContentLoaded', function cb () {
       document.removeEventListener('DOMContentLoaded', cb)
-      callback()
-    })
-  }
-}
-
-export function domEvent (module, target, name, fun) {
-  target.addEventListener(name, fun)
-  if (module.hot) {
-    module.hot.dispose(() => {
-      target.removeEventListener(name, fun)
+      fun()
     })
   }
 }
@@ -25,5 +17,29 @@ export function merge () {
 }
 
 function mergeTwo (acc, value) {
-  return patchAt([], acc, (isObject(value) ? value : {}))
+  return patchIn(acc, [], (isObject(value) ? value : {}))
 }
+
+export function addEvent (target, name, fun, useCapture = false) {
+  validate(isFunction, fun)
+  target.addEventListener(name, fun, useCapture)
+  return () => {
+    target.removeEventListener(name, fun, useCapture)
+  }
+}
+
+/**
+ * Net
+ */
+
+export function Ws () {
+  return '#<SupposedWebSocket>'
+}
+
+/**
+ * Dev
+ */
+
+window.dev = {...window.dev, merge}
+
+if (window.devMode) Object.assign(window, window.dev)

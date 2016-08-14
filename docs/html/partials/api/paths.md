@@ -4,7 +4,6 @@
 * [`cursorsChanged`]({{url(path)}}/#-cursorschanged-cursors-prev-next-)
 * [`changed`]({{url(path)}}/#-changed-)
 * [`pan`]({{url(path)}}/#-pan-cursors-fun-)
-* [`give`]({{url(path)}}/#-give-cursors-fun-)
 
 Utils for:
 * resolving paths and functions into values
@@ -101,21 +100,5 @@ const cursors = [['one'], ['two', 'three']]
 const report = pan(cursors, plus)
 
 report({one: 1, two: {three: 3}})
-// 3
-```
-
-### `give(cursors, fun)`
-
-Like `pan` but ignores its first argument, resolving values against the _second_
-argument. Useful when composing effects.
-
-```js
-function plus (a, b) {return a + b}
-
-const cursors = [['one'], ['two', 'three']]
-
-const report = give(cursors, plus)
-
-report(null, {one: 1, two: {three: 3}})
 // 3
 ```

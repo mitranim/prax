@@ -1,6 +1,6 @@
 {
   "name": "prax",
-  "version": "0.0.73",
+  "version": "0.0.74",
   "main": "dist/index.js",
   "scripts": {
     "start": "gulp",
@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "emerge": "^0.0.27",
-    "fpx": "0.0.8"
+    "fpx": "0.0.10"
   },
   "devDependencies": {
     "babel-core": "^6.7.6",

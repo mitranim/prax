@@ -4,7 +4,7 @@
 
 const $ = require('gulp-load-plugins')()
 const del = require('del')
-const {exec} = require('child_process')
+const {exec, fork} = require('child_process')
 const gulp = require('gulp')
 const statilConfig = require('./statil')
 const webpack = require('webpack')
@@ -160,7 +160,15 @@ gulp.task('docs:fonts:watch', () => {
 /* -------------------------------- Server ----------------------------------*/
 
 gulp.task('docs:server', () => {
-  require('./devserver')
+  let proc
+
+  function restart () {
+    if (proc) proc.kill()
+    proc = fork('./devserver')
+  }
+
+  restart()
+  $.watch(['./webpack.config.js', './devserver.js'], restart)
 })
 
 /* -------------------------------- Default ---------------------------------*/

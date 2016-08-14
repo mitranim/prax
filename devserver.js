@@ -15,7 +15,7 @@ bs.init({
       }
     )
   },
-  port: 7685,
+  port: 7686,
   files: 'gh-pages',
   open: false,
   online: false,

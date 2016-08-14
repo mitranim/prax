@@ -1,9 +1,4 @@
-if (!window.devMode) require('simple-pjax')
-
-const React = require('react')
-const {render, unmountComponentAtNode} = require('react-dom')
-
-// This must be executed before evaluating other modules.
+// This must be executed before any other code.
 if (module.hot) {
   module.hot.accept(err => {
     console.warn('Exception during HMR update.', err)
@@ -13,49 +8,17 @@ if (module.hot) {
   })
 }
 
-/**
- * Views
- */
-
-const {State, Profile, KeyCode} = require('./views')
-
-const views = {
-  '[data-state]': State,
-  '[data-profile]': Profile,
-  '[data-key-code]': KeyCode
+if (window.devMode) {
+  ['log', 'info', 'warn', 'error', 'clear'].forEach(key => {
+    if (!/bound/.test(console[key].name)) {
+      window[key] = console[key] = console[key].bind(console)
+    }
+  })
 }
 
-/**
- * Setup/Teardown
- */
+require('simple-pjax')
 
 require('./core')
-const {slice} = require('fpx')
-const {domEvent, onload} = require('./utils')
-
-const nodes = []
-
-function setup () {
-  for (const selector in views) {
-    const View = views[selector]
-    slice(document.querySelectorAll(selector)).forEach(element => {
-      render(<View />, element)
-      nodes.push(element)
-    })
-  }
-}
-
-function teardown () {
-  nodes.splice(0).forEach(unmountComponentAtNode)
-}
-
-if (module.hot) module.hot.dispose(teardown)
-
-onload(document, setup)
-
-domEvent(module, document, 'simple-pjax-before-transition', teardown)
-
-domEvent(module, document, 'simple-pjax-after-transition', setup)
 
 /**
  * Dev
@@ -63,6 +26,6 @@ domEvent(module, document, 'simple-pjax-after-transition', setup)
 
 const prax = require('prax')
 
-window.dev = {...window.dev, prax, ...prax}
+window.dev = {...window.dev, prax}
 
-if (window.devMode) Object.assign(window, window.dev)
+if (window.devMode) Object.assign(window, prax, window.dev)

@@ -7,38 +7,7 @@ Prax is:
 Prax is designed to complement React or any React-style rendering library. Its
 concepts are applicable to more than just GUI apps.
 
-Borrows many concepts from Clojure / Om, Haskell, Erlang, and others. Somewhat
-similar to Redux, but much more feature-complete.
+Heavily borrows from Clojure, Haskell, Erlang, and others. Somewhat similar to
+Redux, but much more feature-complete.
 
-## Example
-
-React view with Prax:
-
-<!--:
-<div class="demo-pair">
-:-->
-
-```js
-const Root = auto((props, read) => {
-  return (
-    <div>
-      <pre className='pad'>
-        {JSON.stringify(read(), null, 2)}
-      </pre>
-    </div>
-  )
-})
-
-React.render(<Root />, document.getElementById('root'))
-```
-
-<!--:
-  <div data-state></div>
-</div>
-:-->
-
-Class-style views are also available, see the [React addons](api/react) API.
-
-## Compatibility
-
-Any ES5 environment (IE9+).
+[TODO]
