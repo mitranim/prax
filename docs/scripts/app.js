@@ -26,6 +26,10 @@ require('./core')
 
 const prax = require('prax')
 
-window.dev = {...window.dev, prax}
+const globals = {...prax}
+delete globals.isNaN
+delete globals.isFinite
 
-if (window.devMode) Object.assign(window, prax, window.dev)
+window.dev = {prax, ...globals, ...window.dev}
+
+if (window.devMode) Object.assign(window, window.dev)

@@ -158,18 +158,18 @@ exports.watches = [
  * Init
  */
 
-function renderRoot () {
-  if (findRoot()) {
-    render(<Root />, findRoot(), () => {
-      // This is where you run any "post-render" code, using the built-up context
-      // Check this out:
-      // console.info(`-- env.renderingContext:`, env.renderingContext)
-    })
-  }
-}
-
 export function init (env) {
   hackCreateElement(cachingClassTransform(reactiveCreateClass(React.createClass, env)))
+
+  function renderRoot () {
+    if (findRoot()) {
+      render(<Root />, findRoot(), () => {
+        // This is where you run any "post-render" code, using the built-up context
+        // Check this out:
+        // console.info(`-- env.renderingContext:`, env.renderingContext)
+      })
+    }
+  }
 
   env.addWatch('render', delayingWatch(renderingWatch(renderRoot)))
 

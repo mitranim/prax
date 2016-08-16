@@ -44,25 +44,23 @@ env.send = function send (msg) {
  * Init
  */
 
+// Apply new default state, but prioritise built-up state.
+env.swap(state => merge(state, ...extract('state'), state))
+
 const init = pipe(juxt(...extract('init')), spread(seq))
 
 const teardown = init(env)
 
 if (module.hot) module.hot.dispose(teardown)
 
-// Apply new default state, but prioritise built-up state.
-env.swap(state => merge(...extract('state'), state))
-
 /**
  * Dev
  */
 
-window.dev = {...window.dev, env}
-
-if (window.devMode) {
-  Object.assign(window, window.dev, {
-    set (...path) {
-      env.swap(putIn, path, path.pop())
-    }
-  })
+window.dev = {...window.dev, env,
+  set (...path) {
+    env.swap(putIn, path, path.pop())
+  }
 }
+
+if (window.devMode) Object.assign(window, window.dev)
