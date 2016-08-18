@@ -22,8 +22,10 @@ env.watches = {
 env.effects = extract('effects')
 
 env.send = function send (msg) {
-  env.enque(() => {
-    env.effects.forEach(fun => {fun(env, msg)})
+  env.enque(function runEffects () {
+    env.effects.forEach(function runEffect (fun) {
+      fun(env, msg)
+    })
   })
 }
 

@@ -1,8 +1,8 @@
 const React = require('react')
 const {render, unmountComponentAtNode} = require('react-dom')
 const {getIn, putIn, putInBy, inc, dec, val, ifelse, seq, id, isFinite,
-       on, swapBy, delayingWatch} = require('prax')
-const {hackCreateElement, cachingClassTransform, reactiveCreateClass,
+       on, swapBy, swapInto, delayingWatch} = require('prax')
+const {reactiveCreateClass, cachingTransformType, createCreateElement,
        renderingWatch} = require('prax/react')
 const {addEvent} = require('./utils')
 const {Root} = require('./views')
@@ -24,7 +24,6 @@ exports.state = {
 exports.effects = [
   on(['inc'], swapBy(putInBy, ['count'], ifelse(isFinite, inc, val(1)))),
   on(['inc'], swapBy(putInBy, ['count'], ifelse(isFinite, inc, val(1)))),
-  on(['inc'], swapBy(putInBy, ['count'], ifelse(isFinite, inc, val(1)))),
 
   on(['dec'], swapBy(putInBy, ['count'], ifelse(isFinite, dec, val(1)))),
   on(['dec'], swapBy(putInBy, ['count'], ifelse(isFinite, dec, val(1)))),
@@ -32,15 +31,15 @@ exports.effects = [
 
   on(['keyCode'], putTo(['keyCode'], (state, [, value]) => value)),
   on(['keyCode'], putTo(['keyCode'], (state, [, value]) => value)),
-  on(['keyCode'], swapBy((state, [, value]) => (
-    putIn(state, ['keyCode'], value)
-  ))),
+  on(['keyCode'], (env, [, value]) => (
+    env.swap(putIn, ['keyCode'], value)
+  )),
 
   on(['alert', id], putOne(['alerts'], (state, [,, msg]) => msg)),
   on(['alert', id], putOne(['alerts'], (state, [,, msg]) => msg)),
-  on(['alert', id], swapBy((state, [, key, msg]) => (
-    putIn(state, ['alerts', key], msg)
-  ))),
+  on(['alert', id], (env, [, key, msg]) => (
+    env.swap(putIn, ['alerts', key], msg)
+  )),
 
   on(['alert/clear'], swapBy(denotify)),
   on(['alert/clear'], swapBy(denotify)),
@@ -138,28 +137,14 @@ exports.watches = [
 //   compute(['doubleCount'], [['count']], x => (x | 0) * 2)
 // ]
 
-// /**
-//  * Reducers (BC)
-//  */
-
-// exports.reducers = [
-//   on(['dec'], state => (
-//     putIn(state, ['count'], (get(state, 'count') | 0) - 1)
-//   )),
-//   on(['dec'], state => (
-//     putIn(state, ['count'], (get(state, 'count') | 0) - 1)
-//   )),
-//   on(['dec'], state => (
-//     putIn(state, ['count'], (get(state, 'count') | 0) - 1)
-//   ))
-// ]
-
 /**
  * Init
  */
 
 export function init (env) {
-  hackCreateElement(cachingClassTransform(reactiveCreateClass(React.createClass, env)))
+  const createClass = reactiveCreateClass(React.createClass, env)
+  const transformType = cachingTransformType(createClass)
+  React.createElement = createCreateElement(transformType)
 
   function renderRoot () {
     if (findRoot()) {
@@ -195,16 +180,16 @@ export function init (env) {
  * Utils
  */
 
-// Experimental syntax sugar
+// Experimental shortcut
 function putTo (path, fun) {
-  return swapBy(function (state) {
+  return swapInto(function putTo_ (state) {
     return putIn(state, path, fun(...arguments))
   })
 }
 
-// Experimental syntax sugar
+// Experimental shortcut
 function putOne (path, fun) {
-  return swapBy(function (state, [, key]) {
+  return swapInto(function putOne_ (state, [, key]) {
     return putIn(state, [...path, key], fun(...arguments))
   })
 }

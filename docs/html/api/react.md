@@ -3,9 +3,9 @@
 ## TOC
 
 * [Overview]({{url(path)}}/#overview)
-* [`hackCreateElement`]({{url(path)}}/#-hackcreateelement-updatetype-)
-* [`cachingClassTransform`]({{url(path)}}/#-cachingclasstransform-createclass-)
 * [`reactiveCreateClass`]({{url(path)}}/#-reactivecreateclass-createclass-env-)
+* [`cachingTransformType`]({{url(path)}}/#-cachingtransformtype-createclass-)
+* [`createCreateElement`]({{url(path)}}/#-createcreateelement-transformtype-)
 * [`renderingWatch`]({{url(path)}}/#-renderingwatch-renderroot-)
 
 ## Overview
@@ -15,21 +15,21 @@ Source:
 `lib/react.js` <span class="fa fa-github"></span>
 </a>
 
-Enables React views with _implicit_ subscriptions and automatic efficient change
-detection. Lets you write views that look like pure functions, but use the full
-power of React behind the scenes.
+Enables React views with implicit, automatic subscriptions and updates. Lets you
+write views that look like pure functions, but use the full power of React
+behind the scenes.
 
 [TODO example]
 
-## `hackCreateElement(updateType)`
-
-[TODO]
-
-## `cachingClassTransform(createClass)`
-
-[TODO]
-
 ## `reactiveCreateClass(createClass, env)`
+
+[TODO]
+
+## `cachingTransformType(createClass)`
+
+[TODO]
+
+## `createCreateElement(transformType)`
 
 [TODO]
 
