@@ -1,5 +1,7 @@
-const {putIn, Ref, defonce, seq, pipe, juxt, spread, flat, id} = require('prax')
-const {merge, Ws} = require('./utils')
+const {Ref, redef,
+       putIn, seq, pipe, juxt, spread, flat, id} = require('prax')
+const {merge} = require('./utils')
+const {Ws} = require('./ws')
 
 const features = [
   require('./mock-feature')
@@ -11,9 +13,9 @@ const extract = key => flat(features.map(x => x[key]).filter(id))
  * Env
  */
 
-export const env = defonce(['dev', 'env'], Ref)
-
-env.ws = defonce(['dev', 'ws'], Ws, 'wss:///', env)
+export const env = redef(['dev', 'env'], env => (
+  env || Ref()
+))
 
 env.watches = {
   static: seq(...extract('watches'))
@@ -29,8 +31,36 @@ env.send = function send (msg) {
   })
 }
 
+/**
+ * Ws
+ */
+
+if (window.devMode) {
+  const wsUrl = 'ws://localhost:7687'
+  const wsProtocol = undefined
+
+  env.ws = redef(['dev', 'ws'], ws => {
+    if (ws && ws.url === wsUrl && ws.protocol === wsProtocol) return ws
+    if (ws) ws.close()
+    return Ws(wsUrl, wsProtocol)
+  })
+
+  env.ws.onclose = null
+
+  env.ws.onerror = null
+
+  env.ws.onmessage = function onmessage ({data}) {
+    console.info('-- socket message:', data)
+    env.swap(putIn, ['lastMsg'], data)
+  }
+
+  env.ws.onopen = function onopen (event) {
+    console.info('-- socket connected:', event)
+  }
+}
+
 // /**
-//  * Bc
+//  * Computers
 //  */
 
 // const {joinComputers} = require('prax/bc')

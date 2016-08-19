@@ -160,15 +160,24 @@ gulp.task('docs:fonts:watch', () => {
 /* -------------------------------- Server ----------------------------------*/
 
 gulp.task('docs:server', () => {
-  let proc
+  let buildServerProc
+  let wsServerProc
 
-  function restart () {
-    if (proc) proc.kill()
-    proc = fork('./devserver')
+  function restartBuildServer () {
+    if (buildServerProc) buildServerProc.kill()
+    buildServerProc = fork('./devserver')
   }
 
-  restart()
-  $.watch(['./webpack.config.js', './devserver.js'], restart)
+  function restartWsServer () {
+    if (wsServerProc) wsServerProc.kill()
+    wsServerProc = fork('./mock-ws-server')
+  }
+
+  restartBuildServer()
+  $.watch(['./webpack.config.js', './devserver.js'], restartBuildServer)
+
+  restartWsServer()
+  $.watch(['./mock-ws-server.js'], restartWsServer)
 })
 
 /* -------------------------------- Default ---------------------------------*/
