@@ -12,8 +12,6 @@ const webpackConfig = require('./webpack.config')
 
 /* ******************************** Globals **********************************/
 
-const prod = process.env.NODE_ENV === 'production'
-
 const src = {
   lib: 'lib/**/*.js',
   dist: 'dist/**/*.js',
@@ -96,23 +94,7 @@ gulp.task('docs:html:compile', () => (
 gulp.task('docs:html:build', gulp.series('docs:html:clear', 'docs:html:compile'))
 
 gulp.task('docs:html:watch', () => {
-  // No html:clear because it confuses browsersync's file watcher
   $.watch(src.docHtml, gulp.series('docs:html:compile'))
-})
-
-/* -------------------------------- Scripts ---------------------------------*/
-
-gulp.task('docs:scripts:build', done => {
-  webpack(webpackConfig, (err, stats) => {
-    if (err) {
-      throw new $.util.PluginError('webpack', err, {showProperties: false})
-    }
-    $.util.log('[webpack]', stats.toString(webpackConfig.stats))
-    if (stats.hasErrors()) {
-      throw new $.util.PluginError('webpack', 'plugin error', {showProperties: false})
-    }
-    done()
-  })
 })
 
 /* -------------------------------- Styles ----------------------------------*/
@@ -157,11 +139,31 @@ gulp.task('docs:fonts:watch', () => {
   $.watch(src.docFonts, gulp.series('docs:fonts:build'))
 })
 
+/* -------------------------------- Scripts ---------------------------------*/
+
+gulp.task('docs:scripts:build', done => {
+  webpack(webpackConfig, (err, stats) => {
+    if (err) {
+      throw new $.util.PluginError('webpack', err, {showProperties: false})
+    }
+    $.util.log('[webpack]', stats.toString(webpackConfig.stats))
+    if (stats.hasErrors()) {
+      throw new $.util.PluginError('webpack', 'plugin error', {showProperties: false})
+    }
+    done()
+  })
+})
+
 /* -------------------------------- Server ----------------------------------*/
 
 gulp.task('docs:server', () => {
   let buildServerProc
   let wsServerProc
+
+  process.on('exit', () => {
+    if (buildServerProc) buildServerProc.kill()
+    if (wsServerProc) wsServerProc.kill()
+  })
 
   function restartBuildServer () {
     if (buildServerProc) buildServerProc.kill()
@@ -182,15 +184,24 @@ gulp.task('docs:server', () => {
 
 /* -------------------------------- Default ---------------------------------*/
 
-gulp.task('build', gulp.series(
-  'lib:clear', 'lib:build',
-  !prod
-  ? gulp.parallel('docs:html:build', 'docs:styles:build', 'docs:fonts:build')
-  : gulp.parallel('docs:scripts:build', 'docs:html:build', 'docs:styles:build', 'docs:fonts:build')
+gulp.task('clear', gulp.parallel(
+  'lib:clear',
+  'docs:html:clear',
+  'docs:styles:clear',
+  'docs:fonts:clear'
+))
+
+gulp.task('buildup', gulp.parallel(
+  'lib:build',
+  'docs:html:build',
+  'docs:styles:build',
+  'docs:fonts:build'
 ))
 
 gulp.task('watch', gulp.parallel(
   'lib:watch', 'docs:html:watch', 'docs:styles:watch', 'docs:fonts:watch', 'docs:server'
 ))
 
-gulp.task('default', gulp.series('build', 'lib:test', 'watch'))
+gulp.task('default', gulp.series('clear', 'buildup', 'lib:test', 'watch'))
+
+gulp.task('build', gulp.series('clear', 'buildup', 'lib:test', 'docs:scripts:build'))

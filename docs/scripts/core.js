@@ -1,4 +1,4 @@
-const {Ref, redef,
+const {Atom, defonce,
        putIn, seq, pipe, juxt, spread, flat, id} = require('prax')
 const {merge} = require('./utils')
 const {Ws} = require('./ws')
@@ -13,9 +13,7 @@ const extract = key => flat(features.map(x => x[key]).filter(id))
  * Env
  */
 
-export const env = redef(['dev', 'env'], env => (
-  env || Ref()
-))
+export const env = defonce(['dev', 'env'], Atom)
 
 env.watches = {
   static: seq(...extract('watches'))
@@ -36,26 +34,23 @@ env.send = function send (msg) {
  */
 
 if (window.devMode) {
-  const wsUrl = 'ws://localhost:7687'
-  const wsProtocol = undefined
-
-  env.ws = redef(['dev', 'ws'], ws => {
-    if (ws && ws.url === wsUrl && ws.protocol === wsProtocol) return ws
-    if (ws) ws.close()
-    return Ws(wsUrl, wsProtocol)
+  env.ws = defonce(['dev', 'ws'], () => {
+    const ws = Ws('ws://localhost:7687')
+    ws.open()
+    return ws
   })
 
-  env.ws.onclose = null
+  env.ws.onopen = function onopen (event) {
+    console.info('-- socket connected:', event)
+  }
 
-  env.ws.onerror = null
+  env.ws.onerror = function onerror (event) {
+    console.error(event)
+  }
 
   env.ws.onmessage = function onmessage ({data}) {
     console.info('-- socket message:', data)
     env.swap(putIn, ['lastMsg'], data)
-  }
-
-  env.ws.onopen = function onopen (event) {
-    console.info('-- socket connected:', event)
   }
 }
 
@@ -63,13 +58,12 @@ if (window.devMode) {
 //  * Computers
 //  */
 
-// const {joinComputers} = require('prax/bc')
-// const {swap} = require('prax')
+// const {joinComputers} = require('prax')
 
 // const computer = joinComputers(env.computers = extract('computers'))
 
 // env.swap = (mod, ...args) => {
-//   swap(env, prev => computer(prev, mod(prev, ...args)))
+//   Atom.swap(env, prev => computer(prev, mod(prev, ...args)))
 // }
 
 /**

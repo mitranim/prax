@@ -30,7 +30,7 @@
     "no-unexpected-multiline": 2,
     "no-unreachable": 2,
     "no-unused-labels": 0,
-    "no-unused-vars": [2, {"argsIgnorePattern": "^_"}],
+    "no-unused-vars": [2, {"argsIgnorePattern": "^_", "varsIgnorePattern": "^_"}],
     "no-var": 2,
     "object-curly-spacing": [2, "never"],
     "object-shorthand": 2,

@@ -130,7 +130,7 @@ exports.watches = [
 //  * Computers (BC)
 //  */
 
-// const {compute} = require('prax/bc')
+// const {compute} = require('prax')
 
 // exports.computers = [
 //   compute(['textLength'], [['text']], text => get(text, 'length')),

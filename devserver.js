@@ -8,12 +8,13 @@ bs.init({
   startPath: '/prax/',
   server: {
     baseDir: 'gh-pages',
-    middleware: (prod ? [] : hmr()).concat(
+    middleware: [
+      ...(!prod ? hmr() : []),
       (req, res, next) => {
         req.url = req.url.replace(/^\/prax\//, '').replace(/^[/]*/, '/')
         next()
       }
-    )
+    ]
   },
   port: 7686,
   files: 'gh-pages',
@@ -38,10 +39,6 @@ function hmr () {
   ]
 }
 
-function extend () {
-  return [].reduce.call(arguments, assign, {})
-}
-
-function assign (left, right) {
-  return Object.assign(left, right)
+function extend (...args) {
+  return args.reduce(Object.assign, {})
 }

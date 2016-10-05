@@ -18,14 +18,15 @@ module.exports = {
         test: /\.js$/,
         loader: 'babel',
         include: pt.resolve('docs/scripts')
-      }
-    ].concat(!prod ? [] : [
-      {
-        test: /react.*\.jsx?$/,
-        include: /node_modules/,
-        loader: 'transform?envify'
-      }
-    ])
+      },
+      ...(!prod ? [] : [
+        {
+          test: /react.*\.jsx?$/,
+          include: /node_modules/,
+          loader: 'transform?envify'
+        }
+      ])
+    ]
   },
 
   resolve: {

@@ -8,7 +8,7 @@ const {append, remove} = require('./')
 const port = 7687
 
 const server = createServer((request, response) => {
-  log(`Received request for ${request.url}`)
+  log(`Rejecting HTTP request for ${request.url}`)
   response.writeHead(404)
   response.end()
 })
@@ -48,6 +48,7 @@ wsServer.on('request', request => {
 
   log(`Accepted connection from origin: ${request.origin}.`)
 
+  // msg = {type: 'utf8' | 'binary', utf8Data, binaryData}
   connection.on('message', msg => {
     if (msg.type === 'utf8') {
       log(`Received message: ${msg.utf8Data}`)
@@ -55,7 +56,7 @@ wsServer.on('request', request => {
     }
     else if (msg.type === 'binary') {
       log(`Received binary message of ${msg.binaryData.length} bytes.`)
-      // connection.sendBinary(msg.binaryData)
+      // connection.sendBytes(msg.binaryData)
     }
   })
 
