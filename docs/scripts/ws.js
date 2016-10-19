@@ -1,12 +1,11 @@
-const {TaskQueAsync, match, assign, bindTo, seq, not, id: exists,
-       isString, isFunction, validate} = require('prax')
+import {TaskQueAsync, bindTo, assign, not, ifonly, id as exists, seq, testArgsAnd,
+        isFunction, isString, validate} from 'prax'
 
 /**
  * Ws
  */
 
-exports.Ws = Ws
-function Ws (url, protocol) {
+export function Ws (url, protocol) {
   validate(isString, url)
 
   const ws = assign(TaskQueAsync(), {
@@ -18,15 +17,17 @@ function Ws (url, protocol) {
     reconnectAttempts: 0,
     maxReconnectInterval: 1000 * 60,
     onopen: null,
+    onclose: null,
     onerror: null,
     onmessage: null,
+    actions: Ws.actions,
   })
 
   return bindTo(ws, Ws)
 }
 
 Ws.act = function act (ws, msg) {
-  ws.enque(wsActions, msg)
+  ws.enque(seq(...ws.actions), msg)
 }
 
 Ws.open = function open (ws) {
@@ -39,6 +40,10 @@ Ws.close = function close (ws) {
 
 Ws.send = function send (ws, msg) {
   ws.act({type: 'send', msg})
+}
+
+Ws.sendJSON = function sendJSON (ws, msg) {
+  ws.send(JSON.stringify(msg))
 }
 
 Ws.flushSendBuffer = function flushSendBuffer (ws) {
@@ -65,49 +70,57 @@ Ws.calcReconnectInterval = function calcReconnectInterval (ws) {
   return Math.min(1000 * Math.pow(2, ws.reconnectAttempts), ws.maxReconnectInterval)
 }
 
-const wsActions = seq(
-  match({nativeWs: not(isWsActive)}, {type: 'open'}, ws => {
+Ws.actions = [
+  matchTwo({nativeWs: not(isWsActive)}, {type: 'open'}, ws => {
+    if (ws.nativeWs) ws.clearNativeWs()
     ws.nativeWs = assign(new WebSocket(ws.url, ws.protocol), {
       ws, onopen, onclose, onerror, onmessage
     })
   }),
 
-  match({}, {type: 'close'}, ws => {
+  matchTwo({}, {type: 'close'}, ws => {
     ws.clearNativeWs()
     ws.clearReconnect()
   }),
 
-  match({nativeWs: isWsActive}, {type: 'send'}, (ws, {msg}) => {
+  matchTwo({nativeWs: isWsOpen}, {type: 'send'}, (ws, {msg}) => {
     ws.sendBuffer.push(msg)
     ws.flushSendBuffer()
   }),
 
-  match({nativeWs: not(isWsActive)}, {type: 'send'}, (ws, {msg}) => {
+  matchTwo({nativeWs: not(isWsOpen)}, {type: 'send'}, (ws, {msg}) => {
     ws.sendBuffer.push(msg)
   }),
 
-  match({reconnectTimer: not(exists)}, {type: 'reconnect'}, ws => {
+  matchTwo({reconnectTimer: not(exists)}, {type: 'reconnect'}, ws => {
     ws.reconnectTimer = setTimeout(() => {
       ws.reconnectTimer = null
       ws.act({type: 'open'})
     }, ws.calcReconnectInterval())
     ws.reconnectAttempts += 1
   })
-)
+]
 
 // WebSocket listeners
 
 function onopen (event) {
   validatePair.call(this)
   this.ws.clearReconnect()
-  if (isFunction(this.ws.onopen)) this.ws.onopen(event)
-  this.ws.flushSendBuffer()
+  try {
+    if (isFunction(this.ws.onopen)) this.ws.onopen(event)
+  } finally {
+    this.ws.flushSendBuffer()
+  }
 }
 
-function onclose () {
+function onclose (event) {
   validatePair.call(this)
-  this.ws.clearNativeWs()
-  this.ws.act({type: 'reconnect'})
+  try {
+    if (isFunction(this.ws.onclose)) this.ws.onclose(event)
+  } finally {
+    this.ws.act({type: 'reconnect'})
+    this.ws.clearNativeWs()
+  }
 }
 
 // This fires:
@@ -127,10 +140,18 @@ function onmessage (event) {
  * Utils
  */
 
+// WTB better name
+function matchTwo (testA, testB, fun) {
+  return ifonly(testArgsAnd(testA, testB), fun)
+}
+
+function isWsOpen (nativeWs) {
+  return nativeWs && nativeWs.readyState === nativeWs.OPEN
+}
+
 function isWsActive (nativeWs) {
   return nativeWs && (
-    nativeWs.readyState === nativeWs.OPEN ||
-    nativeWs.readyState === nativeWs.CONNECTING
+    isWsOpen(nativeWs) || nativeWs.readyState === nativeWs.CONNECTING
   )
 }
 
