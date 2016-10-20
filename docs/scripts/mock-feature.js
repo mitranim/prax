@@ -1,7 +1,7 @@
 const React = require('react')
 const {render, unmountComponentAtNode} = require('react-dom')
-const {getIn, putIn, putInBy, inc, dec, val, ifelse, seq, id, isFinite,
-       on, swapBy, swapInto, delayingWatch} = require('prax')
+const {getIn, putIn, putInBy, inc, dec, val, ifelse, seq, pipeAnd, id, isFinite,
+       on, swapBy, swapInto, delayingWatch, linear} = require('prax')
 const {reactiveCreateClass, cachingTransformType, createCreateElement,
        renderingWatch} = require('prax/react')
 const {addEvent} = require('./utils')
@@ -146,7 +146,9 @@ export function init (env) {
   const transformType = cachingTransformType(createClass)
   React.createElement = createCreateElement(transformType)
 
-  function renderRoot () {
+  // `renderRoot` is not reentrant; `linear` makes sure it won't accidentally
+  // overlap with itself
+  const renderRoot = linear(function renderRoot () {
     if (findRoot()) {
       render(<Root />, findRoot(), () => {
         // This is where you run any "post-render" code, using the built-up context
@@ -154,22 +156,20 @@ export function init (env) {
         // console.info(`-- env.renderingContext:`, env.renderingContext)
       })
     }
-  }
+  })
 
   env.addWatch('render', delayingWatch(renderingWatch(renderRoot)))
 
   renderRoot()
 
   return seq(
-    () => {
-      if (findRoot()) unmountComponentAtNode(findRoot())
-    },
-    addEvent(document, 'simple-pjax-before-transition', () => {
-      if (findRoot()) unmountComponentAtNode(findRoot())
-    }),
-    addEvent(document, 'simple-pjax-after-transition', () => {
-      renderRoot()
-    }),
+    pipeAnd(findRoot, unmountComponentAtNode),
+    addEvent(
+      document,
+      'simple-pjax-before-transition',
+      pipeAnd(findRoot, unmountComponentAtNode)
+    ),
+    addEvent(document, 'simple-pjax-after-transition', renderRoot),
     addEvent(document, 'keypress', ({keyCode}) => {
       env.send(['keyCode', keyCode])
     })
