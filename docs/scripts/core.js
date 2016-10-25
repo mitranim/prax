@@ -1,7 +1,6 @@
 const {Atom, defonce,
-       putIn, seq, pipe, juxt, spread, flat, id} = require('prax')
+       putIn, bind, seq, pipe, juxt, spread, flat, id} = require('prax')
 const {merge} = require('./utils')
-const {Ws} = require('./ws')
 
 const features = [
   require('./mock-feature')
@@ -21,38 +20,11 @@ env.watches = {
 
 env.effects = extract('effects')
 
-env.send = function send (msg) {
-  env.enque(function runEffects () {
-    env.effects.forEach(function runEffect (fun) {
-      fun(env, msg)
-    })
+env.send = bind(env.enque, function runEffects (env, msg) {
+  env.effects.forEach(function runEffect (fun) {
+    fun(env, msg)
   })
-}
-
-/**
- * Ws
- */
-
-if (window.devMode) {
-  env.ws = defonce(['dev', 'ws'], () => {
-    const ws = Ws('ws://localhost:7687')
-    ws.open()
-    return ws
-  })
-
-  env.ws.onopen = function onopen (event) {
-    console.info('-- socket connected:', event)
-  }
-
-  env.ws.onerror = function onerror (event) {
-    console.error(event)
-  }
-
-  env.ws.onmessage = function onmessage ({data}) {
-    console.info('-- socket message:', data)
-    env.swap(putIn, ['lastMsg'], data)
-  }
-}
+})
 
 // /**
 //  * Computers

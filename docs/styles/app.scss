@@ -1,9 +1,92 @@
-@import './node_modules/highlight.js/styles/tomorrow';
+/**
+ * Vars
+ */
 
-@import './_variables';
+$fa-font-path: '/fonts';
+
+// http://brandcolors.net
+$color-github:  #4183c4;  // unverified
+$color-twitter: #55acee;  // verified
+
+$sf-font-weight: 300;
+
+$sf-rem: 12pt;
+
+/**
+ * Imports
+ */
 
 @import './node_modules/stylific-lite/scss/stylific-lite';
 @import './node_modules/stylific-lite/scss/classes';
+@import './node_modules/highlight.js/styles/tomorrow';
+@import './node_modules/font-awesome/scss/variables';
+@import './node_modules/font-awesome/scss/path';
+@import './node_modules/font-awesome/scss/core';
 
-@import './fa';
-@import './misc';
+/**
+ * Font
+ */
+
+.fa-arrow-up::before      {content: $fa-var-arrow-up}
+.fa-code::before          {content: $fa-var-code}
+.fa-github::before        {content: $fa-var-github}
+.fa-link::before          {content: $fa-var-link}
+.fa-twitter::before       {content: $fa-var-twitter}
+
+.fa::before {
+  display: inline-block;
+  width: 1em;
+  text-align: center;
+}
+
+.fa.inline {
+  margin-right: $sf-space / 2;
+  &:last-child {margin-right: 0}
+}
+
+// wtf
+:not(:empty) .fa.inline:not(:first-child) {
+  margin-left: $sf-space / 2;
+}
+
+a.fa {
+  border: none;
+}
+
+// Brand colours.
+.fa-github, a.fa-github   {color: $color-github}
+.fa-twitter, a.fa-twitter {color: $color-twitter}
+
+/**
+ * Misc
+ */
+
+code {
+  background-color: aliceblue;
+}
+
+.hljs {
+  background-color: rgba(teal, 0.05);
+}
+
+.notes {
+  padding: $sf-space / 2;
+  background-color: aliceblue;
+  > * {margin: 0 0 $sf-space 0}
+  > :last-child {margin-bottom: 0}
+}
+
+/**
+ * Nav
+ */
+
+.nav-h > * {
+  display: inline-block;
+  padding: $sf-space / 2;
+  &:hover, &:focus {
+    background-color: rgba(gray, 0.1);
+  }
+  &.active {
+    box-shadow: inset 0 -3px 0 0;
+  }
+}

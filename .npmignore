@@ -10,3 +10,5 @@ test
 
 # Build-related files
 gulpfile.js
+statil.js
+webpack.config.js

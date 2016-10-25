@@ -18,12 +18,12 @@ const src = {
   docHtml: 'docs/html/**/*',
   docStyles: 'docs/styles/**/*.scss',
   docStylesMain: 'docs/styles/app.scss',
-  docFonts: 'node_modules/font-awesome/fonts/**/*'
+  docFonts: 'node_modules/font-awesome/fonts/**/*',
+  test: 'test/**/*.js',
 }
 
 const out = {
   lib: 'dist',
-  test: 'test/**/*.js',
   docHtml: 'gh-pages',
   docStyles: 'gh-pages/styles',
   docFonts: 'gh-pages/fonts'
@@ -38,11 +38,7 @@ function noop () {}
 /* ---------------------------------- Lib -----------------------------------*/
 
 gulp.task('lib:clear', () => (
-  del(out.lib).catch(noop)
-))
-
-gulp.task('lib:clear-min', () => (
-  del(out.lib + '/**/*.min.js').catch(noop)
+  del(out.lib, {read: false}).catch(noop)
 ))
 
 gulp.task('lib:compile', () => (
@@ -52,7 +48,7 @@ gulp.task('lib:compile', () => (
 ))
 
 gulp.task('lib:minify', () => (
-  gulp.src(src.dist)
+  gulp.src(src.dist, {ignore: '**/*.min.js'})
     .pipe($.uglify({
       mangle: true,
       compress: {screw_ie8: true}
@@ -72,11 +68,9 @@ gulp.task('lib:test', done => {
 
 gulp.task('lib:build', gulp.series('lib:compile', 'lib:minify'))
 
-gulp.task('lib:rebuild', gulp.series('lib:clear', 'lib:build'))
-
 gulp.task('lib:watch', () => {
-  $.watch(src.lib, gulp.parallel('lib:test', gulp.series('lib:clear-min', 'lib:build')))
-  $.watch(out.test, gulp.series('lib:test'))
+  $.watch(src.lib, gulp.parallel('lib:test', gulp.series('lib:build')))
+  $.watch(src.test, gulp.series('lib:test'))
 })
 
 /* --------------------------------- HTML -----------------------------------*/
@@ -157,29 +151,19 @@ gulp.task('docs:scripts:build', done => {
 /* -------------------------------- Server ----------------------------------*/
 
 gulp.task('docs:server', () => {
-  let buildServerProc
-  let wsServerProc
+  let proc
 
   process.on('exit', () => {
-    if (buildServerProc) buildServerProc.kill()
-    if (wsServerProc) wsServerProc.kill()
+    if (proc) proc.kill()
   })
 
-  function restartBuildServer () {
-    if (buildServerProc) buildServerProc.kill()
-    buildServerProc = fork('./devserver')
+  function restart () {
+    if (proc) proc.kill()
+    proc = fork('./devserver')
   }
 
-  function restartWsServer () {
-    if (wsServerProc) wsServerProc.kill()
-    wsServerProc = fork('./mock-ws-server')
-  }
-
-  restartBuildServer()
-  $.watch(['./webpack.config.js', './devserver.js'], restartBuildServer)
-
-  restartWsServer()
-  $.watch(['./mock-ws-server.js'], restartWsServer)
+  restart()
+  $.watch(['./webpack.config.js', './devserver.js'], restart)
 })
 
 /* -------------------------------- Default ---------------------------------*/

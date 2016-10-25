@@ -29,14 +29,6 @@ export function addEvent (target, name, fun, useCapture = false) {
 }
 
 /**
- * Net
- */
-
-export function Ws () {
-  return '#<SupposedWebSocket>'
-}
-
-/**
  * Dev
  */
 
