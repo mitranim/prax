@@ -1,7 +1,7 @@
 const React = require('react')
 const {render, unmountComponentAtNode} = require('react-dom')
 const {getIn, putIn, putInBy, inc, dec, val, ifelse, seq, pipeAnd, id, isFinite,
-       on, swapBy, swapInto, delayingWatch, linear} = require('prax')
+       on, swapBy, swapInto, delayingWatch} = require('prax')
 const {reactiveCreateClass, cachingTransformType, createCreateElement,
        renderingWatch} = require('prax/react')
 const {addEvent} = require('./utils')
@@ -146,9 +146,7 @@ export function init (env) {
   const transformType = cachingTransformType(createClass)
   React.createElement = createCreateElement(transformType)
 
-  // `renderRoot` is not reentrant; `linear` makes sure it won't accidentally
-  // overlap with itself
-  const renderRoot = linear(function renderRoot () {
+  function renderRoot () {
     if (findRoot()) {
       render(<Root />, findRoot(), () => {
         // This is where you run any "post-render" code, using the built-up context
@@ -156,11 +154,12 @@ export function init (env) {
         // console.info(`-- env.renderingContext:`, env.renderingContext)
       })
     }
-  })
+  }
 
   env.addWatch('render', delayingWatch(renderingWatch(renderRoot)))
 
-  renderRoot()
+  // `renderRoot` must be qued to avoid accidental overlap with `renderingWatch`.
+  env.enque(renderRoot)
 
   return seq(
     pipeAnd(findRoot, unmountComponentAtNode),
