@@ -159,7 +159,7 @@ gulp.task('docs:server', () => {
 /* -------------------------------- Default ---------------------------------*/
 
 gulp.task('buildup', gulp.parallel(
-  gulp.series('lib:build', 'docs:scripts:build'),
+  'lib:build',
   'docs:html:build',
   'docs:styles:build',
   'docs:fonts:build'
@@ -173,6 +173,6 @@ gulp.task('watch', gulp.parallel(
   'docs:server'
 ))
 
-gulp.task('build', gulp.series('clear', 'buildup', 'lib:test'))
+gulp.task('build', gulp.series('clear', 'buildup', 'lib:test', 'docs:scripts:build'))
 
 gulp.task('default', gulp.series('clear', 'buildup', 'lib:test', 'watch'))
