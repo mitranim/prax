@@ -14,8 +14,8 @@ const extract = key => flat(features.map(x => x[key]).filter(id))
 
 export const env = defonce(['dev', 'env'], Atom)
 
-env.watches = {
-  static: seq(...extract('watches'))
+env.watchers = {
+  static: seq(...extract('watchers'))
 }
 
 env.effects = extract('effects')

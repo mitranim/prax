@@ -4,10 +4,11 @@
 
 const $ = require('gulp-load-plugins')()
 const del = require('del')
-const {exec, fork} = require('child_process')
 const gulp = require('gulp')
-const statilConfig = require('./statil')
 const webpack = require('webpack')
+const {exec, fork} = require('child_process')
+
+const statilConfig = require('./statil')
 const webpackConfig = require('./webpack.config')
 
 /* ******************************** Globals **********************************/

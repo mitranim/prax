@@ -1,9 +1,9 @@
 const React = require('react')
 const {render, unmountComponentAtNode} = require('react-dom')
 const {getIn, putIn, putInBy, inc, dec, val, ifelse, seq, pipeAnd, id, isFinite,
-       on, swapBy, swapInto, delayingWatch} = require('prax')
+       on, swapBy, swapInto, delayingWatcher} = require('prax')
 const {reactiveCreateClass, cachingTransformType, createCreateElement,
-       renderingWatch} = require('prax/react')
+       renderingWatcher} = require('prax/react')
 const {addEvent} = require('./utils')
 const {Root} = require('./views')
 
@@ -116,12 +116,12 @@ export function notify (state, key, msg) {
 }
 
 /**
- * Watches
+ * Watchers
  */
 
-exports.watches = [
-  // (_key, env, prev, next) => {
-  //   console.info('-- running watch')
+exports.watchers = [
+  // (env, prev, next) => {
+  //   console.info('-- running watcher')
   //   console.info('-- prev, next:', prev, next)
   // }
 ]
@@ -156,9 +156,9 @@ export function init (env) {
     }
   }
 
-  env.addWatch('render', delayingWatch(renderingWatch(renderRoot)))
+  env.addWatcher('render', delayingWatcher(renderingWatcher(renderRoot)))
 
-  // `renderRoot` must be qued to avoid accidental overlap with `renderingWatch`.
+  // `renderRoot` must be qued to avoid accidental overlap with `renderingWatcher`.
   env.enque(renderRoot)
 
   return seq(

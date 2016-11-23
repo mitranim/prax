@@ -37,10 +37,10 @@ function reader (read) {
 }
 ```
 
-Wraps it into a watcher, returning a function with the compute/effect signature:
+Wraps it, creating a watcher with the following signature:
 
 ```js
-function watcher (prev, next) {
+return function watcher (ref, prev, next) {
   // may or may not call the reader
 }
 ```
@@ -49,18 +49,18 @@ Basic example:
 
 ```js
 // Implicitly subscribes to the path ['one', 'two']
-function reader (read) {
+function reader (read, ref) {
   console.log(read('one', 'two'))
 }
 
 const watcher = Watcher(reader)
 
-watcher(undefined, {one: {two: 2}})
+watcher(null, undefined, {one: {two: 2}})
 // prints 2
 
-watcher({one: {two: 2}}, {one: {two: 2, three: 3}})
+watcher(null, {one: {two: 2}}, {one: {two: 2, three: 3}})
 // no change at watched path -> no effect
 
-watcher({one: {two: 2}}, {one: {two: 'two'}})
+watcher(null, {one: {two: 2}}, {one: {two: 'two'}})
 // change at watched path -> print 'two'
 ```

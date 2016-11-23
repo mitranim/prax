@@ -78,7 +78,7 @@ version of `cursorsChanged`. Useful in function composition contexts.
 const one = ['one']
 const three = ['two', 'three']
 
-const x = changed([one, three])
+const x = changed(one, three)
 
 x({}, {})
 // false

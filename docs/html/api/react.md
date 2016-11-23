@@ -6,7 +6,7 @@
 * [`reactiveCreateClass`]({{url(path)}}/#-reactivecreateclass-createclass-env-)
 * [`cachingTransformType`]({{url(path)}}/#-cachingtransformtype-createclass-)
 * [`createCreateElement`]({{url(path)}}/#-createcreateelement-transformtype-)
-* [`renderingWatch`]({{url(path)}}/#-renderingwatch-renderroot-)
+* [`renderingWatcher`]({{url(path)}}/#-renderingwatcher-renderroot-)
 
 ## Overview
 
@@ -33,6 +33,6 @@ behind the scenes.
 
 [TODO]
 
-## `renderingWatch(renderRoot)`
+## `renderingWatcher(renderRoot)`
 
 [TODO]
