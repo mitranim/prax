@@ -5,6 +5,7 @@ if (module.hot) {
   })
   module.hot.dispose(() => {
     console.clear()
+    if (typeof deinit === 'function') deinit()
   })
 }
 
@@ -18,7 +19,9 @@ if (window.devMode) {
 
 require('simple-pjax')
 
-require('./core')
+const {init} = require('./core')
+
+const deinit = init()
 
 /**
  * Dev

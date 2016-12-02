@@ -1,5 +1,5 @@
 const {Atom, defonce,
-       putIn, bind, seq, pipe, juxt, spread, flat, id} = require('prax')
+       putIn, bind, seq, flat, id} = require('prax')
 const {merge} = require('./utils')
 
 const features = [
@@ -42,14 +42,11 @@ env.send = bind(env.enque, function runEffects (env, msg) {
  * Init
  */
 
-// Apply new default state, but prioritise built-up state.
-env.swap(state => merge(state, ...extract('state'), state))
-
-const init = pipe(juxt(...extract('init')), spread(seq))
-
-const teardown = init(env)
-
-if (module.hot) module.hot.dispose(teardown)
+export function init () {
+  env.state = merge(...extract('state'), env.state)
+  env.notifyWatchers(env.state, env.state)
+  return seq(...extract('init').map(fun => fun(env)))
+}
 
 /**
  * Dev

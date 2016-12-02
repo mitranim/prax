@@ -156,7 +156,7 @@ export function init (env) {
     }
   }
 
-  env.addWatcher('render', delayingWatcher(renderingWatcher(renderRoot)))
+  env.addWatcher('render', delayingWatcher(seq(renderingWatcher, renderRoot)))
 
   // `renderRoot` must be qued to avoid accidental overlap with `renderingWatcher`.
   env.enque(renderRoot)
