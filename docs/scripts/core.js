@@ -1,4 +1,4 @@
-const {Atom, defonce,
+const {global, Atom, defonce,
        putIn, bind, seq, flat, id} = require('prax')
 const {merge} = require('./utils')
 
@@ -12,15 +12,13 @@ const extract = key => flat(features.map(x => x[key]).filter(id))
  * Env
  */
 
-export const env = defonce(['dev', 'env'], Atom)
+export const env = defonce(global, ['dev', 'env'], Atom)
 
-env.watchers = {
-  static: seq(...extract('watchers'))
-}
+env.watchers = extract('watchers')
 
 env.effects = extract('effects')
 
-env.send = bind(env.enque, function runEffects (env, msg) {
+env.send = bind(env.enque, function runEffects (msg) {
   env.effects.forEach(function runEffect (fun) {
     fun(env, msg)
   })
@@ -35,7 +33,7 @@ env.send = bind(env.enque, function runEffects (env, msg) {
 // const computer = joinComputers(env.computers = extract('computers'))
 
 // env.swap = (mod, ...args) => {
-//   Atom.swap(env, prev => computer(prev, mod(prev, ...args)))
+//   Atom.prototype.swap.call(env, prev => computer(prev, mod(prev, ...args)))
 // }
 
 /**

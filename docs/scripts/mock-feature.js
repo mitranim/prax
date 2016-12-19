@@ -156,22 +156,27 @@ export function init (env) {
     }
   }
 
-  env.addWatcher('render', delayingWatcher(seq(renderingWatcher, renderRoot)))
+  const unwatch = env.addWatcher(delayingWatcher(seq(renderingWatcher, renderRoot)))
 
   // `renderRoot` must be qued to avoid accidental overlap with `renderingWatcher`.
   env.enque(renderRoot)
 
   return seq(
+    unwatch,
+
     pipeAnd(findRoot, unmountComponentAtNode),
+
     addEvent(
       document,
       'simple-pjax-before-transition',
       pipeAnd(findRoot, unmountComponentAtNode)
     ),
+
     addEvent(document, 'simple-pjax-after-transition', renderRoot),
+
     addEvent(document, 'keypress', ({keyCode}) => {
       env.send(['keyCode', keyCode])
-    })
+    }),
   )
 }
 
