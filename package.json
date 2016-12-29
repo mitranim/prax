@@ -1,6 +1,6 @@
 {
   "name": "prax",
-  "version": "0.0.89",
+  "version": "0.0.90",
   "main": "dist/index.js",
   "scripts": {
     "start": "gulp",
@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "emerge": "0.0.27",
-    "fpx": "0.0.14"
+    "fpx": "0.0.15"
   },
   "peerDependencies": {
     "react": "^15.0.0",
