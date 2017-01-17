@@ -1,4 +1,4 @@
-const {patchIn, foldl, isObject, isFunction, validate} = require('prax')
+const {putIn, patchIn, foldl, isObject, isFunction, validate} = require('prax')
 
 export function onload (document, fun) {
   validate(isFunction, fun)
@@ -25,6 +25,12 @@ export function addEvent (target, name, fun, useCapture = false) {
   target.addEventListener(name, fun, useCapture)
   return () => {
     target.removeEventListener(name, fun, useCapture)
+  }
+}
+
+export function putTo (path, fun) {
+  return function putTo_ (state) {
+    return putIn(state, path, fun(...arguments))
   }
 }
 

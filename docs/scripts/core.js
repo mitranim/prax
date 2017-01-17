@@ -1,12 +1,6 @@
-const {global, Atom, defonce,
-       putIn, bind, seq, flat, id} = require('prax')
+const {global, Atom, defonce, joinReducers, joinComputers,
+  getIn, putIn, seq, flat, isFunction} = require('prax')
 const {merge} = require('./utils')
-
-const features = [
-  require('./mock-feature')
-]
-
-const extract = key => flat(features.map(x => x[key]).filter(id))
 
 /**
  * Env
@@ -14,36 +8,44 @@ const extract = key => flat(features.map(x => x[key]).filter(id))
 
 export const env = defonce(global, ['dev', 'env'], Atom)
 
-env.watchers = extract('watchers')
+env.send = function send (msg) {
+  env.swap(calc, msg)
+  env.enque(runEffects, msg)
+}
 
-env.effects = extract('effects')
+function calc (prev, msg) {
+  return joinComputers(env.computers)(prev, joinReducers(env.reducers)(prev, msg))
+}
 
-env.send = bind(env.enque, function runEffects (msg) {
+function runEffects (msg) {
   env.effects.forEach(function runEffect (fun) {
     fun(env, msg)
   })
-})
-
-// /**
-//  * Computers
-//  */
-
-// const {joinComputers} = require('prax')
-
-// const computer = joinComputers(env.computers = extract('computers'))
-
-// env.swap = (mod, ...args) => {
-//   Atom.prototype.swap.call(env, prev => computer(prev, mod(prev, ...args)))
-// }
+}
 
 /**
  * Init
  */
 
-export function init () {
-  env.state = merge(...extract('state'), env.state)
-  env.notifyWatchers(env.state, env.state)
-  return seq(...extract('init').map(fun => fun(env)))
+const extract = (features, key) => flat(features.map(x => x[key]).filter(Boolean))
+
+export function init (env, features) {
+  // Pure functions that create new state in response to events
+  env.reducers = extract(features, 'reducers')
+
+  // Pure functions that redefine app state as ƒ of itself.
+  env.computers = extract(features, 'computers')
+
+  // Side-effectful functions that react to events
+  env.effects = extract(features, 'effects')
+
+  // Side-effectful functions that react to data changes
+  env.watchers = extract(features, 'watchers')
+
+  // Initial state
+  env.state = merge(...extract(features, 'state'), env.state)
+
+  return seq(...extract(features, 'init').map(fun => fun(env)).filter(isFunction))
 }
 
 /**
@@ -51,6 +53,9 @@ export function init () {
  */
 
 window.dev = {...window.dev, env,
+  read () {
+    return getIn(env.state, arguments)
+  },
   set (...path) {
     env.swap(putIn, path, path.pop())
   }

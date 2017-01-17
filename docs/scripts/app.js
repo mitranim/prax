@@ -19,9 +19,19 @@ if (window.devMode) {
 
 require('simple-pjax')
 
-const {init} = require('./core')
+const {env, init} = require('./core')
 
-const deinit = init()
+// true = use subdirectories
+const requireContext = require.context('./features', true, /\.js$/)
+
+const features = requireContext.keys().map(requireContext)
+
+let deinit
+
+env.enque(function setup () {
+  deinit = init(env, features)
+  env.notifyWatchers(env.state, env.state)
+})
 
 /**
  * Dev
