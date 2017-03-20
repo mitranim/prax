@@ -3,7 +3,7 @@
 <base href="/prax/">
 <meta charset="utf-8">
 <title>{{typeof title === 'string' ? title + ' | prax' : 'prax'}}</title>
-<link rel="stylesheet" href="styles/app.css">
+<link rel="stylesheet" href="styles/main.css">
 <link rel="icon" href="data:;base64,=">
 
 {% if (!prod) { %}
@@ -20,4 +20,4 @@
   {{path === 'index.html' ? include('partials/index.md') : content}}
 </article>
 
-<script src="app.js"></script>
+<script src="main.js"></script>

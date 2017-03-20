@@ -1,24 +1,4 @@
-const {putIn, patchIn, foldl, isObject, isFunction, validate} = require('prax')
-
-export function onload (document, fun) {
-  validate(isFunction, fun)
-  if (/loaded|complete|interactive/.test(document.readyState)) {
-    setTimeout(fun)
-  } else {
-    document.addEventListener('DOMContentLoaded', function cb () {
-      document.removeEventListener('DOMContentLoaded', cb)
-      fun()
-    })
-  }
-}
-
-export function merge () {
-  return foldl(mergeTwo, undefined, arguments)
-}
-
-function mergeTwo (acc, value) {
-  return patchIn(acc, [], (isObject(value) ? value : {}))
-}
+const {getAt, defer, isFunction, validate} = require('prax')
 
 export function addEvent (target, name, fun, useCapture = false) {
   validate(isFunction, fun)
@@ -28,16 +8,20 @@ export function addEvent (target, name, fun, useCapture = false) {
   }
 }
 
-export function putTo (path, fun) {
-  return function putTo_ (state) {
-    return putIn(state, path, fun(...arguments))
-  }
+export function jsonEncode (value) {
+  try {return JSON.stringify(value)}
+  catch (_) {return 'null'}
 }
 
+export function jsonDecode (value) {
+  try {return JSON.parse(value)}
+  catch (_) {return null}
+}
+
+export const from = defer(getAt)
+
 /**
- * Dev
+ * REPL
  */
 
-window.dev = {...window.dev, merge}
-
-if (window.devMode) Object.assign(window, window.dev)
+window.app = {...window.app, utils: exports}

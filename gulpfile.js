@@ -18,7 +18,7 @@ const src = {
   dist: 'dist/**/*.js',
   docHtml: 'docs/html/**/*',
   docStyles: 'docs/styles/**/*.scss',
-  docStylesMain: 'docs/styles/app.scss',
+  docStylesMain: 'docs/styles/main.scss',
   docFonts: 'node_modules/font-awesome/fonts/**/*',
   test: 'test/**/*.js',
 }

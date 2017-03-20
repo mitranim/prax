@@ -77,6 +77,10 @@ code {
   > :last-child {margin-bottom: 0}
 }
 
+.children-margin-1-v > :not(:first-child) {
+  margin-top: $sf-space;
+}
+
 /**
  * Nav
  */

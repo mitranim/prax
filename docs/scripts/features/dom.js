@@ -1,75 +1,43 @@
 const React = require('react')
 const {render, unmountComponentAtNode} = require('react-dom')
-const {seq, pipeAnd, delayingWatcher, on} = require('prax')
-const {reactiveCreateClass, cachingTransformType, createCreateElement,
-       renderingWatcher} = require('prax/react')
-const {addEvent, putTo} = require('../utils')
+const {putIn, on, FixedLifecycler} = require('prax')
+const {addEvent} = require('../utils')
 const {Root} = require('../views')
 
-exports.state = {
-  keyCode: null,
-}
+export function preinit (_root, _onDeinit) {
+  return {
+    state: {
+      keyCode: null,
+    },
 
-exports.reducers = [
-  on(['keyCode'], putTo(['keyCode'], (state, [, value]) => value)),
-]
-
-exports.computers = []
-
-exports.effects = []
-
-exports.watchers = []
-
-/**
- * Init
- */
-
-export function init (env) {
-  const createClass = reactiveCreateClass(React.createClass, env)
-  const transformType = cachingTransformType(createClass)
-  React.createElement = createCreateElement(transformType)
-
-  function renderRoot () {
-    if (findRoot()) {
-      render(<Root />, findRoot(), () => {
-        // This is where you run any "post-render" code, using the built-up context
-        // Check this out:
-        // console.info(`-- env.renderingContext:`, env.renderingContext)
-      })
-    }
+    effects: [
+      on(['keyCode'], (root, [, value]) => {
+        root.store.swap(putIn, ['keyCode'], value)
+      }),
+    ],
   }
-
-  // `renderRoot` must be qued to avoid accidental overlap with `renderingWatcher`.
-  env.enque(renderRoot)
-
-  const unmount = pipeAnd(findRoot, unmountComponentAtNode)
-
-  // deinit
-  return seq(
-    env.addWatcher(delayingWatcher(seq(renderingWatcher, renderRoot))),
-
-    unmount,
-
-    addEvent(document, 'simple-pjax-before-transition', unmount),
-
-    addEvent(document, 'simple-pjax-after-transition', renderRoot),
-
-    addEvent(document, 'keypress', ({keyCode}) => {
-      env.send(['keyCode', keyCode])
-    }),
-  )
 }
 
-/**
- * Utils
- */
+export function init (root, onDeinit) {
+  const renderer = FixedLifecycler({
+    getRoot: findRootNode,
+    initer: rootNode => {render(<Root />, rootNode)},
+    deiniter: unmountComponentAtNode,
+  })
 
-function findRoot () {
+  renderer.init()
+
+  onDeinit(renderer.deinit)
+
+  onDeinit(addEvent(document, 'simple-pjax-before-transition', renderer.deinit))
+
+  onDeinit(addEvent(document, 'simple-pjax-after-transition', renderer.init))
+
+  onDeinit(addEvent(document, 'keypress', ({keyCode}) => {
+    root.send(['keyCode', keyCode])
+  }))
+}
+
+function findRootNode () {
   return document.getElementById('root')
 }
-
-/**
- * Dev
- */
-
-if (window.devMode) Object.assign(window, exports)

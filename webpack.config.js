@@ -5,11 +5,11 @@ const webpack = require('webpack')
 const prod = process.env.NODE_ENV === 'production'
 
 module.exports = {
-  entry: pt.resolve('docs/scripts/app.js'),
+  entry: pt.resolve('docs/scripts/main.js'),
 
   output: {
     path: pt.resolve('gh-pages'),
-    filename: 'app.js'
+    filename: 'main.js'
   },
 
   module: {
@@ -33,14 +33,19 @@ module.exports = {
     alias: {prax: process.cwd()}
   },
 
-  plugins: !prod ? [
-    new webpack.HotModuleReplacementPlugin()
-  ] : [
-    new webpack.optimize.UglifyJsPlugin({
-      minimize: true,
-      compress: {warnings: false, screw_ie8: true},
-      mangle: true
-    })
+  plugins: [
+    new webpack.ProvidePlugin({
+      createElement: pt.resolve('docs/scripts/react-hack.js'),
+    }),
+    ...(!prod ? [
+      new webpack.HotModuleReplacementPlugin()
+    ] : [
+      new webpack.optimize.UglifyJsPlugin({
+        minimize: true,
+        compress: {warnings: false, screw_ie8: true},
+        mangle: true
+      })
+    ])
   ],
 
   devtool: prod ? 'source-map' : null,
