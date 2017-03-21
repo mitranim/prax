@@ -16,9 +16,9 @@ const {Lifecycler, bind} = require('prax')
 
 const app = window.app || (window.app = {})
 
-const lifecycler = app.lifecycler || (app.lifecycler = Lifecycler())
+const lifecycler = app.lifecycler || (app.lifecycler = new Lifecycler())
 
-const {root, reinit} = require('./root')
+const {env, reinit} = require('./env')
 
 // true = use subdirectories
 const requireContext = require.context('./features', true, /\.js$/)
@@ -31,14 +31,13 @@ const features = requireContext.keys().map(requireContext)
 
 require('simple-pjax')
 
-lifecycler.reinit(root, bind(reinit, features))
+lifecycler.reinit(env, bind(reinit, features))
 
 /**
  * REPL
  */
 
 const prax = require('prax')
-const praxReact = require('prax/react')
 
 const praxExport = {...prax}
 delete praxExport.isNaN
@@ -49,7 +48,6 @@ window.app = {
   ...window.app,
   ...praxExport,
   prax,
-  praxReact,
   lifecycler,
 }
 

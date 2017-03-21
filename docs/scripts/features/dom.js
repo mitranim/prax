@@ -4,22 +4,18 @@ const {putIn, on, FixedLifecycler} = require('prax')
 const {addEvent} = require('../utils')
 const {Root} = require('../views')
 
-export function preinit (_root, _onDeinit) {
-  return {
-    state: {
-      keyCode: null,
-    },
-
-    effects: [
-      on(['keyCode'], (root, [, value]) => {
-        root.store.swap(putIn, ['keyCode'], value)
-      }),
-    ],
-  }
+export const defaultState = {
+  keyCode: null,
 }
 
-export function init (root, onDeinit) {
-  const renderer = FixedLifecycler({
+export const effects = [
+  on(['keyCode'], (env, [, value]) => {
+    env.store.swap(putIn, ['keyCode'], value)
+  }),
+]
+
+export function init (env, onDeinit) {
+  const renderer = new FixedLifecycler({
     getRoot: findRootNode,
     initer: rootNode => {render(<Root />, rootNode)},
     deiniter: unmountComponentAtNode,
@@ -34,7 +30,7 @@ export function init (root, onDeinit) {
   onDeinit(addEvent(document, 'simple-pjax-after-transition', renderer.init))
 
   onDeinit(addEvent(document, 'keypress', ({keyCode}) => {
-    root.send(['keyCode', keyCode])
+    env.send(['keyCode', keyCode])
   }))
 }
 

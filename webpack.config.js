@@ -35,7 +35,7 @@ module.exports = {
 
   plugins: [
     new webpack.ProvidePlugin({
-      createElement: pt.resolve('docs/scripts/react-hack.js'),
+      React: 'react',
     }),
     ...(!prod ? [
       new webpack.HotModuleReplacementPlugin()

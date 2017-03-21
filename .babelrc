@@ -5,6 +5,8 @@
     "transform-es2015-block-scoped-functions",
     "transform-es2015-block-scoping",
     ["transform-es2015-destructuring", {"loose": true}],
+    ["transform-class-properties", {"spec": false}],
+    ["transform-es2015-classes", {"loose": true}],
     "transform-es2015-function-name",
     "transform-es2015-literals",
     "transform-es2015-modules-commonjs",
@@ -13,6 +15,7 @@
     ["transform-es2015-spread", {"loose": true}],
     "transform-es2015-template-literals",
     "transform-object-rest-spread",
-    ["transform-react-jsx", {"pragma": "createElement"}]
+    "transform-react-jsx",
+    ["transform-runtime", {"polyfill": false}]
   ]
 }
