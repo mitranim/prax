@@ -12,18 +12,11 @@ if (module.hot) {
  * Preinit
  */
 
-const {Lifecycler, bind} = require('prax')
+const {Lifecycler} = require('prax')
 
 const app = window.app || (window.app = {})
 
 const lifecycler = app.lifecycler || (app.lifecycler = new Lifecycler())
-
-const {env, reinit} = require('./env')
-
-// true = use subdirectories
-const requireContext = require.context('./features', true, /\.js$/)
-
-const features = requireContext.keys().map(requireContext)
 
 /**
  * Init
@@ -31,7 +24,14 @@ const features = requireContext.keys().map(requireContext)
 
 require('simple-pjax')
 
-lifecycler.reinit(env, bind(reinit, features))
+const {reinit} = require('./env')
+
+// true = use subdirectories
+const requireContext = require.context('./features', true, /\.js$/)
+
+lifecycler.features = requireContext.keys().map(requireContext)
+
+lifecycler.reinit(reinit)
 
 /**
  * REPL

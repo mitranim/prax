@@ -14,11 +14,17 @@ export const effects = [
   }),
 ]
 
-export function init (env, onDeinit) {
+export function init ({env, onDeinit}) {
   const renderer = new FixedLifecycler({
-    getRoot: findRootNode,
-    initer: rootNode => {render(<Root />, rootNode)},
-    deiniter: unmountComponentAtNode,
+    initer (flc) {
+      flc.rootNode = document.getElementById('root')
+      if (flc.rootNode) render(<Root />, flc.rootNode)
+    },
+    deiniter (flc) {
+      const {rootNode} = flc
+      flc.rootNode = null
+      if (rootNode) unmountComponentAtNode(rootNode)
+    },
   })
 
   renderer.init()
@@ -32,8 +38,4 @@ export function init (env, onDeinit) {
   onDeinit(addEvent(document, 'keypress', ({keyCode}) => {
     env.send(['keyCode', keyCode])
   }))
-}
-
-function findRootNode () {
-  return document.getElementById('root')
 }

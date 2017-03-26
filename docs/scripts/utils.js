@@ -1,4 +1,4 @@
-const {getAt, defer, isFunction, validate} = require('prax')
+const {isFunction, validate} = require('prax')
 
 export function addEvent (target, name, fun, useCapture = false) {
   validate(isFunction, fun)
@@ -17,8 +17,6 @@ export function jsonDecode (value) {
   try {return JSON.parse(value)}
   catch (_) {return null}
 }
-
-export const from = defer(getAt)
 
 /**
  * REPL

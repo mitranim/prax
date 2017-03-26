@@ -13,14 +13,23 @@ export const env = {
   que,
 }
 
-export function reinit (features, env, onDeinit) {
+export function reinit (lifecycler) {
+  const {features, onDeinit} = lifecycler
+
+  lifecycler.env = env
+
   const {init} = fuseModules(features)
 
   env.effects = extract(['effects'], features)
 
-  env.store.state = merge(...extract(['defaultState'], features), env.store.state)
+  env.store.state = merge(...extract(['defaultState'], features), lifecycler.lastState)
+  lifecycler.lastState = null
 
-  init(env, onDeinit)
+  onDeinit(() => {
+    lifecycler.lastState = env.store.state
+  })
+
+  init(lifecycler)
 }
 
 /**

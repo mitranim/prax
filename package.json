@@ -1,6 +1,6 @@
 {
   "name": "prax",
-  "version": "0.0.96",
+  "version": "0.0.97",
   "main": "dist/index.js",
   "scripts": {
     "start": "gulp",
@@ -9,7 +9,7 @@
     "serve-prod": "env NODE_ENV=production gulp build && env NODE_ENV=production node devserver",
     "push-docs": "env NODE_ENV=production gulp build && (cd gh-pages && git add -A . && git commit -a -m autocommit && git push origin gh-pages)"
   },
-  "description": "Sane architecture for realtime web apps",
+  "description": "Sane architecture for interactive web apps",
   "keywords": [
     "state",
     "immutable",
@@ -27,13 +27,15 @@
     "type": "git",
     "url": "https://github.com/Mitranim/prax.git"
   },
+  "dependencies": {
+    "emerge": "^0.0.28",
+    "espo": "^0.0.7",
+    "fpx": "^0.0.20"
+  },
   "peerDependencies": {
     "react": "^15.0.0",
     "react-dom": "^15.0.0",
-    "babel-runtime": "^6.0.0",
-    "emerge": "^0.0.28",
-    "espo": "^0.0.6",
-    "fpx": "^0.0.20"
+    "babel-runtime": "^6.0.0"
   },
   "devDependencies": {
     "babel-core": "6.18.2",
