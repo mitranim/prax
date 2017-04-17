@@ -1,22 +1,16 @@
 {
   "name": "prax",
-  "version": "0.0.97",
+  "version": "0.0.98",
   "main": "dist/index.js",
   "scripts": {
     "start": "gulp",
-    "test": "node test/test",
-    "prepublish": "gulp lib:build && npm test",
-    "serve-prod": "env NODE_ENV=production gulp build && env NODE_ENV=production node devserver",
-    "push-docs": "env NODE_ENV=production gulp build && (cd gh-pages && git add -A . && git commit -a -m autocommit && git push origin gh-pages)"
+    "gulp": "gulp",
+    "build": "env NODE_ENV=production gulp build"
   },
   "description": "Sane architecture for interactive web apps",
   "keywords": [
-    "state",
-    "immutable",
-    "functional",
-    "events",
     "reactive",
-    "react"
+    "architecture"
   ],
   "authors": [
     "Mitranim <me@mitranim.com>",
@@ -29,13 +23,11 @@
   },
   "dependencies": {
     "emerge": "^0.0.28",
-    "espo": "^0.0.7",
-    "fpx": "^0.0.20"
+    "espo": "^0.0.8",
+    "fpx": "^0.1.0"
   },
   "peerDependencies": {
-    "react": "^15.0.0",
-    "react-dom": "^15.0.0",
-    "babel-runtime": "^6.0.0"
+    "react": "^15.0.0"
   },
   "devDependencies": {
     "babel-core": "6.18.2",
@@ -57,7 +49,6 @@
     "babel-plugin-transform-es2015-template-literals": "6.8.0",
     "babel-plugin-transform-object-rest-spread": "6.19.0",
     "babel-plugin-transform-react-jsx": "6.8.0",
-    "babel-plugin-transform-runtime": "6.23.0",
     "browser-sync": "2.18.2",
     "del": "2.2.2",
     "envify": "4.0.0",
@@ -71,14 +62,14 @@
     "gulp-load-plugins": "1.4.0",
     "gulp-rename": "1.2.2",
     "gulp-sass": "2.3.2",
-    "gulp-statil": "0.1.0",
+    "gulp-statil": "0.5.0",
     "gulp-uglify": "2.0.0",
     "gulp-util": "3.0.7",
     "gulp-watch": "4.3.11",
     "highlight.js": "9.8.0",
     "marked": "0.3.6",
-    "react": "^15.0.0",
-    "react-dom": "^15.0.0",
+    "react": "15.5.4",
+    "react-dom": "15.5.4",
     "simple-pjax": "0.3.0",
     "stylific-lite": "0.0.1",
     "transform-loader": "0.2.3",

@@ -1,41 +1,35 @@
 const React = require('react')
-const {render, unmountComponentAtNode} = require('react-dom')
-const {putIn, on, FixedLifecycler} = require('prax')
+const ReactDOM = require('react-dom')
+const {Lifecycler, PraxComponent, putIn, seq} = require('prax')
 const {addEvent} = require('../utils')
 const {Root} = require('../views')
 
-export const defaultState = {
-  keyCode: null,
-}
+export function onInit (env) {
+  PraxComponent.prototype.env = env
 
-export const effects = [
-  on(['keyCode'], (env, [, value]) => {
-    env.store.swap(putIn, ['keyCode'], value)
-  }),
-]
+  const render = new Lifecycler()
 
-export function init ({env, onDeinit}) {
-  const renderer = new FixedLifecycler({
-    initer (flc) {
-      flc.rootNode = document.getElementById('root')
-      if (flc.rootNode) render(<Root />, flc.rootNode)
-    },
-    deiniter (flc) {
-      const {rootNode} = flc
-      flc.rootNode = null
-      if (rootNode) unmountComponentAtNode(rootNode)
-    },
-  })
+  render.onInit = function onInit () {
+    const rootNode = document.getElementById('root')
+    if (rootNode) {
+      ReactDOM.render(<Root />, rootNode)
+      this.onDeinit(() => {
+        ReactDOM.unmountComponentAtNode(rootNode)
+      })
+    }
+  }
 
-  renderer.init()
+  render.init()
 
-  onDeinit(renderer.deinit)
+  env.onDeinit(render.deinit)
 
-  onDeinit(addEvent(document, 'simple-pjax-before-transition', renderer.deinit))
+  env.onDeinit(seq(
+    addEvent(window, 'simple-pjax-before-transition', render.deinit),
 
-  onDeinit(addEvent(document, 'simple-pjax-after-transition', renderer.init))
+    addEvent(window, 'simple-pjax-after-transition', render.reinit),
 
-  onDeinit(addEvent(document, 'keypress', ({keyCode}) => {
-    env.send(['keyCode', keyCode])
-  }))
+    addEvent(document, 'keydown', ({keyCode}) => {
+      env.atom.swap(putIn, ['keyCode'], keyCode)
+    }),
+  ))
 }

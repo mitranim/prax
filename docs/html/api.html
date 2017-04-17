@@ -5,5 +5,5 @@
 </nav>
 
 <article>
-  {{path === 'api.html' ? include('partials/api/index.md') : content}}
+  {{path === 'api.html' ? md(include('partials/api/index.md')) : content}}
 </article>

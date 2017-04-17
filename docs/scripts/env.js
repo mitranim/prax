@@ -1,49 +1,35 @@
-const {Atom, TaskQue, getIn, putIn, extract, merge, bind, fuseModules} = require('prax')
+const {Atom, Lifecycler, DeinitDict, MessageQue, bindAll, derefIn, assign} = require('prax')
+const dom = require('./features/dom')
+const misc = require('./features/misc')
+const {MockUserResource} = require('./features/user-atom')
 
-const que = new TaskQue()
+export class Env extends Lifecycler {
+  constructor () {
+    super()
+    bindAll(this)
+    this.dd = new DeinitDict()
+  }
 
-export const env = {
-  store: new Atom(),
-  effects: [],
-  send: bind(que.push, function send (msg) {
-    env.effects.forEach(function runEffect (fun) {
-      fun(env, msg)
-    })
-  }),
-  que,
-}
+  onInit (prevEnv) {
+    this.onDeinit(this.dd.deinit)
 
-export function reinit (lifecycler) {
-  const {features, onDeinit} = lifecycler
+    const owned = {
+      mq: new MessageQue(),
+      atom: new Atom(derefIn(prevEnv, ['atom'])),
+      user: new MockUserResource(this),
+    }
 
-  lifecycler.env = env
+    this.dd.own(owned)
+    assign(this, owned)
 
-  const {init} = fuseModules(features)
+    if (prevEnv) prevEnv.deinit()
 
-  env.effects = extract(['effects'], features)
+    misc.onInit(this)
 
-  env.store.state = merge(...extract(['defaultState'], features), lifecycler.lastState)
-  lifecycler.lastState = null
+    dom.onInit(this)
+  }
 
-  onDeinit(() => {
-    lifecycler.lastState = env.store.state
-  })
-
-  init(lifecycler)
-}
-
-/**
- * REPL
- */
-
-window.app = {
-  ...window.app,
-  env,
-  store: env.store,
-  read (query) {
-    return getIn(env.store.state, query)
-  },
-  set (path, value) {
-    env.store.swap(putIn, path, value)
-  },
+  send (msg) {
+    this.mq.push(this, msg)
+  }
 }

@@ -1,12 +1,13 @@
 const React = require('react')
-const {putIn, PraxComponent} = require('prax')
+const {PraxComponent, putIn} = require('prax')
 const {jsonEncode} = require('./utils')
-const {env} = require('./env')
 
 export class Root extends PraxComponent {
-  subrender ({read}) {
+  subrender ({derefIn}) {
+    const {env} = this
     // console.info('rendering Root')
-    const path = read(env.store, ['path']) || []
+    const path = derefIn(env.atom, ['path']) || []
+    const showUser = derefIn(env.atom, ['showUser'])
 
     return (
       <div className='children-margin-1-v'>
@@ -21,52 +22,68 @@ export class Root extends PraxComponent {
           <button onClick={() => env.send(['dec'])}>
             decrement
           </button>
-          <button onClick={() => env.send(['net/user/sync'])}>
-            "load user"
+          <button onClick={() => env.atom.swap(putIn, ['showUser'], !showUser)}>
+            {showUser ? `hide "user"` : `show "user"`}
           </button>
         </div>
+        {showUser ?
+        <UserState /> : null}
         <div>
           <span>Greeting: <Input path={['greeting']} /></span>
         </div>
-        <Mock />
       </div>
     )
   }
 }
 
 class State extends PraxComponent {
-  subrender ({read}) {
-    const {props: {path}} = this
+  subrender ({derefIn}) {
+    const {env, props: {path}} = this
     // console.info('rendering State with path:', path)
 
     return (
-      <pre>{JSON.stringify(read(env.store, path), null, 2)}</pre>
+      <pre>{JSON.stringify(derefIn(env.atom, path), null, 2)}</pre>
+    )
+  }
+}
+
+class UserState extends PraxComponent {
+  subrender ({derefIn}) {
+    const {env} = this
+    const value = derefIn(env.user, ['value'])
+    const syncing = derefIn(env.user, ['syncing'])
+
+    return (
+      <div>
+        {value ?
+        <pre>{JSON.stringify(value, null, 2)}</pre> : null}
+        <button
+          onClick={() => env.user.sync({name: 'Mira'})}
+          disabled={derefIn(env.user, ['syncing'])}>
+          {syncing ? `"syncing"...` : `"sync user"`}
+        </button>
+        {syncing ?
+        <button
+          onClick={() => env.user.stop()}>
+          stop
+        </button> : null}
+      </div>
     )
   }
 }
 
 class Input extends PraxComponent {
-  subrender ({read}) {
-    const {props: {path}} = this
+  subrender ({derefIn}) {
+    const {env, props: {path}} = this
     // console.info('rendering Input with path:', path)
 
     return (
-      <input value={read(env.store, path) || ''}
-             onChange={event => {
-               env.store.swap(putIn, path, event.target.value)
-             }}
-             />
-    )
-  }
-}
-
-class Mock extends PraxComponent {
-  subrender ({read}) {
-    return (
-      <pre className='children-margin-1-v'>
-        <div>read(env.store, ['one']): {read(env.store, ['one'])}</div>
-        <div>read(env.store, ['ten']): {read(env.store, ['ten'])}</div>
-      </pre>
+      <input
+        value={derefIn(env.atom, path) || ''}
+        onChange={event => {
+          env.atom.swap(putIn, path, event.target.value)
+        }}
+        />
     )
   }
 }

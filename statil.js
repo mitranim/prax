@@ -3,6 +3,8 @@
 const hljs = require('highlight.js')
 const marked = require('marked')
 const pt = require('path')
+const {ifonly, not, test, testOr} = require('fpx')
+const {version} = require('./package.json')
 const prod = process.env.NODE_ENV === 'production'
 
 marked.setOptions({
@@ -13,19 +15,18 @@ marked.setOptions({
 
 module.exports = {
   imports: {
+    version,
     prod,
-    url: path => pt.join(pt.dirname(path), pt.parse(path).name)
+    url: path => pt.join(pt.dirname(path), pt.parse(path).name),
+    md: content => (
+      marked(content)
+      .replace(/<pre><code class="(.*)">|<pre><code>/g, '<pre><code class="hljs $1">')
+      .replace(/<!--\s*:((?:[^:]|:(?!\s*-->))*):\s*-->/g, '$1')
+    ),
   },
-  ignorePaths: path => /^partials/.test(path),
-  rename: '$&/index.html',
-  renameExcept: ['index.html', '404.html'],
-  pipeline: [
-    (content, path) => (
-      pt.extname(path) === '.md'
-      ? marked(content)
-        .replace(/<pre><code class="(.*)">|<pre><code>/g, '<pre><code class="hljs $1">')
-        .replace(/<!--\s*:((?:[^:]|:(?!\s*-->))*):\s*-->/g, '$1')
-      : content
-    )
-  ]
+  ignorePath: test(/^partials/),
+  renamePath: ifonly(
+    not(testOr('index.html', '404.html')),
+    (path, {dir, name}) => pt.join(dir, name, 'index.html')
+  ),
 }

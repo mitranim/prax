@@ -8,48 +8,36 @@ if (module.hot) {
   })
 }
 
-/**
- * Preinit
- */
-
-const {Lifecycler} = require('prax')
-
-const app = window.app || (window.app = {})
-
-const lifecycler = app.lifecycler || (app.lifecycler = new Lifecycler())
-
-/**
- * Init
- */
-
 require('simple-pjax')
 
-const {reinit} = require('./env')
+if (!window.app) window.app = {}
 
-// true = use subdirectories
-const requireContext = require.context('./features', true, /\.js$/)
+const {Env} = require('./env')
 
-lifecycler.features = requireContext.keys().map(requireContext)
+const prevEnv = window.app.env
 
-lifecycler.reinit(reinit)
+export const env = window.app.env = new Env()
+
+try {
+  env.init(prevEnv)
+}
+catch (err) {
+  if (prevEnv) prevEnv.deinit()
+  throw err
+}
 
 /**
  * REPL
  */
 
+const React = require('react')
 const prax = require('prax')
 
-const praxExport = {...prax}
-delete praxExport.isNaN
-delete praxExport.isFinite
+window.app = {...window.app, ...prax, prax, React, env}
 
-window.app = {
-  React: require('react'),
-  ...window.app,
-  ...praxExport,
-  prax,
-  lifecycler,
-}
+delete window.app.isNaN
+delete window.app.isFinite
+delete window.app.exports
 
 if (window.devMode) {
   Object.assign(window, window.app)

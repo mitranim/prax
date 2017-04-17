@@ -6,7 +6,7 @@ const $ = require('gulp-load-plugins')()
 const del = require('del')
 const gulp = require('gulp')
 const webpack = require('webpack')
-const {exec, fork} = require('child_process')
+const {fork} = require('child_process')
 
 const statilConfig = require('./statil')
 const webpackConfig = require('./webpack.config')
@@ -20,7 +20,6 @@ const src = {
   docStyles: 'docs/styles/**/*.scss',
   docStylesMain: 'docs/styles/main.scss',
   docFonts: 'node_modules/font-awesome/fonts/**/*',
-  test: 'test/**/*.js',
 }
 
 const out = {
@@ -29,8 +28,6 @@ const out = {
   docStyles: 'gh-pages/styles',
   docFonts: 'gh-pages/fonts'
 }
-
-const testCommand = require('./package').scripts.test
 
 function noop () {}
 
@@ -69,18 +66,10 @@ gulp.task('lib:minify', () => (
     .pipe(gulp.dest(out.lib))
 ))
 
-gulp.task('lib:test', done => {
-  exec(testCommand, (err, stdout) => {
-    process.stdout.write(stdout)
-    done(err)
-  })
-})
-
 gulp.task('lib:build', gulp.series('lib:compile', 'lib:minify'))
 
 gulp.task('lib:watch', () => {
-  $.watch(src.lib, gulp.parallel('lib:test', gulp.series('lib:build')))
-  $.watch(src.test, gulp.series('lib:test'))
+  $.watch(src.lib, gulp.series('lib:build'))
 })
 
 /* --------------------------------- HTML -----------------------------------*/
@@ -174,6 +163,6 @@ gulp.task('watch', gulp.parallel(
   'docs:server'
 ))
 
-gulp.task('build', gulp.series('clear', 'buildup', 'lib:test', 'docs:scripts:build'))
+gulp.task('build', gulp.series('clear', 'buildup', 'docs:scripts:build'))
 
-gulp.task('default', gulp.series('clear', 'buildup', 'lib:test', 'watch'))
+gulp.task('default', gulp.series('clear', 'buildup', 'watch'))

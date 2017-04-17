@@ -1,0 +1,11 @@
+language: node_js
+node_js: node
+script: npm run build
+deploy:
+  provider: pages
+  github_token: $GITHUB_TOKEN  # Set in travis-ci.org dashboard
+  skip_cleanup: true  # keep created files
+  local_dir: gh-pages
+  on:
+    branch: master
+  target_branch: gh-pages

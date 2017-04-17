@@ -1,13 +1,7 @@
 ## Overview
 
 Prax is:
-* an architecture for realtime applications
-* a library implementing that architecture
+* an architecture for dynamic applications
+* a group of libraries for implementing that architecture
 
-Prax is designed to complement React or any React-style rendering library. Its
-concepts are applicable to more than just GUI apps.
-
-Heavily borrows from Clojure, Haskell, Erlang, and others. Somewhat similar to
-Redux, but much more feature-complete.
-
-[TODO]
+Borrows ideas from Clojure, Re-frame, Rust, Haskell, Erlang, and other places.

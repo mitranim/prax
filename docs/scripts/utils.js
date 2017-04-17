@@ -3,7 +3,7 @@ const {isFunction, validate} = require('prax')
 export function addEvent (target, name, fun, useCapture = false) {
   validate(isFunction, fun)
   target.addEventListener(name, fun, useCapture)
-  return () => {
+  return function removeEvent () {
     target.removeEventListener(name, fun, useCapture)
   }
 }

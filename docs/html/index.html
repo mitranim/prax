@@ -17,7 +17,7 @@
 {{include('partials/nav.html')}}
 
 <article>
-  {{path === 'index.html' ? include('partials/index.md') : content}}
+  {{path === 'index.html' ? md(include('partials/index.md')) : content}}
 </article>
 
 <script src="main.js"></script>
