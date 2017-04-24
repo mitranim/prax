@@ -5,5 +5,4 @@ const prod = process.env.NODE_ENV === 'production'
 
 module.exports = {
   imports: {version, prod},
-  ignorePath: path => path !== 'index.html',
 }

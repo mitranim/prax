@@ -1,6 +1,6 @@
 {
   "name": "prax",
-  "version": "0.0.100",
+  "version": "0.0.101",
   "main": "dist/index.js",
   "scripts": {
     "start": "gulp",

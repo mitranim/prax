@@ -66,7 +66,7 @@ export function smoothScrollY (velocity, getDeltaY) {
   })
 }
 
-function getHeaderHeight () {
+export function getHeaderHeight () {
   const header = document.getElementById('header')
   return !header
     ? null
@@ -83,6 +83,16 @@ export function smoothScrollYToSelector (velocity, selector) {
 
 export function smoothScrollToTop (velocity) {
   return smoothScrollY(velocity, getDocumentTop)
+}
+
+export function scrollYToSelector (selector) {
+  const elem = document.querySelector(selector)
+  if (!elem) return
+  window.scrollTo(window.scrollX, elemOffsetY(elem) - (getHeaderHeight() | 0))
+}
+
+function elemOffsetY (elem) {
+  return elem.getBoundingClientRect().top + window.pageYOffset - document.documentElement.clientTop
 }
 
 function getDocumentTop () {

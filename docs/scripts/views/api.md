@@ -19,7 +19,7 @@ non-React examples in the console.
 
 Base class for your React components. Supports automatic subscriptions to
 observable data sources such as
-[`Atom`](https://mitranim.com/espo/#-atom-value-). It's a thin adapter between
+[`espo.Atom`](https://mitranim.com/espo/#-atom-value-). It's a thin adapter between
 React components and [`espo.Runner`](https://mitranim.com/espo/#-runner-),
 a general-purpose tool for implicit reactivity.
 

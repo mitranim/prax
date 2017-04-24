@@ -1,7 +1,8 @@
 const React = require('react')
 const ReactDOM = require('react-dom')
 const {PraxComponent, Runner, byPath, equal, get, putIn, putInBy, test} = require('prax')
-const {addEvent, journal, smoothScrollYToSelector, smoothScrollToTop, originHref} = require('../utils')
+const {addEvent, journal, originHref, onlyString,
+  smoothScrollYToSelector, smoothScrollToTop} = require('../utils')
 const {Root} = require('../views')
 
 export function onInit (env) {
@@ -36,6 +37,13 @@ export function onInit (env) {
     const prev = deref(byPath(env.atom, ['nav', 'prevLocation']))
     const next = deref(byPath(env.atom, ['nav', 'location']))
 
+    if (!prev && next && next.hash) {
+      // Probably initial page load. We need to adjust the scroll position
+      // because the browser doesn't account for the fixed header.
+      smoothScrollYToSelector(120, next.hash)
+      return
+    }
+
     if (!prev || !next) return
 
     // HMR
@@ -65,7 +73,14 @@ const localHrefReg = new RegExp(`^${originHref}`, 'i')
 // host embedded markdown.
 export function maybeInterceptAnchorNavigation (event) {
   const anchor = findParent(isAnchor, event.target)
-  if (!anchor || !localHrefReg.test(anchor.href)) return
+  if (
+    !anchor ||
+    !localHrefReg.test(anchor.href) ||
+    event.altKey ||
+    event.ctrlKey ||
+    event.metaKey ||
+    event.shiftKey
+  ) return
   event.preventDefault()
   journal.push(anchor.href.replace(localHrefReg, ''))
 }
@@ -82,4 +97,12 @@ function forceLayoutHeight () {
   // Force height measurement to ensure proper scroll restoration when
   // navigating back and forward. This must be done after a rendering phase.
   document.body.scrollHeight
+}
+
+function getPath (deref, atom) {
+  return onlyString(deref(byPath(atom, ['nav', 'location', 'pathname']))).replace(/^\//, '')
+}
+
+export function correctPageAnchors (text, deref, atom) {
+  return onlyString(text).replace(/href="#(.*)"/g, `href="${getPath(deref, atom)}#$1"`)
 }

@@ -28,7 +28,7 @@ catch (err) {
  * REPL
  */
 
-const prax = require('prax')
+const prax = window.prax = require('prax')
 
 window.app = {...window.app, ...prax, prax, env}
 
