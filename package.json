@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "emerge": "^0.0.28",
-    "espo": "^0.0.9",
+    "espo": "^0.0.10",
     "fpx": "^0.1.0"
   },
   "peerDependencies": {
