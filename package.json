@@ -1,6 +1,6 @@
 {
   "name": "prax",
-  "version": "0.0.99",
+  "version": "0.0.100",
   "main": "dist/index.js",
   "scripts": {
     "start": "gulp",
@@ -72,7 +72,7 @@
     "react": "15.5.4",
     "react-dom": "15.5.4",
     "react-router-dom": "4.1.1",
-    "stylebox": "0.0.8",
+    "stylebox": "aristovn/stylebox#d701a9324ffc59474aefd9a3bf3dff394e2993de",
     "stylific-lite": "0.0.1",
     "transform-loader": "0.2.4",
     "webpack": "2.4.1",
