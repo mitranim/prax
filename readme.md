@@ -1,8 +1,3 @@
-[WIP]
+Framework for organising state and side effects in React applications.
 
-```sh
-npm i
-
-# tab 1
-npm start
-```
+See [documentation](http://mitranim.com/prax/).
