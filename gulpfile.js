@@ -16,7 +16,7 @@ const webpackConfig = require('./webpack.config')
 const src = {
   lib: 'lib/**/*.js',
   dist: 'dist/**/*.js',
-  docHtml: 'docs/html/**/*',
+  docTemplates: 'docs/html/**/*',
   docStyles: 'docs/styles/**/*.scss',
   docStylesMain: 'docs/styles/main.scss',
   docFonts: 'node_modules/font-awesome/fonts/**/*',
@@ -29,19 +29,19 @@ const out = {
   docFonts: 'gh-pages/fonts'
 }
 
-function noop () {}
+const Err = (pluginName, err) => new $.util.PluginError(pluginName, err, {showProperties: false})
 
 /* ********************************* Tasks ***********************************/
 
 /* --------------------------------- Clear ---------------------------------- */
 
 gulp.task('lib:clear', () => (
-  del(out.lib).catch(noop)
+  del(out.lib).catch(console.error.bind(console))
 ))
 
 gulp.task('docs:clear', () => (
   // Skips dotfiles like `.git` and `.gitignore`
-  del(out.docRoot + '/*').catch(noop)
+  del(out.docRoot + '/*').catch(console.error.bind(console))
 ))
 
 gulp.task('clear', gulp.parallel('lib:clear', 'docs:clear'))
@@ -72,16 +72,16 @@ gulp.task('lib:watch', () => {
   $.watch(src.lib, gulp.series('lib:build'))
 })
 
-/* --------------------------------- HTML -----------------------------------*/
+/* ------------------------------ Templates ---------------------------------*/
 
 gulp.task('docs:html:build', () => (
-  gulp.src(src.docHtml)
+  gulp.src(src.docTemplates)
     .pipe($.statil(statilConfig))
     .pipe(gulp.dest(out.docRoot))
 ))
 
 gulp.task('docs:html:watch', () => {
-  $.watch(src.docHtml, gulp.series('docs:html:build'))
+  $.watch(src.docTemplates, gulp.series('docs:html:build'))
 })
 
 /* -------------------------------- Styles ----------------------------------*/
@@ -118,13 +118,12 @@ gulp.task('docs:fonts:watch', () => {
 gulp.task('docs:scripts:build', done => {
   webpack(webpackConfig, (err, stats) => {
     if (err) {
-      throw new $.util.PluginError('webpack', err, {showProperties: false})
+      done(Err('webpack', err))
     }
-    $.util.log('[webpack]', stats.toString(webpackConfig.stats))
-    if (stats.hasErrors()) {
-      throw new $.util.PluginError('webpack', 'plugin error', {showProperties: false})
+    else {
+      $.util.log('[webpack]', stats.toString(webpackConfig.stats))
+      done(stats.hasErrors() ? Err('webpack', 'plugin error') : null)
     }
-    done()
   })
 })
 

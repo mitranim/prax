@@ -1,30 +1,20 @@
-const {Atom, Lifecycler, DeinitDict, MessageQue, bindAll, derefIn, assign} = require('prax')
+const {Atom, Lifecycler, MessageQue, bindAll, derefIn} = require('prax')
 const dom = require('./features/dom')
-const misc = require('./features/misc')
-const {MockUserResource} = require('./features/user-atom')
 
 export class Env extends Lifecycler {
   constructor () {
     super()
     bindAll(this)
-    this.dd = new DeinitDict()
   }
 
   onInit (prevEnv) {
-    this.onDeinit(this.dd.deinit)
+    this.mq = new MessageQue()
+    this.onDeinit(() => this.mq.deinit())
 
-    const owned = {
-      mq: new MessageQue(),
-      atom: new Atom(derefIn(prevEnv, ['atom'])),
-      user: new MockUserResource(this),
-    }
-
-    this.dd.own(owned)
-    assign(this, owned)
+    this.atom = new Atom(derefIn(prevEnv, ['atom']))
+    this.onDeinit(() => this.atom.deinit())
 
     if (prevEnv) prevEnv.deinit()
-
-    misc.onInit(this)
 
     dom.onInit(this)
   }

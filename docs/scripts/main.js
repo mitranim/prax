@@ -8,8 +8,6 @@ if (module.hot) {
   })
 }
 
-require('simple-pjax')
-
 if (!window.app) window.app = {}
 
 const {Env} = require('./env')
@@ -30,16 +28,15 @@ catch (err) {
  * REPL
  */
 
-const React = require('react')
 const prax = require('prax')
 
-window.app = {...window.app, ...prax, prax, React, env}
+window.app = {...window.app, ...prax, prax, env}
 
 delete window.app.isNaN
 delete window.app.isFinite
 delete window.app.exports
 
-if (window.devMode) {
+if (!window.ENV.prod) {
   Object.assign(window, window.app)
   ;['log', 'info', 'warn', 'error', 'clear'].forEach(key => {
     if (!/bound/.test(console[key].name)) {

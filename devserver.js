@@ -1,11 +1,24 @@
 'use strict'
 
 const bs = require('browser-sync').create()
-
+const {log} = require('gulp-util')
+const {mapVals} = require('fpx')
 const config = require('./webpack.config')
 
-const compiler = require('webpack')(extend(config, {
-  entry: ['webpack-hot-middleware/client', config.entry]
+const prod = process.env.NODE_ENV === 'production'
+
+if (prod) {
+  require('webpack')(config).watch({}, (err, stats) => {
+    log('[webpack]', stats.toString(config.stats))
+    if (err) log('[webpack]', err.message)
+  })
+}
+
+const compiler = prod ? null : require('webpack')(extend(config, {
+  entry: mapVals(
+    fsPath => ['webpack-hot-middleware/client', fsPath],
+    config.entry
+  ),
 }))
 
 bs.init({
@@ -13,16 +26,19 @@ bs.init({
   server: {
     baseDir: 'gh-pages',
     middleware: [
-      require('webpack-dev-middleware')(compiler, {
-        publicPath: '/prax',
-        noInfo: true
-      }),
-      require('webpack-hot-middleware')(compiler),
       (req, res, next) => {
         req.url = req.url.replace(/^\/prax\//, '').replace(/^[/]*/, '/')
         next()
       },
-    ]
+      ...(prod ? [] : [
+        require('webpack-dev-middleware')(compiler, {
+          publicPath: config.output.publicPath,
+          stats: config.stats,
+        }),
+        require('webpack-hot-middleware')(compiler),
+      ]),
+      require('connect-history-api-fallback')(),
+    ],
   },
   port: 7686,
   files: 'gh-pages',
@@ -30,9 +46,9 @@ bs.init({
   online: false,
   ui: false,
   ghostMode: false,
-  notify: false
+  notify: false,
 })
 
-function extend (...args) {
-  return args.reduce(Object.assign, {})
+function extend () {
+  return Object.assign({}, ...arguments)
 }

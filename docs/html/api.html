@@ -1,9 +1,0 @@
-{% extend('index.html') %}
-
-<nav class="nav-h">
-  <a href="api/" class="{{path === 'api.html' ? 'active' : ''}}">index</a>
-</nav>
-
-<article>
-  {{path === 'api.html' ? md(include('partials/api/index.md')) : content}}
-</article>

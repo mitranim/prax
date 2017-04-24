@@ -17,7 +17,7 @@
     "eqeqeq": ["error", "allow-null"],
     "indent": ["error", 2, {"SwitchCase": 1}],
     "jsx-quotes": ["error", "prefer-single"],
-    "max-len": ["error", 100],
+    // "max-len": ["error", 100],
     "no-cond-assign": "error",
     "no-console": "off",
     "no-empty": "off",

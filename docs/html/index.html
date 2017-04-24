@@ -2,22 +2,16 @@
 
 <base href="/prax/">
 <meta charset="utf-8">
-<title>{{typeof title === 'string' ? title + ' | prax' : 'prax'}}</title>
+<title>prax</title>
 <link rel="stylesheet" href="styles/main.css">
 <link rel="icon" href="data:;base64,=">
 
-{% if (!prod) { %}
-<script>
-  window.devMode = true
-</script>
-{% } %}
-
 <body></body>
 
-{{include('partials/nav.html')}}
+<div id="root"></div>
 
-<article>
-  {{path === 'index.html' ? md(include('partials/index.md')) : content}}
-</article>
+<script>
+  window.ENV = {prod: {{Boolean(prod)}}, version: '{{version}}'}
+</script>
 
-<script src="main.js"></script>
+<script src="scripts/main.js"></script>

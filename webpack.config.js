@@ -5,32 +5,52 @@ const webpack = require('webpack')
 const prod = process.env.NODE_ENV === 'production'
 
 module.exports = {
-  entry: pt.resolve('docs/scripts/main.js'),
+  entry: {
+    main: pt.resolve('docs/scripts/main.js'),
+  },
 
   output: {
-    path: pt.resolve('gh-pages'),
-    filename: 'main.js'
+    path: pt.resolve('gh-pages/scripts'),
+    filename: '[name].js',
+    // For dev middleware
+    publicPath: '/scripts/',
   },
 
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.js$/,
-        loader: 'babel',
-        include: pt.resolve('docs/scripts')
+        include: pt.resolve('docs/scripts'),
+        use: {loader: 'babel-loader'},
       },
       ...(!prod ? [] : [
         {
           test: /react.*\.jsx?$/,
           include: /node_modules/,
-          loader: 'transform?envify'
+          use: {loader: 'transform-loader', options: {envify: true}},
         }
-      ])
+      ]),
+      {
+        test: /\.md$/,
+        include: pt.resolve('docs'),
+        use: [
+          {loader: 'html-loader'},
+          {loader: 'md-loader'},
+        ],
+      },
     ]
   },
 
   resolve: {
-    alias: {prax: process.cwd()}
+    alias: {
+      prax: process.cwd(),
+    },
+  },
+
+  resolveLoader: {
+    alias: {
+      'md-loader': pt.resolve('md-loader.js'),
+    }
   },
 
   plugins: [
@@ -45,7 +65,7 @@ module.exports = {
     ])
   ],
 
-  devtool: prod ? 'source-map' : null,
+  devtool: prod ? 'source-map' : false,
 
   // For static build. See gulpfile.
   stats: {
