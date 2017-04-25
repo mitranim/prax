@@ -202,7 +202,7 @@ Creates an _observable computation_ from the provided definition, using the same
 procedural reactivity as [`PraxComponent`](#-praxcomponent-). Lazy: doesn't
 update when it has no subscribers. Can be used in views or reactions.
 
-See [Reactive Computations](examples#reactive-computations) for a bigger example.
+See [Reactive Computations](examples#reactive-computations) for another example.
 
 ```js
 const {Atom, PraxComponent, computation} = require('prax')
