@@ -1,4 +1,4 @@
-const {mergeBy, ifelse, id, val, bind, foldl,
+const {mergeBy, ifelse, id, val, bind, foldl, rest,
   isFunction, isString, isNatural, isFinite, validate} = require('prax')
 
 export function addEvent (target, name, fun, useCapture = false) {
@@ -20,7 +20,7 @@ export function jsonDecode (value) {
 }
 
 // Similar to `merge`, but has a special merge tactic for `className`.
-export const mix = bind(foldl, bind(mergeBy, mergeClassName), {})
+export const mix = rest(bind(foldl, bind(mergeBy, mergeClassName), {}))
 
 function mergeClassName (left, right, key) {
   return key === 'className'

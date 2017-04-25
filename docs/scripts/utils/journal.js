@@ -1,4 +1,4 @@
-import createBrowserHistory from 'history/createBrowserHistory'
+const createBrowserHistory = require('history/createBrowserHistory')
 
 const baseNode = document.querySelector('head base')
 

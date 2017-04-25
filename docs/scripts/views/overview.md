@@ -5,7 +5,7 @@ It's heavily inspired by Redux, Clojure, ClojureScript libraries, and has been
 battle-tested in large apps since 2015. Prax's role in your app is roughly
 comparable to a combination of Redux with addons, ImmutableJS, and RxJS.
 
-Prax is not buzz-driven. and doesn't subscribe to an ideology. It's not
+Prax is not buzz-driven, and doesn't subscribe to an ideology. It's not
 particularly functional, object-oriented, or FRP-centric. It's built on solid
 ideas carefully pilfered from several languages and frameworks, it tries hard to
 be general and not over-abstract, and it attacks real, hard problems.
