@@ -17,11 +17,12 @@ non-React examples in the console.
 
 `extends React.PureComponent`
 
-Base class for your React components. Supports automatic subscriptions to
-observable data sources such as
-[`espo.Atom`](https://mitranim.com/espo/#-atom-value-). It's a thin adapter between
-React components and [`espo.Runner`](https://mitranim.com/espo/#-runner-),
-a general-purpose tool for implicit reactivity.
+Base class for your React components. Automatically subscribes to observable
+references such as
+[`espo.Atom`](https://mitranim.com/espo/#-atom-value-) accessed during rendering.
+It's a thin adapter between React components and
+[`espo.Reaction`](https://mitranim.com/espo/#-reaction-), a general-purpose
+tool for procedural reactivity.
 
 ```js
 const React = require('react')
@@ -54,13 +55,14 @@ class View extends PraxComponent {
 render(<View />, document.getElementById('root'))
 ```
 
-### `praxComponent.subrender(runner)`
+### `praxComponent.subrender(reaction)`
 
 In Prax components, you must define `subrender` instead of `render`.
 
-Receives the instance of [`espo.Runner`](https://mitranim.com/espo/#-runner-)
-associated with this component instance. Use `runner.deref()` to pull data from
-observable refs and automatically subscribe.
+Receives the instance of
+[`espo.Reaction`](https://mitranim.com/espo/#-reaction-)
+associated with this component instance. Use `reaction.deref()` to pull data
+from observable refs and automatically subscribe.
 
 ```js
 const {Atom, PraxComponent, byPath} = require('prax')
@@ -126,33 +128,113 @@ You may want to override `shouldComponentUpdate` if:
   * props or state contain extremely large data structures
   * props or state may receive genuinely different functions under the same key
 
-## `byPath(observable, path)`
+## `byQuery(observableRef, query)`
 
-Observes the value inside `observable` at `path`. Example:
+where `query: ƒ(any): any`
+
+Creates an observable that derives its value from `observableRef` by applying
+`query` to it. Can be used in views or reactions.
 
 ```js
-const {Atom, Runner, byPath} = require('prax')
+const {Atom, PraxComponent, byPath} = require('prax')
+
+const atom = new Atom({msg: 'Hello', name: 'world'})
+
+const greeting = byQuery(atom, ({msg, name}) => `${msg} ${name}!`)
+
+const sub = greeting.subscribe(greeting => {
+  console.info('greeting:', greeting.deref())
+})
+
+atom.swap(putIn, ['name'], 'sunshine')
+// greeting: Hello sunshine!
+
+// When you're done
+sub.deinit()
+
+class MyView extends PraxComponent {
+  subrender({deref}) {
+    return <div>{deref(greeting)}</div>
+  }
+}
+```
+
+Shortcut to
+[`espo.Query`](https://mitranim.com/espo/#-query-observableref-path-equal-)
+with [`emerge.equal`](https://github.com/Mitranim/emerge#equalone-other).
+
+In RxJS terms, `byQuery(observableRef, query)` is equivalent to:
+
+```js
+const {equal} = require('emerge')
+observable.map(query).distinctUntilChanged(equal)
+```
+
+## `byPath(observableRef, path)`
+
+Creates an observable that derives its value by reading it from `observableRef`
+at `path`.
+
+```js
+const {Atom, PraxComponent, byPath} = require('prax')
 
 const atom = new Atom({msg: {greeting: 'Hello world!'}})
+
 const greeting = byPath(atom, ['msg', 'greeting'])
 
-const runner = Runner.loop(({deref}) => {
-  console.info('greeting:', deref(greeting))
+const sub = greeting.subscribe(greeting => {
+  console.info('greeting:', greeting.deref())
 })
 
 // When you're done
-runner.deinit()
+sub.deinit()
 ```
 
-Shortcut to [`espo.PathQuery`](https://mitranim.com/espo/#-pathquery-observableref-path-)
+Shortcut to
+[`espo.PathQuery`](https://mitranim.com/espo/#-pathquery-observableref-path-equal-)
 with [`emerge.equal`](https://github.com/Mitranim/emerge#equalone-other).
 
-In RxJS terms, `byPath(observable, path)` is equivalent to:
+## `computation(def)`
+
+where `def: ƒ(reaction)`
+
+Creates an _observable computation_ from the provided definition, using the same
+procedural reactivity as [`PraxComponent`](#-praxcomponent-). Lazy: doesn't
+update when it has no subscribers. Can be used in views or reactions.
+
+See [Reactive Computations](examples#reactive-computations) for a bigger example.
 
 ```js
-const {getIn, equal} = require('emerge')
-observable.map(value => getIn(value, path)).distinct(equal)
+const {Atom, PraxComponent, computation} = require('prax')
+
+const greeting = new Atom('Hello')
+const name = new Atom('world')
+
+const msg = computation(({deref}) => {
+  return `${deref(greeting)} ${deref(name)}!`
+})
+
+const sub = computation.subscribe(computation => {
+  console.info('msg:', computation.deref())
+})
+// msg: Hello world!
+
+name.reset('sunshine')
+// msg: Hello sunshine!
+
+// When you're done
+sub.deinit()
+
+class View extends PraxComponent {
+  subrender ({deref}) {
+    return <div>{deref(msg)}</div>
+  }
+}
 ```
+
+Shortcut to
+[`espo.Computation`](https://mitranim.com/espo/#-computation-def-equal-)
+with [`emerge.equal`](https://github.com/Mitranim/emerge#equalone-other).
 
 ## `on(argPattern, fun)`
 
@@ -192,8 +274,8 @@ listener({type: 'greeting'}, {message: 'Hello world!'})
 General-purpose tools for observables, subscriptions, broadcasts. Lightweight
 alternative to RxJS. Provides the core mechanisms Prax is built on: observable
 refs such as [`Atom`](https://mitranim.com/espo/#-atom-value-), implicit
-subscriptions via [`Runner`](https://mitranim.com/espo/#-runner-), and an
-[event system](examples#event-system) via
+subscriptions via [`Reaction`](https://mitranim.com/espo/#-reaction-),
+and an [event system](examples#event-system) via
 [`MessageQue`](https://mitranim.com/espo/#-messageque-).
 
 Docs: https://mitranim.com/espo/

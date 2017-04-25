@@ -84,6 +84,8 @@ pre, code {
 .fa-code::before          {content: $fa-var-code}
 .fa-github::before        {content: $fa-var-github}
 .fa-link::before          {content: $fa-var-link}
+.fa-chain::before         {content: $fa-var-chain}
+.fa-chain-broken::before  {content: $fa-var-chain-broken}
 .fa-external-link::before {content: $fa-var-external-link}
 .fa-twitter::before       {content: $fa-var-twitter}
 
@@ -152,14 +154,26 @@ a.undecorated {
   border: none;
 }
 
-article p a {
+article p a, article ul a, article ol a {
   @extend a.decorated;
 }
 
-a.heading-anchor {
+.heading-anchor, a.heading-anchor {
   color: gray;
   font-size: 0.8em;
   margin-left: 0.2em;
+
+  display: none;
+  [id]:hover > &, :target > &, .hash-target-active > & {
+    display: inline-block;
+  }
+}
+
+:target, .hash-target-active {
+  background-color: $color-code-bg;
+  animation-name: backgroundFlash;
+  animation-duration: 2s;
+  animation-timing-function: ease-out;
 }
 
 article {
@@ -178,16 +192,14 @@ article p {
   margin-bottom: 1rem;
 }
 
-.sidenav {
-  @extend .col-start-stretch;
-  // min-width: 15%;
-  max-width: 50%;
+.padding-stocky {
+  @extend .padding-0x5-v;
+  @extend .padding-1-h;
 }
 
 .sidenav-link {
   @extend .row-between-center;
-  @extend .padding-0x5-v;
-  @extend .padding-1-h;
+  @extend .padding-stocky;
 }
 
 .sidenav-link::after {
@@ -237,4 +249,16 @@ article th, article td {
 
 .fg-gray {
   color: gray;
+}
+
+@keyframes backgroundFlash {
+  0% {
+    background-color: $color-code-bg;
+  }
+  33% {
+    background-color: darken($color-code-bg, 20%);
+  }
+  50%, 100% {
+    background-color: $color-code-bg;
+  }
 }

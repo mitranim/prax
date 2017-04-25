@@ -1,11 +1,32 @@
 const React = require('react')
 const ReactDOM = require('react-dom')
-const {PraxComponent, Runner, byPath, equal, get, putIn, putInBy, test} = require('prax')
+const {PraxComponent, Reaction,
+  byPath, equal, get, putIn, putInBy, test} = require('prax')
 const {addEvent, journal, originHref, onlyString,
   smoothScrollYToSelector, smoothScrollToTop} = require('../utils')
 const {Root} = require('../views')
 
 export function onInit (env) {
+  env.onDeinit(addEvent(document, 'keydown', ({keyCode}) => {
+    env.atom.swap(putIn, ['keyCode'], keyCode)
+  }))
+
+  // Location
+
+  function updateLocation (location) {
+    env.atom.swap(putInBy, ['nav'], nav => ({
+      lastAction: journal.action,
+      prevLocation: get(nav, 'location'),
+      location,
+    }))
+  }
+
+  updateLocation(journal.location)
+
+  env.onDeinit(journal.listen(updateLocation))
+
+  // Rendering
+
   PraxComponent.prototype.env = env
 
   const rootNode = document.getElementById('root')
@@ -17,29 +38,18 @@ export function onInit (env) {
     })
   }
 
-  env.onDeinit(addEvent(document, 'keydown', ({keyCode}) => {
-    env.atom.swap(putIn, ['keyCode'], keyCode)
-  }))
+  // Scroll
 
-  function updateLocation (location) {
-    env.atom.swap(putInBy, ['nav'], nav => ({
-      prevLocation: get(nav, 'location'),
-      location,
-    }))
-  }
-
-  updateLocation(journal.location)
-
-  env.onDeinit(journal.listen(updateLocation))
-
-  // Scroll behaviour
-  const runner = Runner.loop(({deref}) => {
+  const reaction = Reaction.loop(({deref}) => {
     const prev = deref(byPath(env.atom, ['nav', 'prevLocation']))
     const next = deref(byPath(env.atom, ['nav', 'location']))
+    const action = deref(byPath(env.atom, ['nav', 'lastAction']))
 
     if (!prev && next && next.hash) {
       // Probably initial page load. We need to adjust the scroll position
-      // because the browser doesn't account for the fixed header.
+      // because the browser doesn't account for the fixed header. If the page
+      // got refreshed in-place, Chrome will overwrite this with the previous
+      // scroll position, after a brief flicker. Haven't tested other browsers.
       smoothScrollYToSelector(120, next.hash)
       return
     }
@@ -49,7 +59,7 @@ export function onInit (env) {
     // HMR
     if (equal(prev, next)) return
 
-    if (journal.action === 'POP') {
+    if (action === 'POP') {
       // Stimulate the browser to restore the scroll position.
       forceLayoutHeight()
       return
@@ -63,7 +73,7 @@ export function onInit (env) {
     smoothScrollToTop(120)
   })
 
-  env.onDeinit(() => runner.deinit())
+  env.onDeinit(() => reaction.deinit())
 }
 
 const localHrefReg = new RegExp(`^${originHref}`, 'i')
@@ -99,10 +109,13 @@ function forceLayoutHeight () {
   document.body.scrollHeight
 }
 
-function getPath (deref, atom) {
-  return onlyString(deref(byPath(atom, ['nav', 'location', 'pathname']))).replace(/^\//, '')
-}
-
+// Ridiculous. This is a consequence of compiling markdown to HTML, and of the
+// :target selector not working with pushState. Should look deeper into
+// markdown-React integration.
 export function correctPageAnchors (text, deref, atom) {
-  return onlyString(text).replace(/href="#(.*)"/g, `href="${getPath(deref, atom)}#$1"`)
+  const id = onlyString(deref(byPath(atom, ['nav', 'location', 'hash']))).replace(/^#/, '')
+  const path = onlyString(deref(byPath(atom, ['nav', 'location', 'pathname']))).replace(/^\//, '')
+  return onlyString(text)
+    .replace(/href="#(.*)"/g, `href="${path}#$1"`)
+    .replace(`id="${id}"`, `id="${id}" class="hash-target-active"`)
 }

@@ -2,15 +2,81 @@
 
 Prax is a framework for organising state and side effects in React applications.
 It's heavily inspired by Redux, Clojure, ClojureScript libraries, and has been
-battle-tested in large apps since 2015.
+battle-tested in large apps since 2015. Prax's role in your app is roughly
+comparable to a combination of Redux with addons, ImmutableJS, and RxJS.
 
-Prax is not buzzword-driven. It's built on solid ideas carefully pilfered from
-several languages and frameworks. It doesn't subscribe to an ideology. It's not
-particularly functional, object-oriented, or FRP-centric, it doesn't "follow the
-leader" to gain fame, it tries very hard to be general and not over-abstract,
-and it attacks real, hard problems.
+Prax is not buzz-driven. and doesn't subscribe to an ideology. It's not
+particularly functional, object-oriented, or FRP-centric. It's built on solid
+ideas carefully pilfered from several languages and frameworks, it tries hard to
+be general and not over-abstract, and it attacks real, hard problems.
 
-Dive into the [API Reference](api) and [examples](examples).
+Dive into the [API Reference](api) and [examples](examples). Read forth for the
+[motivation](#problems-and-solutions) and [big ideas](#big-ideas) behind Prax.
+
+## Problems and Solutions
+
+Prax solves many problems by design. These are just the biggest ones that come
+to mind.
+
+Problem: reactive UI and event-driven logic requires subscriptions and
+unsubscriptions. This is equivalent to manual memory management, and we
+shouldn't have to do it.
+
+  * Non-solution: manual subscriptions; humans can't be trusted with cleanup.
+Another non-solution: specialised "declarative" APIs like `react-redux`. They
+tend to have one use, and we can do better.
+
+  * Prax solution: reactivity driven by _procedural_ data access. See
+[`PraxComponent`](api#-praxcomponent-) for a UI example,
+[Reactive Logic](examples#reactive-logic) for a side effect example, and
+[Reactive Computations](examples#reactive-computations) for a data example.
+
+Problem: unused resources should automatically deinitialise. I call this
+[demand-driven design](misc#_demand-driven_). When nobody's looking, you should
+evict data from cache, abort requests, close websockets, etc., and it should be
+part of your reactivity model. This is crucial for a subscription-based API such
+as Firebase.
+
+  * Non-solution: using only immutable data and pure functions. Many
+[resources](misc#_resource_) are inherently mutable, you can't pretend that
+you're only dealing with data; pure functions can't track subscribers.
+
+  * Prax solution: lazy resources that init/deinit on demand; see
+[example](examples#demand-driven-resources). Define multiple resources
+that manage the lifecycle of immutable data.
+
+Problem: coordinating async activities that depend on multiple conditions.
+Example: loading user profile when authorised, evicting it when deauthorised,
+and reloading it if the user has changed. It's even harder to write asynchronous
+code that may start an activity, then _restart_ or _change_ it when the
+conditions change.
+
+* Non-solution: ignoring the problem. It leads to nasty race conditions such as
+trying to load private data before authorising the user. Another non-solution:
+using promises or any inherently asynchronous abstraction. It leads to UI jank.
+
+* Prax solution: expressing logic and side effects as reactive definitions. See
+[Reactive Logic](examples#reactive-logic).
+
+## Big Ideas
+
+[Implicit reactivity](api#-praxcomponent-) driven by procedural data access.
+
+[Demand-driven resources](examples#demand-driven-resources), friendly to lazy
+init/deinit and cache eviction.
+
+[Reactive logic](examples#reactive-logic), defining side effects as a function
+of state.
+
+Combine the strengths of FP and OOP. Store your data in immutable, functional
+data types, manipulating it with [generic functions](api#emerge). Conduct the
+_flow_ of data and side effects with proven tools such as
+[lazy observables](examples#demand-driven-resources) and
+[event streams](examples#event-system), or the novel tools offered by Prax.
+
+Centralise your resources and data, starting with a root object. Make the root
+available everywhere in the app. This avoids the need for over-designed props,
+dependency injection, etc.
 
 ## Inspiration
 

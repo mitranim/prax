@@ -16,7 +16,7 @@ export class Header extends PraxComponent {
         <a
           href='https://github.com/Mitranim/prax'
           target='_blank'
-          className='padding-1 theme-interact-inverse children-margin-0x5-h'>
+          className='fat-rectangle theme-interact-inverse children-margin-0x5-h'>
           <span>Source</span>
           <span className='fa fa-github' />
         </a>

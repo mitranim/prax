@@ -15,8 +15,9 @@ const webpackConfig = require('./webpack.config')
 
 const src = {
   lib: 'lib/**/*.js',
-  dist: 'dist/**/*.js',
-  docTemplates: 'docs/html/**/*',
+  libDist: 'dist/**/*.js',
+  docHtml: 'docs/html/**/*',
+  docScripts: 'docs/scripts/**/*.js',
   docStyles: 'docs/styles/**/*.scss',
   docStylesMain: 'docs/styles/main.scss',
   docFonts: 'node_modules/font-awesome/fonts/**/*',
@@ -55,7 +56,7 @@ gulp.task('lib:compile', () => (
 ))
 
 gulp.task('lib:minify', () => (
-  gulp.src(src.dist, {ignore: '**/*.min.js'})
+  gulp.src(src.libDist, {ignore: '**/*.min.js'})
     .pipe($.uglify({
       mangle: true,
       compress: {screw_ie8: true}
@@ -75,13 +76,13 @@ gulp.task('lib:watch', () => {
 /* ------------------------------ Templates ---------------------------------*/
 
 gulp.task('docs:html:build', () => (
-  gulp.src(src.docTemplates)
+  gulp.src(src.docHtml)
     .pipe($.statil(statilConfig))
     .pipe(gulp.dest(out.docRoot))
 ))
 
 gulp.task('docs:html:watch', () => {
-  $.watch(src.docTemplates, gulp.series('docs:html:build'))
+  $.watch(src.docHtml, gulp.series('docs:html:build'))
 })
 
 /* -------------------------------- Styles ----------------------------------*/
@@ -127,6 +128,15 @@ gulp.task('docs:scripts:build', done => {
   })
 })
 
+/* --------------------------------- Lint ---------------------------------- */
+
+gulp.task('lint', () => (
+  gulp.src([src.lib, src.docScripts])
+    .pipe($.eslint())
+    .pipe($.eslint.format())
+    .pipe($.eslint.failAfterError())
+))
+
 /* -------------------------------- Server ----------------------------------*/
 
 gulp.task('docs:server', () => {
@@ -162,6 +172,6 @@ gulp.task('watch', gulp.parallel(
   'docs:server'
 ))
 
-gulp.task('build', gulp.series('clear', 'buildup', 'docs:scripts:build'))
+gulp.task('build', gulp.series('clear', 'lint', 'buildup', 'docs:scripts:build'))
 
 gulp.task('default', gulp.series('clear', 'buildup', 'watch'))

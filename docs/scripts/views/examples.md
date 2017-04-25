@@ -1,4 +1,4 @@
-### Basic Usage
+## Basic Usage
 
 ```js
 const React = require('react')
@@ -28,17 +28,17 @@ class View extends PraxComponent {
 render(<View />, document.getElementById('root'))
 ```
 
-### Demand-Driven Resources
+## Demand-Driven Resources
 
-Biggest disadvantage of centralising your data: it becomes difficult to
-implement demand-driven design where resources initialise when used, and unused
-resources are deinitialised and evicted from cache.
+Biggest disadvantage of centralising your data and making it all immutable: it
+becomes difficult to implement demand-driven design where resources initialise
+when used, and unused resources are deinitialised and evicted from cache.
 
-"Unused resources" includes data, websockets, HTTP requests, blob URLs that must be
+"Unused resources" includes HTTP requests, websockets, blob URLs that must be
 [manually garbage-collected](https://developer.mozilla.org/en-US/docs/Web/API/URL/revokeObjectURL),
-and so on.
+large data that could be moved to a disk cache, and so on.
 
-Prax makes it unbelievably easy with
+Prax makes it extremely easy with
 [lazy observables](https://mitranim.com/espo/#-observable-)
 that initialise/deinitialise based on subscription count.
 
@@ -91,7 +91,7 @@ If we navigate away from `View` before the request has finished, and no other
 component is trying to read data from `someResource`, _the unused request will
 be aborted_. How cool is that?
 
-### Event System
+## Event System
 
 Having a global broadcast system is a popular and useful pattern in modern web
 applications. Prax comes with nifty utilities for that.
@@ -100,12 +100,18 @@ applications. Prax comes with nifty utilities for that.
 [`on`](api#-on-argpattern-fun-) are strictly more expressive than Node.js-style
 event emitters. You decide your own event format, argument count, and so on.
 
+`MessageQue` is a better event system than a Redux store. It supports arbitrary
+arguments and can enque more than 1 dispatch at a time, processing them linearly
+without overlaps. It's also resilient to exceptions: exceptions in subscribers
+never interfere with other subscribers or messages. This can prevent subtle
+gotchas and potentially save you hours of debugging.
+
 ```js
 const {MessageQue, on, truthy} = require('prax')
 
 const mq = new MessageQue()
 
-// Two arguments
+// Match two arguments
 const sub0 = mq.subscribe(on(
   ['greeting', {message: truthy}],
   (type, {message}) => {
@@ -113,7 +119,7 @@ const sub0 = mq.subscribe(on(
   }
 ))
 
-// One argument
+// Match one argument
 const sub1 = mq.subscribe(on(
   [{type: 'key', keyName: 'Enter'}],
   ({keyName}) => {
@@ -130,7 +136,7 @@ sub0.deinit()
 sub1.deinit()
 ```
 
-### Reactive Logic
+## Reactive Logic
 
 Forget event handlers. Write application logic, and side effects, as reactive
 definitions!
@@ -170,8 +176,6 @@ This example also demonstrates [demand-driven resources](#demand-driven-resource
 
 ```js
 const {Atom, PraxComponent, byPath, putIn, noop} = require('prax')
-const {Xhttp} = require('xhttp')
-
 const firebase = require('firebase/app').initializeApp(myConfig)
 
 class MessagesResource extends Atom {
@@ -185,14 +189,16 @@ class MessagesResource extends Atom {
   onInit () {
     const resource = this
 
-    // Adding more conditions would be trivial
-    resource.runner = Runner.loop(({deref}) => {
-      // Stop being authed      -> rerun
-      // Auth as different user -> rerun
-      const userId = byPath(resource.store, ['user', 'uid'])
-
+    // Note: this has only 1-2 branches.
+    resource.reaction = Reaction.loop(({deref}) => {
       resource.unsub()
       resource.reset(null)
+
+      // Reruns when unauthed or authed as a different user
+      const userId = deref(byPath(resource.store, ['user', 'uid']))
+
+      // Adding new conditions is trivial: just pull more data
+      // const otherRelevantInfo = deref(someOtherResource)
 
       if (userId) {
         const ref = firebase.database().ref(`messages/${userId}`)
@@ -206,7 +212,7 @@ class MessagesResource extends Atom {
 
   // This runs when losing last subscriber (view disappears)
   onDeinit () {
-    this.runner.deinit()
+    this.reaction.deinit()
     this.unsub()
   }
 }
@@ -235,6 +241,38 @@ class MessagesView extends PraxComponent {
       : messages.map(message => (
         <Message message={message} key={message.id} />
       ))
+  }
+}
+```
+
+## Reactive Computations
+
+Define your data as a reactive computation on other data by using
+[`computation`](api#-computation-def-).
+
+This idea is lifted directly from [Reagent's `reaction`](https://github.com/Day8/re-frame/blob/master/docs/SubscriptionFlow.md#how-flow-happens-in-reagent).
+
+```js
+const {Atom, PraxComponent, byPath, computation} = require('prax')
+
+const store = new Atom({user: {firstName: 'Mira', lastName: 'Nova'}})
+
+const fullName = computation(({deref}) => {
+  const first = deref(byPath(store, ['user', 'firstName']))
+  const last = deref(byPath(store, ['user', 'lastName']))
+  return `${first} ${last}`
+})
+
+const sub = fullName.subscribe(fullName => {
+  console.info(fullName.deref())
+})
+
+// When you're done
+sub.deinit()
+
+class UserView extends PraxComponent {
+  subrender ({deref}) {
+    return <div>{deref(fullName)}</div>
   }
 }
 ```
