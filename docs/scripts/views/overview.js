@@ -15,12 +15,10 @@ export class Overview extends PraxComponent {
           <NavLink to='#big-ideas' className='sidenav-link'>Big Ideas</NavLink>
           <NavLink to='#inspiration' className='sidenav-link'>Inspiration</NavLink>
         </div>
-        <div>
-          <article
-            className='flex-4 padding-stocky'
-            onClick={maybeInterceptAnchorNavigation}
-            {...htmlProps(correctPageAnchors(require('./overview.md'), deref, atom))} />
-        </div>
+        <article
+          className='flex-4 padding-stocky'
+          onClick={maybeInterceptAnchorNavigation}
+          {...htmlProps(correctPageAnchors(require('./overview.md'), deref, atom))} />
       </div>
     )
   }

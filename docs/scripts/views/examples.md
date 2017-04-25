@@ -104,7 +104,7 @@ event emitters. You decide your own event format, argument count, and so on.
 arguments and can enque more than 1 dispatch at a time, processing them linearly
 without overlaps. It's also resilient to exceptions: exceptions in subscribers
 never interfere with other subscribers or messages. This can prevent subtle
-gotchas and potentially save you hours of debugging.
+gotchas and save you hours of debugging.
 
 ```js
 const {MessageQue, on, truthy} = require('prax')
