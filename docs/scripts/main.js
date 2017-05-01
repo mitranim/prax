@@ -8,6 +8,8 @@ if (module.hot) {
   })
 }
 
+const {deinit} = require('prax')
+
 if (!window.app) window.app = {}
 
 const {Env} = require('./env')
@@ -17,10 +19,13 @@ const prevEnv = window.app.env
 export const env = window.app.env = new Env()
 
 try {
+  // Env should deinit prevEnv
   env.init(prevEnv)
 }
 catch (err) {
-  if (prevEnv) prevEnv.deinit()
+  // Now it's up to us
+  deinit(prevEnv)
+  deinit(env)
   throw err
 }
 

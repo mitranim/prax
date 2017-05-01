@@ -6,8 +6,8 @@ export const Link = RouterLink
 
 export class NavLink extends PraxComponent {
   subrender ({deref}) {
-    const {env: {atom}, props: {to, ...props}} = this
-    const location = deref(byPath(atom, ['nav', 'location']))
+    const {env, props: {to, ...props}} = this
+    const location = deref(byPath(env, ['nav', 'location']))
 
     return (
       <RouterNavLink

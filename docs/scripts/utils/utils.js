@@ -1,5 +1,4 @@
-const {mergeBy, ifelse, id, val, bind, foldl, rest,
-  isFunction, isString, isNatural, isFinite, validate} = require('prax')
+const {TaskQue, ifelse, id, val, isFunction, isString, isNatural, isFinite, validate} = require('prax')
 
 export function addEvent (target, name, fun, useCapture = false) {
   validate(isFunction, fun)
@@ -17,15 +16,6 @@ export function jsonEncode (value) {
 export function jsonDecode (value) {
   try {return JSON.parse(value)}
   catch (_) {return null}
-}
-
-// Similar to `merge`, but has a special merge tactic for `className`.
-export const mix = rest(bind(foldl, bind(mergeBy, mergeClassName), {}))
-
-function mergeClassName (left, right, key) {
-  return key === 'className'
-    ? `${onlyString(left)} ${onlyString(right)}`.trim()
-    : undefined
 }
 
 export const onlyString = ifelse(isString, id, val(''))
@@ -121,5 +111,24 @@ export function doEachFrameWhile (fun) {
 
   return function abort () {
     cancelAnimationFrame(id)
+  }
+}
+
+// WTB better name
+export class CleanupQue extends TaskQue {
+  constructor () {
+    super()
+    this.dam()
+  }
+
+  flush () {
+    if (this.state !== this.state.FLUSHING) {
+      try {super.flush()}
+      finally {this.dam()}
+    }
+  }
+
+  deinit () {
+    this.flush()
   }
 }

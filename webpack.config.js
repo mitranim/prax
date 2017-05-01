@@ -68,7 +68,7 @@ module.exports = {
 
   devtool: prod ? 'source-map' : false,
 
-  // For static build. See gulpfile.
+  // See gulpfile and devserver.
   stats: {
     colors: true,
     chunks: false,

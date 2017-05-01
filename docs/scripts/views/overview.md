@@ -6,7 +6,7 @@ battle-tested in large apps since 2015. Prax's role in your app is roughly
 comparable to a combination of Redux with addons, ImmutableJS, and RxJS.
 
 Prax is not buzz-driven, and doesn't subscribe to an ideology. It's not
-particularly functional, object-oriented, or FRP-centric. It's built on solid
+particularly functional, object-oriented, or FRP-centric. It builds on solid
 ideas carefully pilfered from several languages and frameworks, it tries hard to
 be general and not over-abstract, and it attacks real, hard problems.
 
@@ -22,11 +22,11 @@ Problem: reactive UI and event-driven logic requires subscriptions and
 unsubscriptions. This is equivalent to manual memory management, and we
 shouldn't have to do it.
 
-  * Non-solution: manual subscriptions; humans can't be trusted with cleanup.
+* Non-solution: manual subscriptions; humans can't be trusted with cleanup.
 Another non-solution: specialised "declarative" APIs like `react-redux`. They
-tend to have one use, and we can do better.
+tend to be specialised for one purpose. We can do better.
 
-  * Prax solution: reactivity driven by _procedural_ data access. See
+* Prax solution: reactivity driven by _procedural_ data access. See
 [`PraxComponent`](api#-praxcomponent-) for a UI example,
 [Reactive Logic](examples#reactive-logic) for a side effect example, and
 [Reactive Computations](examples#reactive-computations) for a data example.
@@ -37,13 +37,13 @@ evict data from cache, abort requests, close websockets, etc., and it should be
 part of your reactivity model. This is crucial for a subscription-based API such
 as Firebase.
 
-  * Non-solution: using only immutable data and pure functions. Many
+* Non-solution: using only immutable data and pure functions. Many
 [resources](misc#_resource_) are inherently mutable, you can't pretend that
 you're only dealing with data; pure functions can't track subscribers.
 
-  * Prax solution: lazy resources that init/deinit on demand; see
-[example](examples#demand-driven-resources). Define multiple resources
-that manage the lifecycle of immutable data.
+* Prax solution: lazy resources that init/deinit on demand; see
+[example](examples#demand-driven-resources). Define multiple resources that
+manage the lifecycle of immutable data.
 
 Problem: coordinating async activities that depend on multiple conditions.
 Example: loading user profile when authorised, evicting it when deauthorised,
@@ -70,7 +70,7 @@ of state.
 
 Combine the strengths of FP and OOP. Store your data in immutable, functional
 data types, manipulating it with [generic functions](api#emerge). Conduct the
-_flow_ of data and side effects with proven tools such as
+_flow_ of data and side effects with OO tools such as
 [lazy observables](examples#demand-driven-resources) and
 [event streams](examples#event-system), or the novel tools offered by Prax.
 

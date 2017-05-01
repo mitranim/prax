@@ -3,7 +3,7 @@
 ```js
 const React = require('react')
 const {render} = require('react-dom')
-const {Atom, PraxComponent, byPath} = require('prax')
+const {Atom, PraxComponent, byPath, putIn} = require('prax')
 
 const store = new Atom({message: {greeting: 'Hello world!'}})
 
@@ -104,7 +104,7 @@ event emitters. You decide your own event format, argument count, and so on.
 arguments and can enque more than 1 dispatch at a time, processing them linearly
 without overlaps. It's also resilient to exceptions: exceptions in subscribers
 never interfere with other subscribers or messages. This can prevent subtle
-gotchas and save you hours of debugging.
+gotchas.
 
 ```js
 const {MessageQue, on, truthy} = require('prax')
@@ -189,7 +189,7 @@ class MessagesResource extends Atom {
   onInit () {
     const resource = this
 
-    // Note: this has only 1-2 branches.
+    // Note: this has only 2 branches.
     resource.reaction = Reaction.loop(({deref}) => {
       resource.unsub()
       resource.reset(null)

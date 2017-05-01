@@ -1,25 +1,16 @@
-const {Atom, Lifecycler, MessageQue, bindAll, derefIn} = require('prax')
-const dom = require('./features/dom')
+const {Agent, MessageQue, unwrap, deinit} = require('prax')
+const {Dom} = require('./features/dom')
 
-export class Env extends Lifecycler {
-  constructor () {
-    super()
-    bindAll(this)
-  }
+export class Env extends Agent {
+  init (prevEnv) {
+    this.reset({
+      ...unwrap(prevEnv),
+      mq: new MessageQue(),
+      dom: new Dom(this),
+    })
 
-  onInit (prevEnv) {
-    this.mq = new MessageQue()
-    this.onDeinit(() => this.mq.deinit())
+    deinit(prevEnv)
 
-    this.atom = new Atom(derefIn(prevEnv, ['atom']))
-    this.onDeinit(() => this.atom.deinit())
-
-    if (prevEnv) prevEnv.deinit()
-
-    dom.onInit(this)
-  }
-
-  send (msg) {
-    this.mq.push(this, msg)
+    this.deref().dom.init()
   }
 }

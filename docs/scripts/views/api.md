@@ -27,7 +27,7 @@ tool for procedural reactivity.
 ```js
 const React = require('react')
 const {render} = require('react-dom')
-const {Atom, PraxComponent, byPath} = require('prax')
+const {Atom, PraxComponent, byPath, putIn} = require('prax')
 
 // Observable reference acting as central data store
 const store = new Atom({message: {greeting: 'Hello', name: 'world'}})
@@ -130,13 +130,13 @@ You may want to override `shouldComponentUpdate` if:
 
 ## `byQuery(observableRef, query)`
 
-where `query: ƒ(any): any`
+`where query: ƒ(any): any`
 
 Creates an observable that derives its value from `observableRef` by applying
 `query` to it. Can be used in views or reactions.
 
 ```js
-const {Atom, PraxComponent, byPath} = require('prax')
+const {Atom, PraxComponent, byPath, putIn} = require('prax')
 
 const atom = new Atom({msg: 'Hello', name: 'world'})
 
@@ -196,7 +196,7 @@ with [`emerge.equal`](https://github.com/Mitranim/emerge#equalone-other).
 
 ## `computation(def)`
 
-where `def: ƒ(reaction)`
+`where def: ƒ(reaction)`
 
 Creates an _observable computation_ from the provided definition, using the same
 procedural reactivity as [`PraxComponent`](#-praxcomponent-). Lazy: doesn't

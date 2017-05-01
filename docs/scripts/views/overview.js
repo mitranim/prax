@@ -6,7 +6,6 @@ const {NavLink} = require('./link')
 
 export class Overview extends PraxComponent {
   subrender ({deref}) {
-    const {env: {atom}} = this
     return (
       <div className='row-between-stretch padding-1-v'>
         <div className='flex-1 col-start-stretch'>
@@ -15,10 +14,12 @@ export class Overview extends PraxComponent {
           <NavLink to='#big-ideas' className='sidenav-link'>Big Ideas</NavLink>
           <NavLink to='#inspiration' className='sidenav-link'>Inspiration</NavLink>
         </div>
-        <article
-          className='flex-4 padding-stocky'
-          onClick={maybeInterceptAnchorNavigation}
-          {...htmlProps(correctPageAnchors(require('./overview.md'), deref, atom))} />
+        <div>
+          <article
+            className='flex-4 padding-stocky'
+            onClick={maybeInterceptAnchorNavigation}
+            {...htmlProps(correctPageAnchors(this.env, deref, require('./overview.md')))} />
+        </div>
       </div>
     )
   }
