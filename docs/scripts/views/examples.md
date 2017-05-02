@@ -141,9 +141,10 @@ sub1.deinit()
 Forget event handlers. Write application logic, and side effects, as reactive
 definitions!
 
-Suppose we're writing a chat application, and need to load the current user's
-message feed from [Firebase](https://firebase.google.com). We need the user's ID
-to subscribe to its feed, and we _must_ eventually unsubscribe. Consider:
+Suppose we're writing a [chat application](https://github.com/Mitranim/chat),
+and need to load the current user's message feed from
+[Firebase](https://firebase.google.com). We need the user's ID to subscribe to
+its feed, and we _must_ eventually unsubscribe. Consider:
 
 Messages   | User       | Subscription | Action
 :---------:|:----------:|:------------:|-----------:
