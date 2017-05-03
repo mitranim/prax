@@ -7,4 +7,4 @@ deploy:
   github_token: $GITHUB_TOKEN  # Set in travis-ci.org dashboard
   skip_cleanup: true  # keep created files
   local_dir: gh-pages
-  target_branch: gh-pages
+  on: branch: master
