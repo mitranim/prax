@@ -1,13 +1,13 @@
 {
   "name": "prax",
-  "version": "0.0.105",
+  "version": "0.0.106",
   "main": "dist/index.js",
   "scripts": {
     "start": "gulp",
     "gulp": "gulp",
     "build": "env NODE_ENV=production gulp build"
   },
-  "description": "Framework for organising state and side effects in React applications",
+  "description": "Framework of time and state in React applications",
   "keywords": [],
   "authors": [
     "Mitranim <me@mitranim.com>",
@@ -19,9 +19,9 @@
     "url": "https://github.com/Mitranim/prax.git"
   },
   "dependencies": {
-    "emerge": "^0.0.30",
-    "espo": "^0.0.13",
-    "fpx": "^0.1.0 || ^0.2.0"
+    "emerge": "^0.0.31",
+    "espo": "^0.0.14",
+    "fpx": "^0.2.0"
   },
   "peerDependencies": {
     "react": "^15.0.0"
