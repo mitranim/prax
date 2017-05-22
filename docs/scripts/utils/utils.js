@@ -24,6 +24,10 @@ export function htmlProps (html) {
   return {dangerouslySetInnerHTML: {__html: html}}
 }
 
+export function toInt32 (value) {
+  return value | 0  // eslint-disable-line
+}
+
 // Pixel measurements are inaccurate when the browser is zoomed in or out, so we
 // have to use a small non-zero value in some geometry checks.
 const PX_ERROR_MARGIN = 3
@@ -61,7 +65,7 @@ export function smoothScrollYTo ({velocity, selector}) {
     velocity,
     getDeltaY () {
       const elem = document.querySelector(selector)
-      return !elem ? null : elem.getBoundingClientRect().top - (getHeaderHeight() | 0)
+      return !elem ? null : elem.getBoundingClientRect().top - toInt32(getHeaderHeight())
     },
   })
 }
@@ -88,7 +92,7 @@ export function smoothScrollYToWithin ({milliseconds, minVelocity, selector}) {
     minVelocity,
     getDeltaY () {
       const elem = document.querySelector(selector)
-      return !elem ? null : elem.getBoundingClientRect().top - (getHeaderHeight() | 0)
+      return !elem ? null : elem.getBoundingClientRect().top - toInt32(getHeaderHeight())
     },
   })
 }
@@ -131,12 +135,12 @@ export function doEachFrameWhile (fun) {
 
 export function onFrame (fun) {
   let timerId = requestAnimationFrame(function run () {
+    timerId = null
     let enabled = true
     // Next frame can be scheduled only synchronously and only once.
     function scheduleNext () {
       if (!enabled) return
       enabled = false
-      cancelAnimationFrame(timerId)
       timerId = requestAnimationFrame(run)
     }
     try {

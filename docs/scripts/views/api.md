@@ -118,19 +118,26 @@ apps and giving React a bad reputation.
 
 `PraxComponent` implements a `shouldComponentUpdate` that deeply compares props
 and state via
-[`emerge.equalBy`](https://github.com/Mitranim/emerge#equalbytest-one-other) and
-considers all functions "equal". Prax components tend to receive data from
-external observables, have shallow props, little to no state, therefore deep
-equality is cheap. As for functions, it's common to pass inline lambdas on each
-render without changing their functionality, and uncommon to pass genuinely
-different functions on different render calls.
+[`emerge.equal`](https://github.com/Mitranim/emerge#equalone-other). Prax
+components tend to receive data from external observables, have shallow props,
+and little to no state. Deep equality of props and state is typically far
+cheaper than the redundant renders it prevents.
 
-Bottom line, this eliminates redundant updates and greatly improves performance.
+**Note**: when defining or binding functions inline, you pass a new reference
+every time, completely negating this optimisation. For maximum performance, you
+should prebind view methods, or use this more aggressive version of
+`shouldComponentUpdate` that compares _all functions_ as equal:
 
-You may want to override `shouldComponentUpdate` if:
+```js
+const {pseudoEqual} = require('prax')
 
-  * props or state contain extremely large data structures
-  * props or state may receive genuinely different functions under the same keys
+class ParanoidComponent extends PraxComponent {
+  shouldComponentUpdate (props, state) {
+    // Will count all functions as "equal" and reject even more updates
+    return !pseudoEqual(props, this.props) || !pseudoEqual(state, this.state)
+  }
+}
+```
 
 ---
 
