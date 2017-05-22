@@ -1,22 +1,23 @@
 ## Overview
 
-Prax is a framework for organising state and side effects in React applications.
-It's heavily inspired by Redux, Clojure, ClojureScript libraries, and has been
-battle-tested in large apps since 2015. Prax's role in your app is roughly
-comparable to a combination of Redux with addons, ImmutableJS, and RxJS.
+Prax is a framework of time and state for React applications. It's heavily
+inspired by Redux, Clojure, ClojureScript libraries, and has been battle-tested
+in large apps since 2015. Prax's role in your app can be roughly described as:
+Redux with addons + ImmutableJS + RxJS + mini-runtime for deterministic
+object destructors.
 
-Prax is not buzz-driven, and doesn't subscribe to an ideology. It's not
-particularly functional, object-oriented, or FRP-centric. It builds on solid
-ideas carefully pilfered from several languages and frameworks, it tries hard to
-be general and not over-abstract, and it attacks real, hard problems.
+Another, simplistic, way to describe Prax: it's like React for _everything_, not
+just for views.
+
+Prax is not buzz-driven, not particularly functional, object-oriented,
+event-based, or FRP-centric. It builds on solid ideas carefully pilfered from
+multiple languages and frameworks, it tries hard to be general and not
+over-abstract, and it attacks real, hard problems.
 
 Dive into the [API Reference](api) and [examples](examples). Read forth for the
 [motivation](#problems-and-solutions) and [big ideas](#big-ideas) behind Prax.
 
 ## Problems and Solutions
-
-Prax solves many problems by design. These are just the biggest ones that come
-to mind.
 
 Problem: reactive UI and event-driven logic requires subscriptions and
 unsubscriptions. This is equivalent to manual memory management, and we
@@ -81,7 +82,7 @@ dependency injection, etc.
 ## Inspiration
 
 * Clojure, `clojure.core`: functional data structures, atoms
-* Redux: centralised state
+* Redux: centralisation
 * Reagent, Re-frame: implicit reactivity
 * Redux, Re-frame: global event broadcast
 * Erlang: pattern matching

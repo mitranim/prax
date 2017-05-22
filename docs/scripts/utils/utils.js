@@ -1,4 +1,4 @@
-const {TaskQue, ifelse, id, val, isFunction, isString, isNatural, isFinite, validate} = require('prax')
+const {TaskQue, ifelse, id, val, noop, isFunction, isString, isFinite, validate} = require('prax')
 
 export function addEvent (target, name, fun, useCapture = false) {
   validate(isFunction, fun)
@@ -28,12 +28,12 @@ export function htmlProps (html) {
 // have to use a small non-zero value in some geometry checks.
 const PX_ERROR_MARGIN = 3
 
-export function smoothScrollY (velocity, getDeltaY) {
-  validate(isNatural, velocity)
+export function smoothScrollY ({velocity, getDeltaY}) {
+  validate(isFinite, velocity)
   validate(isFunction, getDeltaY)
 
   // Used to track deltaY changes between frames.
-  let lastDeltaY
+  let lastDeltaY = null
 
   return doEachFrameWhile(function smoothScrollStep () {
     const deltaY = getDeltaY()
@@ -41,7 +41,7 @@ export function smoothScrollY (velocity, getDeltaY) {
     if (
       !isFinite(deltaY) ||
       // Couldn't move, must have reached the end.
-      isFinite(lastDeltaY) && Math.abs(lastDeltaY - deltaY) <= PX_ERROR_MARGIN ||
+      (isFinite(lastDeltaY) && Math.abs(lastDeltaY - deltaY) <= PX_ERROR_MARGIN) ||
       // Close enough.
       Math.abs(deltaY) <= PX_ERROR_MARGIN
     ) {
@@ -56,6 +56,47 @@ export function smoothScrollY (velocity, getDeltaY) {
   })
 }
 
+export function smoothScrollYTo ({velocity, selector}) {
+  return smoothScrollY({
+    velocity,
+    getDeltaY () {
+      const elem = document.querySelector(selector)
+      return !elem ? null : elem.getBoundingClientRect().top - (getHeaderHeight() | 0)
+    },
+  })
+}
+
+export function smoothScrollYWithin ({milliseconds, minVelocity, getDeltaY}) {
+  const deltaY = getDeltaY()
+
+  if (!isFinite(deltaY)) return noop
+
+  // This is so stupid. How much web animation code is going to break when
+  // refresh rates change? And there's no API to get the actual refresh rate!
+  const refreshRate = 60
+
+  const msPerFrame = 1000 / refreshRate
+
+  const velocity = Math.abs(deltaY / (milliseconds / msPerFrame))
+
+  return smoothScrollY({velocity: Math.max(minVelocity || 10, velocity), getDeltaY})
+}
+
+export function smoothScrollYToWithin ({milliseconds, minVelocity, selector}) {
+  return smoothScrollYWithin({
+    milliseconds,
+    minVelocity,
+    getDeltaY () {
+      const elem = document.querySelector(selector)
+      return !elem ? null : elem.getBoundingClientRect().top - (getHeaderHeight() | 0)
+    },
+  })
+}
+
+export function smoothScrollToTop ({milliseconds}) {
+  return smoothScrollYWithin({milliseconds, getDeltaY: getDocumentTopDelta})
+}
+
 export function getHeaderHeight () {
   const header = document.getElementById('header')
   return !header
@@ -64,28 +105,7 @@ export function getHeaderHeight () {
     : header.getBoundingClientRect().height + 6
 }
 
-export function smoothScrollYToSelector (velocity, selector) {
-  return smoothScrollY(velocity, () => {
-    const elem = document.querySelector(selector)
-    return !elem ? null : elem.getBoundingClientRect().top - (getHeaderHeight() | 0)
-  })
-}
-
-export function smoothScrollToTop (velocity) {
-  return smoothScrollY(velocity, getDocumentTop)
-}
-
-export function scrollYToSelector (selector) {
-  const elem = document.querySelector(selector)
-  if (!elem) return
-  window.scrollTo(window.scrollX, elemOffsetY(elem) - (getHeaderHeight() | 0))
-}
-
-function elemOffsetY (elem) {
-  return elem.getBoundingClientRect().top + window.pageYOffset - document.documentElement.clientTop
-}
-
-function getDocumentTop () {
+function getDocumentTopDelta () {
   return document.documentElement.getBoundingClientRect().top
 }
 
@@ -100,17 +120,35 @@ function limitTo (limit, num) {
 
 export function doEachFrameWhile (fun) {
   let i = 0
-  let id
-
-  id = requestAnimationFrame(function run () {
-    if (++i === 300) {
-      throw Error('Task has been running for 300 frames, aborting: ' + fun)
+  return onFrame(function onFrameWhile (scheduleNext) {
+    i += 1
+    if (i === 300) {
+      throw Error(`Task has been running for 300 frames, aborting: ${fun}`)
     }
-    if (fun()) id = requestAnimationFrame(run)
+    if (fun()) scheduleNext()
+  })
+}
+
+export function onFrame (fun) {
+  let timerId = requestAnimationFrame(function run () {
+    let enabled = true
+    // Next frame can be scheduled only synchronously and only once.
+    function scheduleNext () {
+      if (!enabled) return
+      enabled = false
+      cancelAnimationFrame(timerId)
+      timerId = requestAnimationFrame(run)
+    }
+    try {
+      fun(scheduleNext)
+    }
+    finally {
+      enabled = false
+    }
   })
 
   return function abort () {
-    cancelAnimationFrame(id)
+    cancelAnimationFrame(timerId)
   }
 }
 

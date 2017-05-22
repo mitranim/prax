@@ -172,6 +172,6 @@ gulp.task('watch', gulp.parallel(
   'docs:server'
 ))
 
-gulp.task('build', gulp.series('clear', 'lint', 'buildup', 'docs:scripts:build'))
+gulp.task('build', gulp.series('clear', 'buildup', 'lint', 'docs:scripts:build'))
 
-gulp.task('default', gulp.series('clear', 'buildup', 'watch'))
+gulp.task('default', gulp.series('build', 'watch'))

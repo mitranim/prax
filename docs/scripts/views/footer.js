@@ -14,7 +14,7 @@ export class Footer extends PraxComponent {
           <button
             className='fa fa-arrow-up fg-gray padding-0x5'
             onClick={() => {
-              smoothScrollToTop(120)
+              smoothScrollToTop({milliseconds: 300})
             }} />
         </span>
       </div>

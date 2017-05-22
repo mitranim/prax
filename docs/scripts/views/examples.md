@@ -96,15 +96,18 @@ be aborted_. How cool is that?
 Having a global broadcast system is a popular and useful pattern in modern web
 applications. Prax comes with nifty utilities for that.
 
-[`espo.MessageQue`](https://mitranim.com/espo/#-messageque-) and
-[`on`](api#-on-argpattern-fun-) are strictly more expressive than Node.js-style
-event emitters. You decide your own event format, argument count, and so on.
+[`espo.MessageQue`](https://mitranim.com/espo/#-messageque-) handles
+subscriptions, notifications and event buffering. `MessageQue` a better event
+system than a Redux store. It supports arbitrary arguments and can enque more
+than 1 dispatch at a time, processing them linearly without overlaps. It's also
+resilient to exceptions: exceptions in subscribers never interfere with other
+subscribers or messages. This can prevent subtle gotchas.
 
-`MessageQue` is a better event system than a Redux store. It supports arbitrary
-arguments and can enque more than 1 dispatch at a time, processing them linearly
-without overlaps. It's also resilient to exceptions: exceptions in subscribers
-never interfere with other subscribers or messages. This can prevent subtle
-gotchas.
+[`on`](api#-on-argpattern-fun-) is a utility for pattern-matching on event
+structure.
+
+This combination is strictly more expressive than Node.js-style event emitters.
+You decide your own event format, argument count, and so on.
 
 ```js
 const {MessageQue, on, truthy} = require('prax')
@@ -237,11 +240,15 @@ class MessagesView extends PraxComponent {
     // (3) initialise resource; it will load messages when authed
     const messages = deref(store.deref().messages)
 
-    return !messages
-      ? null
-      : messages.map(message => (
-        <Message message={message} key={message.id} />
-      ))
+    if (!messages) return null
+
+    return (
+      <div>
+        {messages.map(message => (
+          <Message message={message} key={message.id} />
+        ))}
+      </div>
+    )
   }
 }
 ```

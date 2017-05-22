@@ -14,20 +14,36 @@ export class Root extends PraxComponent {
   subrender () {
     return (
       <Router history={journal}>
-        <div className='stretch-to-viewport-v'>
-          <Header />
-          <div className='flex-1 col-start-stretch'>
-            <Switch>
-              <Route exact path='/' component={Overview} />
-              <Route exact path='/api' component={Api} />
-              <Route exact path='/examples' component={Examples} />
-              <Route exact path='/misc' component={Misc} />
-              <Route component={NotFound} />
-            </Switch>
-          </div>
-          <Footer />
-        </div>
+        <Route component={Layout} />
       </Router>
     )
+  }
+}
+
+class Layout extends PraxComponent {
+  subrender () {
+    return (
+      <div className='stretch-to-viewport-v'>
+        <Header />
+        <div className='flex-1 col-start-stretch'>
+          <Switch>
+            <Route exact path='/' component={Overview} />
+            <Route exact path='/api' component={Api} />
+            <Route exact path='/examples' component={Examples} />
+            <Route exact path='/misc' component={Misc} />
+            <Route component={NotFound} />
+          </Switch>
+        </div>
+        <Footer />
+      </div>
+    )
+  }
+
+  componentDidMount () {
+    this.env.deref().dom.updateNav()
+  }
+
+  componentDidUpdate () {
+    this.env.deref().dom.updateNav()
   }
 }

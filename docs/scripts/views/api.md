@@ -13,6 +13,8 @@ If you're familiar with them, you should feel right at home.
 On this page, the entire library is available as `window.prax`. You can run
 non-React examples in the console.
 
+---
+
 ## `PraxComponent`
 
 `extends React.PureComponent`
@@ -109,24 +111,77 @@ class Greeting extends PraxComponent {
 
 ### `praxComponent.shouldComponentUpdate()`
 
-An optimal `shouldComponentUpdate` strategy is crucial for performance. Many
-developers ignore it, producing slow apps and giving React a bad reputation.
+`shouldComponentUpdate` is a standard lifecycle method of React components that
+allows to reject unnecessary updates. An optimal `shouldComponentUpdate`
+strategy is crucial for performance. Many developers ignore it, producing slow
+apps and giving React a bad reputation.
 
-`PraxComponent` has a default `shouldComponentUpdate` tuned for the most common
-case. It deeply compares props and state via
-[`emerge.equalBy`](https://github.com/Mitranim/emerge#equalbytest-one-other)
-and considers all functions "equal". Prax components tend to receive data from
-external observables, and therefore have shallow props and little to no state.
-As for functions, it's common to pass inline lambdas which have a different
-reference each time, and uncommon to pass genuinely different functions under
-the same key.
+`PraxComponent` implements a `shouldComponentUpdate` that deeply compares props
+and state via
+[`emerge.equalBy`](https://github.com/Mitranim/emerge#equalbytest-one-other) and
+considers all functions "equal". Prax components tend to receive data from
+external observables, have shallow props, little to no state, therefore deep
+equality is cheap. As for functions, it's common to pass inline lambdas on each
+render without changing their functionality, and uncommon to pass genuinely
+different functions on different render calls.
 
-Bottom line, it eliminates redundant updates and greatly improves performance.
+Bottom line, this eliminates redundant updates and greatly improves performance.
 
 You may want to override `shouldComponentUpdate` if:
 
   * props or state contain extremely large data structures
-  * props or state may receive genuinely different functions under the same key
+  * props or state may receive genuinely different functions under the same keys
+
+---
+
+## `RenderQue`
+
+Utility for scheduling React component updates. Lets you globally pause view
+updates and later resume them in batch. This is useful when running a state
+update that could trigger multiple render phases, leading to redundant work.
+
+All `PraxComponent` instances schedule their updates through the
+`RenderQue.global` singleton, which you can use to control their updates.
+
+React already uses pausing and batching internally, but only for DOM event
+listeners that it controls. `RenderQue` lets you deploy this optimisation
+anywhere. The most common use case is a network callback. Example:
+
+```js
+const {RenderQue} = require('prax')
+const {Xhttp} = require('xhttp')
+
+function httpRequest (params, fun) {
+  return Xhttp(params)
+    .onDone(result => {
+      // Pauses updates of Prax view components
+      RenderQue.globalRenderQue.dam()
+      try {
+        // Suppose this triggers redundant renders
+        fun(result)
+      }
+      finally {
+        // Resumes updates
+        RenderQue.globalRenderQue.flush()
+      }
+    })
+    .start()
+}
+```
+
+### `RenderQue.global`
+
+Global singleton used by `PraxComponent` instances to schedule their updates.
+
+### `renderQue.dam()`
+
+Pauses the que. See usage example above.
+
+### `renderQue.flush()`
+
+Resumes the que, running any pending view updates. See usage example above.
+
+---
 
 ## `byQuery(observableRef, query)`
 
@@ -170,6 +225,8 @@ const {equal} = require('emerge')
 observable.map(query).distinctUntilChanged(equal)
 ```
 
+---
+
 ## `byPath(observableRef, path)`
 
 Creates an observable that derives its value by reading it from `observableRef`
@@ -194,6 +251,8 @@ Shortcut to
 [`espo.PathQuery`](https://mitranim.com/espo/#-pathquery-observableref-path-equal-)
 with [`emerge.equal`](https://github.com/Mitranim/emerge#equalone-other).
 
+---
+
 ## `computation(def)`
 
 `where def: ƒ(reaction)`
@@ -214,8 +273,8 @@ const msg = computation(({deref}) => {
   return `${deref(greeting)} ${deref(name)}!`
 })
 
-const sub = computation.subscribe(computation => {
-  console.info('msg:', computation.deref())
+const sub = msg.subscribe(msg => {
+  console.info('msg:', msg.deref())
 })
 // msg: Hello world!
 
@@ -235,6 +294,8 @@ class View extends PraxComponent {
 Shortcut to
 [`espo.Computation`](https://mitranim.com/espo/#-computation-def-equal-)
 with [`emerge.equal`](https://github.com/Mitranim/emerge#equalone-other).
+
+---
 
 ## `on(argPattern, fun)`
 
@@ -268,6 +329,8 @@ listener({type: 'goodbye'}, {message: 'Farewell world!'})
 listener({type: 'greeting'}, {message: 'Hello world!'})
 // prints 'Hello world!', returns true
 ```
+
+---
 
 ## Espo
 

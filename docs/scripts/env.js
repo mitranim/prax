@@ -1,15 +1,18 @@
-const {Agent, MessageQue, unwrap, deinit} = require('prax')
+const {Agent, MessageQue, patch} = require('prax')
 const {Dom} = require('./features/dom')
 
 export class Env extends Agent {
   init (prevEnv) {
     this.reset({
-      ...unwrap(prevEnv),
+      ...(prevEnv && prevEnv.deref()),
       mq: new MessageQue(),
       dom: new Dom(this),
     })
 
-    deinit(prevEnv)
+    if (prevEnv) {
+      prevEnv.swap(patch, {dom: null})
+      prevEnv.deinit()
+    }
 
     this.deref().dom.init()
   }

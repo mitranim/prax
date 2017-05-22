@@ -1,38 +1,37 @@
 const React = require('react')
 const ReactDOM = require('react-dom')
-const {PraxComponent, Reaction, Agent,
-  byPath, equal, get, putIn, putInBy, test} = require('prax')
+const {PraxComponent, Reaction, Agent, byPath, equal, putIn, putInBy, test} = require('prax')
 const {CleanupQue, addEvent, journal, originHref, onlyString,
-  smoothScrollYToSelector, smoothScrollToTop} = require('../utils')
+  smoothScrollYToWithin, smoothScrollToTop} = require('../utils')
 const {Root} = require('../views')
 
 export class Dom extends Agent {
   constructor (env) {
-    super({reaction: new Reaction(), cleanup: new CleanupQue()})
+    super({
+      reaction: new Reaction(),
+      cleanup: new CleanupQue(),
+      nav: null,
+    })
     this.env = env
+  }
+
+  updateNav () {
+    this.swap(putInBy, ['nav'], nav => ({
+      lastAction: journal.action,
+      prevLocation: nav && nav.location,
+      location: journal.location,
+    }))
   }
 
   init () {
     const {env} = this
     const {cleanup, reaction} = this.deref()
 
+    this.updateNav()
+
     cleanup.push(addEvent(document, 'keydown', ({keyCode}) => {
       env.swap(putIn, ['keyCode'], keyCode)
     }))
-
-    // Location
-
-    function updateLocation (location) {
-      env.swap(putInBy, ['nav'], nav => ({
-        lastAction: journal.action,
-        prevLocation: get(nav, 'location'),
-        location,
-      }))
-    }
-
-    updateLocation(journal.location)
-
-    cleanup.push(journal.listen(updateLocation))
 
     // Rendering
 
@@ -50,16 +49,16 @@ export class Dom extends Agent {
     // Scroll
 
     reaction.loop(({deref}) => {
-      const prev = deref(byPath(env, ['nav', 'prevLocation']))
-      const next = deref(byPath(env, ['nav', 'location']))
-      const action = deref(byPath(env, ['nav', 'lastAction']))
+      const prev = deref(byPath(this, ['nav', 'prevLocation']))
+      const next = deref(byPath(this, ['nav', 'location']))
+      const action = deref(byPath(this, ['nav', 'lastAction']))
 
       if (!prev && next && next.hash) {
         // Probably initial page load. We need to adjust the scroll position
         // because the browser doesn't account for the fixed header. If the page
         // got refreshed in-place, Chrome will overwrite this with the previous
         // scroll position, after a brief flicker. Haven't tested other browsers.
-        smoothScrollYToSelector(120, next.hash)
+        smoothScrollYToWithin({milliseconds: 300, selector: next.hash})
         return
       }
 
@@ -68,18 +67,18 @@ export class Dom extends Agent {
       // HMR
       if (equal(prev, next)) return
 
-      if (action === 'POP') {
+      if (action === 'POP' && !next.hash) {
         // Stimulate the browser to restore the scroll position.
         forceLayoutHeight()
         return
       }
 
       if (next.hash) {
-        smoothScrollYToSelector(120, next.hash)
+        smoothScrollYToWithin({milliseconds: 300, selector: next.hash})
         return
       }
 
-      smoothScrollToTop(120)
+      smoothScrollToTop({milliseconds: 300})
     })
   }
 }
@@ -120,9 +119,9 @@ function forceLayoutHeight () {
 // Ridiculous. This demonstrates a conflict between markdown->HTML and React.
 // It's also a consequence of the :target selector not working with pushState.
 // Should look deeper into markdown-React integration.
-export function correctPageAnchors (env, deref, text) {
-  const id = onlyString(deref(byPath(env, ['nav', 'location', 'hash']))).replace(/^#/, '')
-  const path = onlyString(deref(byPath(env, ['nav', 'location', 'pathname']))).replace(/^\//, '')
+export function correctPageAnchors ({hash, pathname}, text) {
+  const id = hash.replace(/^#/, '')
+  const path = pathname.replace(/^\//, '')
   return onlyString(text)
     .replace(/href="#(.*)"/g, `href="${path}#$1"`)
     .replace(`id="${id}"`, `id="${id}" class="hash-target-active"`)

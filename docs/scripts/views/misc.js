@@ -5,7 +5,7 @@ const {maybeInterceptAnchorNavigation, correctPageAnchors} = require('../feature
 const {NavLink} = require('./link')
 
 export class Misc extends PraxComponent {
-  subrender ({deref}) {
+  subrender () {
     return (
       <div className='row-between-stretch padding-1-v'>
         <div className='flex-1 col-start-stretch'>
@@ -14,7 +14,7 @@ export class Misc extends PraxComponent {
         <article
           className='flex-4 padding-stocky'
           onClick={maybeInterceptAnchorNavigation}
-          {...htmlProps(correctPageAnchors(this.env, deref, require('./misc.md')))} />
+          {...htmlProps(correctPageAnchors(this.props.location, require('./misc.md')))} />
       </div>
     )
   }
