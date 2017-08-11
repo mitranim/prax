@@ -35,7 +35,14 @@ catch (err) {
 
 const prax = window.prax = require('prax')
 
-window.app = {...window.app, ...prax, prax, env}
+window.app = {
+  ...window.app,
+  ...prax,
+  prax,
+  env,
+  React: require('react'),
+  ReactDOM: require('react-dom'),
+}
 
 delete window.app.isNaN
 delete window.app.isFinite

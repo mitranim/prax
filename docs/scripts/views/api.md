@@ -10,14 +10,15 @@ and
 The React layer is heavily inspired by [Reagent](http://reagent-project.github.io).
 If you're familiar with them, you should feel right at home.
 
-On this page, the entire library is available as `window.prax`. You can run
-non-React examples in the console.
+On this page, the entire library is available as `window.prax`. In addition,
+`React` and `ReactDOM` are available as globals. You can run most examples in
+the browser console.
 
 ---
 
 ## `PraxComponent`
 
-`extends React.PureComponent`
+`extends React.Component`
 
 Base class for your React components. Automatically subscribes to observable
 references such as

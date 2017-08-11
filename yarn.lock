@@ -1394,9 +1394,9 @@ elliptic@^6.0.0:
     minimalistic-assert "^1.0.0"
     minimalistic-crypto-utils "^1.0.0"
 
-emerge@^0.0.28:
-  version "0.0.28"
-  resolved "https://registry.yarnpkg.com/emerge/-/emerge-0.0.28.tgz#0ca8f6e56a2b36ea675d0faeee8e86ea4a9aaec1"
+emerge@^0.0.32:
+  version "0.0.32"
+  resolved "https://registry.yarnpkg.com/emerge/-/emerge-0.0.32.tgz#41afe9703e92031148da7cfbabd151d0d846c912"
 
 emitter-steward@^1.0.0:
   version "1.0.0"
@@ -1648,11 +1648,11 @@ eslint_d@4.2.5:
     resolve "^1.1.7"
     supports-color "^3.1.2"
 
-espo@^0.0.11:
-  version "0.0.11"
-  resolved "https://registry.yarnpkg.com/espo/-/espo-0.0.11.tgz#0558b3d2d2b7daa473456ae3b063543afd62010d"
+espo@^0.0.14:
+  version "0.0.14"
+  resolved "https://registry.yarnpkg.com/espo/-/espo-0.0.14.tgz#7febf7cc3363f7f9eccd5037381d540309976418"
   dependencies:
-    fpx "^0.1.0"
+    fpx "^0.1.0 || ^0.2.0"
 
 espree@^3.4.0:
   version "3.4.2"
@@ -1936,9 +1936,9 @@ formidable@1.0.x:
   version "1.0.17"
   resolved "https://registry.yarnpkg.com/formidable/-/formidable-1.0.17.tgz#ef5491490f9433b705faa77249c99029ae348559"
 
-fpx@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/fpx/-/fpx-0.1.0.tgz#28bfec04806043719145762cfa103e9b6d06ae52"
+"fpx@^0.1.0 || ^0.2.0", fpx@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/fpx/-/fpx-0.2.0.tgz#f59df3e64da35b68e98e78a54cfcae716b0fb29f"
 
 fresh@0.3.0, fresh@^0.3.0:
   version "0.3.0"
@@ -3897,7 +3897,7 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-prop-types@^15.5.4, prop-types@^15.5.7, prop-types@~15.5.7:
+prop-types@^15.5.4, prop-types@^15.5.6:
   version "15.5.8"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.5.8.tgz#6b7b2e141083be38c8595aa51fc55775c7199394"
   dependencies:
@@ -3977,18 +3977,18 @@ rc@^1.1.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-dom@15.5.4:
-  version "15.5.4"
-  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-15.5.4.tgz#ba0c28786fd52ed7e4f2135fe0288d462aef93da"
+react-dom@next:
+  version "16.0.0-beta.5"
+  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.0.0-beta.5.tgz#c9c2e5c059576f77b55e8c3959535d63cb1227e5"
   dependencies:
     fbjs "^0.8.9"
     loose-envify "^1.1.0"
     object-assign "^4.1.0"
-    prop-types "~15.5.7"
+    prop-types "^15.5.6"
 
-react-router-dom@4.1.1:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-4.1.1.tgz#3021ade1f2c160af97cf94e25594c5f294583025"
+react-router-dom@4.1.2:
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-4.1.2.tgz#7f8a7ca868d32acadd19ca09543b40d26df8ec37"
   dependencies:
     history "^4.5.1"
     loose-envify "^1.3.1"
@@ -4007,14 +4007,14 @@ react-router@^4.1.1:
     prop-types "^15.5.4"
     warning "^3.0.0"
 
-react@15.5.4:
-  version "15.5.4"
-  resolved "https://registry.yarnpkg.com/react/-/react-15.5.4.tgz#fa83eb01506ab237cdc1c8c3b1cea8de012bf047"
+react@next:
+  version "16.0.0-beta.5"
+  resolved "https://registry.yarnpkg.com/react/-/react-16.0.0-beta.5.tgz#b4abba9bce7db72c30633db54a148614b6574e79"
   dependencies:
     fbjs "^0.8.9"
     loose-envify "^1.1.0"
     object-assign "^4.1.0"
-    prop-types "^15.5.7"
+    prop-types "^15.5.6"
 
 read-pkg-up@^1.0.1:
   version "1.0.1"

@@ -55,11 +55,12 @@ gulp.task('lib:compile', () => (
     .pipe(gulp.dest(out.lib))
 ))
 
+// Ensures ES5 compliance and shows minified size
 gulp.task('lib:minify', () => (
   gulp.src(src.libDist, {ignore: '**/*.min.js'})
     .pipe($.uglify({
-      mangle: true,
-      compress: {screw_ie8: true}
+      mangle: {toplevel: true},
+      compress: {warnings: false},
     }))
     .pipe($.rename(path => {
       path.extname = '.min.js'
