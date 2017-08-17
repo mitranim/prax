@@ -1936,9 +1936,9 @@ formidable@1.0.x:
   version "1.0.17"
   resolved "https://registry.yarnpkg.com/formidable/-/formidable-1.0.17.tgz#ef5491490f9433b705faa77249c99029ae348559"
 
-"fpx@^0.1.0 || ^0.2.0", fpx@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/fpx/-/fpx-0.2.0.tgz#f59df3e64da35b68e98e78a54cfcae716b0fb29f"
+"fpx@^0.1.0 || ^0.2.0", fpx@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/fpx/-/fpx-0.2.1.tgz#e312ceb1ee416afc2bd8671ac88913973ee781cd"
 
 fresh@0.3.0, fresh@^0.3.0:
   version "0.3.0"
@@ -4617,9 +4617,9 @@ strip-json-comments@~2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/strip-json-comments/-/strip-json-comments-2.0.1.tgz#3c531942e908c2697c0ec344858c286c7ca0a60a"
 
-stylebox@aristovn/stylebox#d701a9324ffc59474aefd9a3bf3dff394e2993de:
-  version "0.0.8"
-  resolved "https://codeload.github.com/aristovn/stylebox/tar.gz/d701a9324ffc59474aefd9a3bf3dff394e2993de"
+stylebox@0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/stylebox/-/stylebox-0.0.10.tgz#65e289f84ad9f630c4efcacfef1f5d8ef05bd9bf"
 
 stylific-lite@0.0.1:
   version "0.0.1"

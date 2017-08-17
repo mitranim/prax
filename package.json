@@ -1,6 +1,6 @@
 {
   "name": "prax",
-  "version": "0.0.109",
+  "version": "0.0.110",
   "main": "dist/index.js",
   "scripts": {
     "start": "gulp",
@@ -21,7 +21,7 @@
   "dependencies": {
     "emerge": "^0.0.32",
     "espo": "^0.0.14",
-    "fpx": "^0.2.0"
+    "fpx": "^0.2.1"
   },
   "peerDependencies": {
     "react": "*"
@@ -73,7 +73,7 @@
     "react": "next",
     "react-dom": "next",
     "react-router-dom": "4.1.2",
-    "stylebox": "aristovn/stylebox#d701a9324ffc59474aefd9a3bf3dff394e2993de",
+    "stylebox": "0.0.10",
     "stylific-lite": "0.0.1",
     "transform-loader": "0.2.4",
     "webpack": "2.4.1",

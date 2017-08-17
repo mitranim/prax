@@ -98,10 +98,11 @@ applications. Prax comes with nifty utilities for that.
 
 [`espo.MessageQue`](https://mitranim.com/espo/#-messageque-) handles
 subscriptions, notifications and event buffering. `MessageQue` a better event
-system than a Redux store. It supports arbitrary arguments and can enque more
-than 1 dispatch at a time, processing them linearly without overlaps. It's also
-resilient to exceptions: exceptions in subscribers never interfere with other
-subscribers or messages. This can prevent subtle gotchas.
+system than a Redux store or a Node.js event emitter. It supports arbitrary
+arguments and can enque more than 1 dispatch at a time, processing them linearly
+without overlaps. It's also resilient to exceptions: exceptions in subscribers
+never interfere with other subscribers or messages. This can prevent subtle
+gotchas.
 
 [`on`](api#-on-argpattern-fun-) is a utility for pattern-matching on event
 structure.

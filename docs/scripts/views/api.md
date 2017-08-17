@@ -84,32 +84,6 @@ class View extends PraxComponent {
 }
 ```
 
-### `praxComponent.setup(props, state)`
-
-Helps avoid the common mistake of defining props-dependent state in
-`componentWillMount` but not in `componentWillReceiveProps`. Usually you need to
-define both, but forget.
-
-If `setup` is defined, it's called on the initial setup and later on each
-meaningful props change. In technical terms, it's called on `componentWillMount`
-and later on each `componentWillReceiveProps` if `shouldComponentUpdate` returns
-`true`.
-
-```js
-const {PraxComponent} = require('prax')
-
-class Greeting extends PraxComponent {
-  subrender () {
-    return <div>{this.state.msg}</div>
-  }
-
-  // If props change, state will correctly match them
-  setup (props, _state) {
-    this.setState({msg: `Hello ${props.name}!`})
-  }
-}
-```
-
 ### `praxComponent.shouldComponentUpdate()`
 
 `shouldComponentUpdate` is a standard lifecycle method of React components that
@@ -118,24 +92,25 @@ strategy is crucial for performance. Many developers ignore it, producing slow
 apps and giving React a bad reputation.
 
 `PraxComponent` implements a `shouldComponentUpdate` that deeply compares props
-and state via
-[`emerge.equal`](https://github.com/Mitranim/emerge#equalone-other). Prax
-components tend to receive data from external observables, have shallow props,
-and little to no state. Deep equality of props and state is typically far
-cheaper than the redundant renders it prevents.
+and state via [`reactEqual`](#-reactequal-left-right-). Prax components tend to
+receive data from external observables, have shallow props aside from
+`children`, and little to no state. Deep equality of props and state is
+typically far cheaper than the redundant renders it prevents.
 
-**Note**: when defining or binding functions inline, you pass a new reference
-every time, completely negating this optimisation. For maximum performance, you
-should prebind view methods, or use this more aggressive version of
-`shouldComponentUpdate` that compares _all functions_ as equal:
+**Note**: when defining and passing functions inline, you create a new reference
+every time, completely negating this optimisation. Make sure to prebind methods
+in component constructor:
 
 ```js
-const {pseudoEqual} = require('prax')
+class View extends PraxComponent {
+  constructor() {
+    super(...arguments)
+    this.onAction = this.onAction.bind(this)
+  }
 
-class ParanoidComponent extends PraxComponent {
-  shouldComponentUpdate (props, state) {
-    // Will count all functions as "equal" and reject even more updates
-    return !pseudoEqual(props, this.props) || !pseudoEqual(state, this.state)
+  subrender() {
+    // Fixed function reference makes equality check possible
+    return <AnotherView onAction={this.onAction} />
   }
 }
 ```
@@ -336,6 +311,24 @@ listener({type: 'goodbye'}, {message: 'Farewell world!'})
 
 listener({type: 'greeting'}, {message: 'Hello world!'})
 // prints 'Hello world!', returns true
+```
+
+---
+
+## `reactEqual(left, right)`
+
+Deep equality with a few safety rules for React elements. Used internally by
+[`shouldComponentUpdate`](#-praxcomponent-shouldcomponentupdate-), so you
+shouldn't have to use this directly.
+
+Defined in terms of [`emerge.equalBy`](https://github.com/Mitranim/emerge#equalbytest-one-other)
+
+```js
+const {reactEqual} = require('react')
+
+const _ = reactEqual(prevProps, nextProps)
+
+const _ = reactEqual(prevState, nextState)
 ```
 
 ---

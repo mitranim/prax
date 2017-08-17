@@ -16,9 +16,6 @@ export class Api extends PraxComponent {
           <NavLink to='#-praxcomponent-subrender-reaction-' className='sidenav-link margin-1-l'>
             <code>.subrender</code>
           </NavLink>
-          <NavLink to='#-praxcomponent-setup-props-state-' className='sidenav-link margin-1-l'>
-            <code>.setup</code>
-          </NavLink>
           <NavLink to='#-praxcomponent-shouldcomponentupdate-' className='sidenav-link margin-1-l'>
             <code>.shouldComponentUpdate</code>
           </NavLink>
@@ -45,6 +42,9 @@ export class Api extends PraxComponent {
           </NavLink>
           <NavLink to='#-on-argpattern-fun-' className='sidenav-link'>
             <code>on</code>
+          </NavLink>
+          <NavLink to='#-reactequal-left-right-' className='sidenav-link'>
+            <code>reactEqual</code>
           </NavLink>
           <NavLink to='#espo' className='sidenav-link'>Espo</NavLink>
           <NavLink to='#emerge' className='sidenav-link'>Emerge</NavLink>

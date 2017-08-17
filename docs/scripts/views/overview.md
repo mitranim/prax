@@ -75,9 +75,9 @@ _flow_ of data and side effects with OO tools such as
 [lazy observables](examples#demand-driven-resources) and
 [event streams](examples#event-system), or the novel tools offered by Prax.
 
-Centralise your resources and data, starting with a root object. Make the root
-available everywhere in the app. This avoids the need for over-designed props,
-dependency injection, etc.
+Centralise your resources and data into a hierarchy of ownership, starting with
+a root object. Make the root available everywhere in the app. This avoids the
+need for over-designed props, dependency injection, etc.
 
 ## Inspiration
 
