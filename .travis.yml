@@ -1,6 +1,6 @@
 language: node_js
 node_js: node
-script: yarn run build
+script: yarn run prepublishOnly
 cache: yarn
 deploy:
   provider: pages
