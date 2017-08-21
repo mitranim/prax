@@ -1,11 +1,12 @@
 {
   "name": "prax",
-  "version": "0.0.110",
-  "main": "dist/index.js",
+  "version": "0.1.0",
+  "main": "dist/prax.js",
+  "module": "es/prax.js",
   "scripts": {
-    "start": "gulp",
-    "gulp": "gulp",
-    "prepublishOnly": "env NODE_ENV=production gulp build"
+    "start": "(rollup -cw & gulp)",
+    "compile": "rollup -c && NODE_ENV=production gulp build",
+    "prepublishOnly": "npm run compile"
   },
   "description": "Framework of time and state in React applications",
   "keywords": [],
@@ -19,9 +20,9 @@
     "url": "https://github.com/Mitranim/prax.git"
   },
   "dependencies": {
-    "emerge": "^0.0.32",
-    "espo": "^0.0.14",
-    "fpx": "^0.2.1"
+    "emerge": "^0.1.0",
+    "espo": "^0.1.0",
+    "fpx": "^0.3.0"
   },
   "peerDependencies": {
     "react": "*"
@@ -39,7 +40,6 @@
     "babel-plugin-transform-es2015-destructuring": "6.23.0",
     "babel-plugin-transform-es2015-function-name": "6.24.1",
     "babel-plugin-transform-es2015-literals": "6.22.0",
-    "babel-plugin-transform-es2015-modules-commonjs": "6.24.1",
     "babel-plugin-transform-es2015-parameters": "6.24.1",
     "babel-plugin-transform-es2015-shorthand-properties": "6.24.1",
     "babel-plugin-transform-es2015-spread": "6.22.0",
@@ -55,14 +55,12 @@
     "font-awesome": "4.7.0",
     "gulp": "gulpjs/gulp#4.0",
     "gulp-autoprefixer": "3.1.1",
-    "gulp-babel": "6.1.2",
     "gulp-clean-css": "3.0.4",
     "gulp-eslint": "3.0.1",
     "gulp-load-plugins": "1.5.0",
     "gulp-rename": "1.2.2",
     "gulp-sass": "3.1.0",
     "gulp-statil": "0.5.0",
-    "gulp-uglify": "2.1.2",
     "gulp-util": "3.0.8",
     "gulp-watch": "4.3.11",
     "highlight.js": "9.11.0",
@@ -73,6 +71,9 @@
     "react": "next",
     "react-dom": "next",
     "react-router-dom": "4.1.2",
+    "rollup": "0.48.2",
+    "rollup-plugin-babel": "3.0.2",
+    "rollup-plugin-uglify": "2.0.1",
     "stylebox": "0.0.10",
     "stylific-lite": "0.0.1",
     "transform-loader": "0.2.4",

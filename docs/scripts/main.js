@@ -1,3 +1,5 @@
+/* global module, require */
+
 // This must be executed before any other code.
 if (module.hot) {
   module.hot.accept(err => {

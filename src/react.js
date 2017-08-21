@@ -1,11 +1,9 @@
-'use strict'
+import {createElement, Component} from 'react'
+import {is, equalBy} from 'emerge'
+import {includes, isFunction, isObject} from 'fpx'
+import {Que, Reaction} from 'espo'
 
-const React = require('react')
-const {is, equalBy} = require('emerge')
-const {includes, isFunction, isObject} = require('fpx')
-const {Que, Reaction, bindAll} = require('espo')
-
-const {$$typeof: elementMarker} = React.createElement('div')
+const {$$typeof: elementMarker} = createElement('div')
 
 /**
  * Classes
@@ -15,20 +13,17 @@ const {$$typeof: elementMarker} = React.createElement('div')
 // trigger multiple render phases, we can .dam() the shared render que, update,
 // then flush the que, avoiding redundant renders that could have happened
 // during the update.
-class RenderQue extends Que {
+export class RenderQue extends Que {
   constructor() {
     super(forceUpdateInstance)
-    if (this.constructor === RenderQue) bindAll(this)
   }
 
   push(value) {
     if (isComponentInstance(value) && !includes(this.pending, value)) super.push(value)
   }
+
+  static global = new RenderQue()
 }
-
-RenderQue.global = new RenderQue()
-
-exports.RenderQue = RenderQue
 
 // Enables implicit reactivity driven by procedural data access (adapts React
 // views to espo.Reaction). Enables custom batching of view updates via
@@ -41,7 +36,7 @@ exports.RenderQue = RenderQue
 // stuck in an inconsistent state, breaking it. Replacing exceptions with
 // console reports circumvents the problem. (Note: need to check behavior in
 // React 16+.)
-class PraxComponent extends React.Component {
+export class PraxComponent extends Component {
   constructor() {
     super(...arguments)
     this.reaction = new Reaction()
@@ -72,39 +67,45 @@ class PraxComponent extends React.Component {
   }
 }
 
-exports.PraxComponent = PraxComponent
-
 PraxComponent.prototype.renderQue = RenderQue.global
 
 /**
  * Utils
  */
 
-function forceUpdateInstance (instance) {
-  instance.forceUpdate()
-}
-
-exports.isComponentInstance = isComponentInstance
-function isComponentInstance (value) {
+export function isComponentInstance (value) {
   return isObject(value) && isFunction(value.forceUpdate)
 }
 
-exports.isElement = isElement
-function isElement(value) {
+export function isElement(value) {
   return isObject(value) && value.$$typeof === elementMarker
 }
 
-exports.reactEqual = reactEqual
-function reactEqual(left, right) {
+export function reactEqual(left, right) {
   return isElement(left) && isElement(right)
     ? elemEqual(left, right)
     : equalBy(reactEqual, left, right)
 }
 
+// Utility for extra paranoid `shouldComponentUpdate`.
+export function reactPseudoEqual (left, right) {
+  return (isFunction(left) && isFunction(right)) || (
+    isElement(left, right)
+    ? elemEqual(left, right)
+    : equalBy(reactPseudoEqual, left, right)
+  )
+}
+
+function forceUpdateInstance (instance) {
+  instance.forceUpdate()
+}
+
 function elemEqual(left, right) {
-  return is(left.type, right.type) &&
+  return (
+    is(left.type, right.type) &&
     is(left.key, right.key) &&
     propsEqual(left.props, right.props)
+  )
 }
 
 function propsEqual(left, right) {
@@ -119,14 +120,4 @@ function propsEqual(left, right) {
   }
 
   return reactEqual(left.children, right.children)
-}
-
-// Utility for extra paranoid `shouldComponentUpdate`.
-exports.reactPseudoEqual = reactPseudoEqual
-function reactPseudoEqual (left, right) {
-  return isFunction(left) && isFunction(right) || (
-    isElement(left, right)
-    ? elemEqual(left, right)
-    : equalBy(reactPseudoEqual, left, right)
-  )
 }

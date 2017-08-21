@@ -1,0 +1,25 @@
+{
+  "env": {
+    "browser": true,
+    "node": false,
+    "es6": false
+  },
+  "parserOptions": {
+    "sourceType": "module"
+  },
+  "plugins": [
+    "react"
+  ],
+  "globals": {
+    "React": true
+  },
+  "rules": {
+    "jsx-quotes": ["error", "prefer-single"],
+    "react/jsx-curly-spacing": "error",
+    "react/jsx-first-prop-new-line": ["error", "multiline"],
+    "react/jsx-no-undef": "error",
+    "react/jsx-uses-react": "error",
+    "react/jsx-uses-vars": "error",
+    "react/no-unknown-property": "error"
+  }
+}

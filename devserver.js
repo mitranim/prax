@@ -2,7 +2,7 @@
 
 const bs = require('browser-sync').create()
 const {log} = require('gulp-util')
-const {mapVals} = require('fpx')
+const {mapDict} = require('fpx')
 const config = require('./webpack.config')
 
 const prod = process.env.NODE_ENV === 'production'
@@ -15,7 +15,7 @@ if (prod) {
 }
 
 const compiler = prod ? null : require('webpack')(extend(config, {
-  entry: mapVals(
+  entry: mapDict(
     fsPath => ['webpack-hot-middleware/client', fsPath],
     config.entry
   ),

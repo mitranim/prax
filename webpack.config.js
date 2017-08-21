@@ -28,7 +28,7 @@ module.exports = {
           test: /react.*\.jsx?$/,
           include: /node_modules/,
           use: {loader: 'transform-loader', options: {envify: true}},
-        }
+        },
       ]),
       {
         test: /\.md$/,
@@ -38,7 +38,7 @@ module.exports = {
           {loader: 'md-loader'},
         ],
       },
-    ]
+    ],
   },
 
   resolve: {
@@ -50,20 +50,20 @@ module.exports = {
   resolveLoader: {
     alias: {
       'md-loader': pt.resolve('md-loader.js'),
-    }
+    },
   },
 
   plugins: [
     ...(!prod ? [
-      new webpack.HotModuleReplacementPlugin()
+      new webpack.HotModuleReplacementPlugin(),
     ] : [
       new webpack.optimize.UglifyJsPlugin({
         minimize: true,
         compress: {warnings: false, screw_ie8: true},
         mangle: true,
         sourceMap: true,
-      })
-    ])
+      }),
+    ]),
   ],
 
   devtool: prod ? 'source-map' : false,
@@ -74,6 +74,6 @@ module.exports = {
     chunks: false,
     version: false,
     hash: false,
-    assets: false
-  }
+    assets: false,
+  },
 }
