@@ -6,7 +6,7 @@
   "scripts": {
     "start": "(rollup -cw & gulp)",
     "compile": "rollup -c && NODE_ENV=production gulp build",
-    "prepublishOnly": "npm run compile"
+    "prepublishOnly": "npm run -s compile"
   },
   "description": "Framework of time and state in React applications",
   "keywords": [],

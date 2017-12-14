@@ -49,13 +49,11 @@ const {Xhttp} = require('xhttp')
 class SomeResource extends Atom {
   // Runs when adding first subscription
   onInit () {
-    this.xhr = Xhttp({url: '/api/some-resource'})
-      .onDone(result => {
-        this.xhr = null
-        // Could delegate storage to the central store
-        this.reset({result})
-      })
-      .start()
+    this.xhr = Xhttp({url: '/api/some-resource'}, response => {
+      this.xhr = null
+      // Could delegate storage to the central store
+      this.reset({response})
+    })
     this.reset({syncing: true})
   }
 
@@ -74,13 +72,13 @@ class View extends PraxComponent {
   subrender ({deref}) {
     // Subscribes and activates resource
     // Resource will deactivate when nobody is pulling data from it
-    const {syncing, result} = deref(store.deref().someResource)
+    const {syncing, response} = deref(store.deref().someResource)
 
     return (
       syncing ?
       <div>...syncing</div> :
-      result ?
-      <div>Response: {JSON.stringify(result.body)}</div> :
+      response ?
+      <div>Response: {JSON.stringify(response.body)}</div> :
       null
     )
   }

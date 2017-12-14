@@ -11,7 +11,7 @@ marked.setOptions({
 })
 
 // Adds anchor links.
-marked.Renderer.prototype.heading = function (text, level, raw) {
+marked.Renderer.prototype.heading = function heading(text, level, raw) {
   const id = this.options.headerPrefix + raw.toLowerCase().replace(/[^\w]+/g, '-')
   return (
 `<h${level} id="${id}">
@@ -22,7 +22,7 @@ marked.Renderer.prototype.heading = function (text, level, raw) {
 }
 
 // Adds target="_blank" to external links.
-marked.Renderer.prototype.link = function (href, title, text) {
+marked.Renderer.prototype.link = function link(href, title, text) {
   if (this.options.sanitize) {
     try {
       const protocol = decodeURIComponent(unescape(href))

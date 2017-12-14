@@ -135,20 +135,18 @@ const {RenderQue} = require('prax')
 const {Xhttp} = require('xhttp')
 
 function httpRequest (params, fun) {
-  return Xhttp(params)
-    .onDone(result => {
-      // Pauses updates of Prax view components
-      RenderQue.globalRenderQue.dam()
-      try {
-        // Suppose this triggers redundant renders
-        fun(result)
-      }
-      finally {
-        // Resumes updates
-        RenderQue.globalRenderQue.flush()
-      }
-    })
-    .start()
+  return Xhttp(params, response => {
+    // Pauses updates of Prax view components
+    RenderQue.globalRenderQue.dam()
+    try {
+      // Suppose this triggers redundant renders
+      fun(response)
+    }
+    finally {
+      // Resumes updates
+      RenderQue.globalRenderQue.flush()
+    }
+  })
 }
 ```
 

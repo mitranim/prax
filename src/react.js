@@ -40,8 +40,12 @@ export class PraxComponent extends Component {
   constructor() {
     super(...arguments)
     this.reaction = new Reaction()
-    this.scheduleUpdate = this.renderQue.push.bind(this.renderQue, this)
+    this.scheduleUpdate = this.scheduleUpdate.bind(this)
     if (isFunction(this.subrender)) this.subrender = this.subrender.bind(this)
+  }
+
+  scheduleUpdate() {
+    this.renderQue.push(this)
   }
 
   // Prevents unnecessary renders caused by ancestor instances. Works best if
