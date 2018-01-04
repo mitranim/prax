@@ -1,6 +1,6 @@
 {
   "name": "prax",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "dist/prax.js",
   "module": "es/prax.js",
   "scripts": {
@@ -20,9 +20,9 @@
     "url": "https://github.com/Mitranim/prax.git"
   },
   "dependencies": {
-    "emerge": "^0.1.0",
-    "espo": "^0.1.0",
-    "fpx": "^0.3.0"
+    "emerge": "^0.1.1",
+    "espo": "^0.2.0",
+    "fpx": "^0.3.1"
   },
   "peerDependencies": {
     "react": "*"

@@ -91,19 +91,6 @@ export function reactEqual(left, right) {
     : equalBy(reactEqual, left, right)
 }
 
-// Utility for extra paranoid `shouldComponentUpdate`.
-export function reactPseudoEqual (left, right) {
-  return (isFunction(left) && isFunction(right)) || (
-    isElement(left, right)
-    ? elemEqual(left, right)
-    : equalBy(reactPseudoEqual, left, right)
-  )
-}
-
-function forceUpdateInstance (instance) {
-  instance.forceUpdate()
-}
-
 function elemEqual(left, right) {
   return (
     is(left.type, right.type) &&
@@ -124,4 +111,8 @@ function propsEqual(left, right) {
   }
 
   return reactEqual(left.children, right.children)
+}
+
+function forceUpdateInstance (instance) {
+  instance.forceUpdate()
 }
