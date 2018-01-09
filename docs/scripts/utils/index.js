@@ -1,4 +1,4 @@
-const {assign} = require('prax')
+const {assign} = require('espo')
 
 // true = use subdirectories
 // http://fineonly.com/solutions/regex-exclude-a-string

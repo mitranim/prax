@@ -1,7 +1,8 @@
-const {TaskQue, ifelse, id, val, noop, isFunction, isString, isFinite, validate} = require('prax')
+const {TaskQue} = require('espo')
+const {ifelse, id, val, noop, isFunction, isString, isFinite, validate} = require('fpx')
 
 export function addEvent (target, name, fun, useCapture = false) {
-  validate(isFunction, fun)
+  validate(fun, isFunction)
   target.addEventListener(name, fun, useCapture)
   return function removeEvent () {
     target.removeEventListener(name, fun, useCapture)
@@ -33,8 +34,8 @@ export function toInt32 (value) {
 const PX_ERROR_MARGIN = 3
 
 export function smoothScrollY ({velocity, getDeltaY}) {
-  validate(isFinite, velocity)
-  validate(isFunction, getDeltaY)
+  validate(velocity, isFinite)
+  validate(getDeltaY, isFunction)
 
   // Used to track deltaY changes between frames.
   let lastDeltaY = null

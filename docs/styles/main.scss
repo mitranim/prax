@@ -14,7 +14,7 @@ $color-code-bg: floralwhite;
 $breakpoint-sm: 600px;
 $breakpoint-md: 960px;
 
-$content-max-width: $breakpoint-md;
+$content-max-width: 1280px;
 
 /**
  * Imports
@@ -57,7 +57,7 @@ $content-max-width: $breakpoint-md;
 html {
   font-family: 'Open Sans', 'Helvetica Neue', Roboto, 'Segoe UI', Verdana, sans-serif;
   font-weight: 400;
-  font-size: 16px;
+  font-size: 18px;
   @media (max-width: $breakpoint-md) {font-size: 14px}
   @media (max-width: $breakpoint-sm) {font-size: 12px}
   line-height: 1.4;

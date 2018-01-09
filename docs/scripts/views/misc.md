@@ -71,7 +71,7 @@ when it has subscribers, and drops it when nobody's looking.
 See [another example](examples#demand-driven-resources).
 
 ```js
-const {Atom} = require('prax')
+const {Atom} = require('espo') // transitive dependency
 const {Webbs} = require('webbs')
 
 class MyResource extends Atom {

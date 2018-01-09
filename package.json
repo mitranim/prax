@@ -1,6 +1,6 @@
 {
   "name": "prax",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "main": "dist/prax.js",
   "module": "es/prax.js",
   "scripts": {
@@ -19,15 +19,17 @@
     "type": "git",
     "url": "https://github.com/Mitranim/prax.git"
   },
-  "dependencies": {
-    "emerge": "^0.1.1",
-    "espo": "^0.2.0",
-    "fpx": "^0.3.1"
-  },
+  "dependencies": {},
   "peerDependencies": {
+    "emerge": "^0.1.1",
+    "espo": "^0.3.0",
+    "fpx": "^0.4.0",
     "react": "*"
   },
   "devDependencies": {
+    "emerge": "^0.1.1",
+    "espo": "^0.3.0",
+    "fpx": "^0.4.0",
     "babel-core": "6.24.1",
     "babel-eslint": "7.2.3",
     "babel-loader": "7.0.0",
@@ -66,7 +68,7 @@
     "highlight.js": "9.11.0",
     "history": "4.6.1",
     "html-loader": "0.4.5",
-    "marked": "0.3.6",
+    "marked": "0.3.12",
     "normalize.css": "6.0.0",
     "react": "next",
     "react-dom": "next",

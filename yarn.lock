@@ -1636,11 +1636,11 @@ eslint_d@4.2.5:
     resolve "^1.1.7"
     supports-color "^3.1.2"
 
-espo@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/espo/-/espo-0.2.0.tgz#ef62643f72e1721824ec3c3663c78d4e79b88b41"
+espo@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/espo/-/espo-0.3.0.tgz#de6710c807990452dadf552f928830ec31daf6b6"
   dependencies:
-    fpx "^0.3.0"
+    fpx "^0.4.0"
 
 espree@^3.4.0:
   version "3.4.2"
@@ -1928,13 +1928,9 @@ formidable@1.0.x:
   version "1.0.17"
   resolved "https://registry.yarnpkg.com/formidable/-/formidable-1.0.17.tgz#ef5491490f9433b705faa77249c99029ae348559"
 
-fpx@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/fpx/-/fpx-0.3.0.tgz#3ac5c5cdecb5b7dd8d6f92889f1356a4d388eb2b"
-
-fpx@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/fpx/-/fpx-0.3.1.tgz#8015c7e65d9c253ded465d199fdf7931bf9f01b8"
+fpx@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/fpx/-/fpx-0.4.0.tgz#c1ea6f19b46e6d37642d43577f7b8a9e08acbb13"
 
 fresh@0.3.0, fresh@^0.3.0:
   version "0.3.0"
@@ -3182,9 +3178,9 @@ map-obj@^1.0.0, map-obj@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/map-obj/-/map-obj-1.0.1.tgz#d933ceb9205d82bdcf4886f6742bdc2b4dea146d"
 
-marked@0.3.6:
-  version "0.3.6"
-  resolved "https://registry.yarnpkg.com/marked/-/marked-0.3.6.tgz#b2c6c618fccece4ef86c4fc6cb8a7cbf5aeda8d7"
+marked@0.3.12:
+  version "0.3.12"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-0.3.12.tgz#7cf25ff2252632f3fe2406bde258e94eee927519"
 
 matchdep@^1.0.0:
   version "1.0.1"

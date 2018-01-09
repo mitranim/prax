@@ -1,10 +1,10 @@
 ## Overview
 
 Prax is a framework of time and state for React applications. It's heavily
-inspired by Redux, Clojure, ClojureScript libraries, and has been battle-tested
-in large apps since 2015. Prax's role in your app can be roughly described as:
-Redux with addons + ImmutableJS + RxJS + mini-runtime for deterministic
-object destructors.
+inspired by Clojure and ClojureScript libraries, particularly Reagent, and has
+been battle-tested in large apps since 2015. In terms of popular JS libraries,
+Prax's role in your app can be roughly described as: Redux with addons +
+ImmutableJS + RxJS + mini-runtime for deterministic object destructors.
 
 Another, simplistic, way to describe Prax: it's like React for _everything_, not
 just for views.

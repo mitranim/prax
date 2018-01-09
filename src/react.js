@@ -15,7 +15,7 @@ const {$$typeof: elementMarker} = createElement('div')
 // during the update.
 export class RenderQue extends Que {
   constructor() {
-    super(forceUpdateInstance)
+    super(forceUpdateViewInstance)
   }
 
   push(value) {
@@ -113,6 +113,6 @@ function propsEqual(left, right) {
   return reactEqual(left.children, right.children)
 }
 
-function forceUpdateInstance (instance) {
-  instance.forceUpdate()
+function forceUpdateViewInstance (viewInstance) {
+  viewInstance.forceUpdate()
 }

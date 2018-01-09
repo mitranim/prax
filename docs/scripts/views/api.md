@@ -1,18 +1,16 @@
 ## Overview
 
-Prax is an umbrella for 3 other libraries: `espo`, `emerge`, and `fpx`. They
-have their own documentation (see below). Prax re-exports everything under one
-namespace, adding a React adapter and a few minor utilities.
+Prax depends on 3 other libraries: `espo`, `emerge`, and `fpx`. They have their own documentation (see below). They're _peer dependencies_ and must be installed explicitly. Prax combines them to create a React adapter that enables implicit reactivity and global update scheduling. It also adds a few minor utilities.
 
-Prax is heavily inspired by [`clojure.core`](https://clojuredocs.org/core-library)
-and
-[Clojure's philosophy](https://github.com/matthiasn/talk-transcripts/blob/master/Hickey_Rich/AreWeThereYet.md).
-The React layer is heavily inspired by [Reagent](http://reagent-project.github.io).
-If you're familiar with them, you should feel right at home.
+Installation:
 
-On this page, the entire library is available as `window.prax`. In addition,
-`React` and `ReactDOM` are available as globals. You can run most examples in
-the browser console.
+```sh
+npm i -E prax espo emerge fpx
+```
+
+Prax is heavily inspired by [`clojure.core`](https://clojuredocs.org/core-library) and [Clojure's philosophy](https://github.com/matthiasn/talk-transcripts/blob/master/Hickey_Rich/AreWeThereYet.md). The React layer is heavily inspired by [Reagent](http://reagent-project.github.io). If you're familiar with them, you should feel right at home.
+
+On this page, the entire library is available as `window.prax`. In addition, `React` and `ReactDOM` are available as globals. You can run most examples in the browser console.
 
 ---
 
@@ -30,7 +28,9 @@ tool for procedural reactivity.
 ```js
 const React = require('react')
 const {render} = require('react-dom')
-const {Atom, PraxComponent, byPath, putIn} = require('prax')
+const {PraxComponent, byPath} = require('prax')
+const {Atom} = require('espo') // transitive dependency
+const {putIn} = require('emerge') // transitive dependency
 
 // Observable reference acting as central data store
 const store = new Atom({message: {greeting: 'Hello', name: 'world'}})
@@ -68,7 +68,8 @@ associated with this component instance. Use `reaction.deref()` to pull data
 from observable refs and automatically subscribe.
 
 ```js
-const {Atom, PraxComponent, byPath} = require('prax')
+const {PraxComponent, byPath} = require('prax')
+const {Atom} = require('espo') // transitive dependency
 
 const store = new Atom({msg: 'Hello world!'})
 
@@ -172,7 +173,9 @@ Creates an observable that derives its value from `observableRef` by applying
 `query` to it. Can be used in views or reactions.
 
 ```js
-const {Atom, PraxComponent, byPath, putIn} = require('prax')
+const {PraxComponent, byPath} = require('prax')
+const {Atom} = require('espo') // transitive dependency
+const {putIn} = require('emerge') // transitive dependency
 
 const atom = new Atom({msg: 'Hello', name: 'world'})
 
@@ -214,7 +217,8 @@ Creates an observable that derives its value by reading it from `observableRef`
 at `path`.
 
 ```js
-const {Atom, PraxComponent, byPath} = require('prax')
+const {PraxComponent, byPath} = require('prax')
+const {Atom} = require('espo') // transitive dependency
 
 const atom = new Atom({msg: {greeting: 'Hello world!'}})
 
@@ -245,7 +249,8 @@ update when it has no subscribers. Can be used in views or reactions.
 See [Reactive Computations](examples#reactive-computations) for another example.
 
 ```js
-const {Atom, PraxComponent, computation} = require('prax')
+const {PraxComponent, computation} = require('prax')
+const {Atom} = require('espo') // transitive dependency
 
 const greeting = new Atom('Hello')
 const name = new Atom('world')
@@ -316,44 +321,34 @@ listener({type: 'greeting'}, {message: 'Hello world!'})
 ## `reactEqual(left, right)`
 
 Deep equality with a few safety rules for React elements. Used internally by
-[`shouldComponentUpdate`](#-praxcomponent-shouldcomponentupdate-), so you
-shouldn't have to use this directly.
+[`praxComponent.shouldComponentUpdate`](#-praxcomponent-shouldcomponentupdate-).
 
 Defined in terms of [`emerge.equalBy`](https://github.com/Mitranim/emerge#equalbytest-one-other)
 
 ```js
 const {reactEqual} = require('react')
 
-const _ = reactEqual(prevProps, nextProps)
+reactEqual(prevProps, nextProps)
 
-const _ = reactEqual(prevState, nextState)
+reactEqual(prevState, nextState)
 ```
 
 ---
 
 ## Espo
 
-General-purpose tools for observables, subscriptions, broadcasts. Lightweight
-alternative to RxJS. Provides the core mechanisms Prax is built on: observable
-refs such as [`Atom`](https://mitranim.com/espo/#-atom-value-), implicit
-subscriptions via [`Reaction`](https://mitranim.com/espo/#-reaction-),
-and an [event system](examples#event-system) via
-[`MessageQue`](https://mitranim.com/espo/#-messageque-).
+Library for reactive and stateful programming: observables, implicit reactivity, automatic resource cleanup. Provides Prax's core mechanisms: observable [`atoms`](https://mitranim.com/espo/#-atom-value-) and implicit subscriptions via [`Reaction`](https://mitranim.com/espo/#-reaction-).
 
 Docs: https://mitranim.com/espo/
 
 ## Emerge
 
-Library for using plain JS data as immutable, functional data
-structures. Lightweight alternative to ImmutableJS. Heavily influenced by
-[Clojure's philosophy](https://github.com/matthiasn/talk-transcripts/blob/master/Hickey_Rich/AreWeThereYet.md)
-and [`clojure.core`](https://clojuredocs.org/core-library).
+Library for using plain JS data as immutable, functional data structures. Lightweight alternative to ImmutableJS. Heavily inspired by data functions in [`clojure.core`](https://clojuredocs.org/core-library).
 
 Docs: https://github.com/Mitranim/emerge
 
 ## fpx
 
-Functional programming utils. Lightweight alternative to Lodash with a richer
-higher-order function toolkit.
+Functional programming utils. Lightweight alternative to Lodash.
 
 Docs: https://mitranim.com/fpx/

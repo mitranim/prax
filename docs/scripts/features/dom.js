@@ -1,6 +1,9 @@
 const React = require('react')
 const ReactDOM = require('react-dom')
-const {PraxComponent, Reaction, Agent, byPath, equal, putIn, putInBy, test} = require('prax')
+const {PraxComponent, byPath} = require('prax')
+const {Reaction, Agent} = require('espo')
+const {equal, putIn, putInBy} = require('emerge')
+const {test} = require('fpx')
 const {CleanupQue, addEvent, journal, originHref, onlyString,
   smoothScrollYToWithin, smoothScrollToTop} = require('../utils')
 const {Root} = require('../views')

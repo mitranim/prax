@@ -1,8 +1,8 @@
-const createBrowserHistory = require('history/createBrowserHistory').default
+const {default: createBrowserHistory} = require('history/createBrowserHistory')
 
 const baseNode = document.querySelector('head base')
 
-const baseHref = baseNode && baseNode.getAttribute('href') || ''
+const baseHref = (baseNode && baseNode.getAttribute('href')) || ''
 
 export const journal = createBrowserHistory({
   basename: baseHref || null,

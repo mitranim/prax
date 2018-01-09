@@ -3,7 +3,9 @@
 ```js
 const React = require('react')
 const {render} = require('react-dom')
-const {Atom, PraxComponent, byPath, putIn} = require('prax')
+const {PraxComponent, byPath} = require('prax')
+const {Atom} = require('espo') // transitive dependency
+const {putIn} = require('emerge') // transitive dependency
 
 const store = new Atom({message: {greeting: 'Hello world!'}})
 
@@ -43,7 +45,9 @@ Prax makes it extremely easy with
 that initialise/deinitialise based on subscription count.
 
 ```js
-const {Atom, PraxComponent} = require('prax')
+const {PraxComponent} = require('prax')
+const {Atom} = require('espo') // transitive dependency
+
 const {Xhttp} = require('xhttp')
 
 class SomeResource extends Atom {
@@ -109,13 +113,14 @@ This combination is strictly more expressive than Node.js-style event emitters.
 You decide your own event format, argument count, and so on.
 
 ```js
-const {MessageQue, on, truthy} = require('prax')
+const {on} = require('prax')
+const {MessageQue} = require('espo') // transitive dependency
 
 const mq = new MessageQue()
 
 // Match two arguments
 const sub0 = mq.subscribe(on(
-  ['greeting', {message: truthy}],
+  ['greeting', {message: Boolean}],
   (type, {message}) => {
     console.info('greeted:', message)
   }
@@ -178,7 +183,10 @@ It should define _side effects as a function of current state_.
 This example also demonstrates [demand-driven resources](#demand-driven-resources).
 
 ```js
-const {Atom, PraxComponent, byPath, putIn, noop} = require('prax')
+const {PraxComponent, byPath} = require('prax')
+const {Atom} = require('espo') // transitive dependency
+const {putIn} = require('emerge') // transitive dependency
+
 const firebase = require('firebase/app').initializeApp(myConfig)
 
 class MessagesResource extends Atom {
@@ -250,6 +258,8 @@ class MessagesView extends PraxComponent {
     )
   }
 }
+
+function noop() {}
 ```
 
 ## Reactive Computations
@@ -260,7 +270,8 @@ Define your data as a reactive computation on other data by using
 This idea is lifted directly from [Reagent's `reaction`](https://github.com/Day8/re-frame/blob/master/docs/SubscriptionFlow.md#how-flow-happens-in-reagent).
 
 ```js
-const {Atom, PraxComponent, byPath, computation} = require('prax')
+const {PraxComponent, byPath, computation} = require('prax')
+const {Atom} = require('espo') // transitive dependency
 
 const store = new Atom({user: {firstName: 'Mira', lastName: 'Nova'}})
 
