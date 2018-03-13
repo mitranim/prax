@@ -1,9 +1,7 @@
-import {createElement, Component} from 'react'
+import {Component, isValidElement} from 'react'
 import {is, equalBy} from 'emerge'
 import {includes, isFunction, isObject} from 'fpx'
 import {Que, Reaction} from 'espo'
-
-const {$$typeof: elementMarker} = createElement('div')
 
 /**
  * Classes
@@ -41,7 +39,7 @@ export class PraxComponent extends Component {
     super(...arguments)
     this.reaction = new Reaction()
     this.scheduleUpdate = this.scheduleUpdate.bind(this)
-    if (isFunction(this.subrender)) this.subrender = this.subrender.bind(this)
+    this.subrender = this.subrender.bind(this)
   }
 
   scheduleUpdate() {
@@ -60,7 +58,6 @@ export class PraxComponent extends Component {
   }
 
   render() {
-    if (!isFunction(this.subrender)) return null
     try {
       return this.reaction.run(this.subrender, this.scheduleUpdate)
     }
@@ -69,6 +66,9 @@ export class PraxComponent extends Component {
       return null
     }
   }
+
+  // Must override in subclass
+  subrender() {return null}
 }
 
 PraxComponent.prototype.renderQue = RenderQue.global
@@ -81,14 +81,10 @@ export function isComponentInstance (value) {
   return isObject(value) && isFunction(value.forceUpdate)
 }
 
-export function isElement(value) {
-  return isObject(value) && value.$$typeof === elementMarker
-}
-
 export function reactEqual(left, right) {
-  return isElement(left) && isElement(right)
-    ? elemEqual(left, right)
-    : equalBy(reactEqual, left, right)
+  return isValidElement(left)
+    ? isValidElement(right) && elemEqual(left, right)
+    : equalBy(left, right, reactEqual)
 }
 
 function elemEqual(left, right) {

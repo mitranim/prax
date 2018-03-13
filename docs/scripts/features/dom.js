@@ -2,7 +2,7 @@ const React = require('react')
 const ReactDOM = require('react-dom')
 const {PraxComponent, byPath} = require('prax')
 const {Reaction, Agent} = require('espo')
-const {equal, putIn, putInBy} = require('emerge')
+const e = require('emerge')
 const {test} = require('fpx')
 const {CleanupQue, addEvent, journal, originHref, onlyString,
   smoothScrollYToWithin, smoothScrollToTop} = require('../utils')
@@ -19,7 +19,7 @@ export class Dom extends Agent {
   }
 
   updateNav () {
-    this.swap(putInBy, ['nav'], nav => ({
+    this.swap(e.putBy, 'nav', nav => ({
       lastAction: journal.action,
       prevLocation: nav && nav.location,
       location: journal.location,
@@ -33,7 +33,7 @@ export class Dom extends Agent {
     this.updateNav()
 
     cleanup.push(addEvent(document, 'keydown', ({keyCode}) => {
-      env.swap(putIn, ['keyCode'], keyCode)
+      env.swap(e.put, 'keyCode', keyCode)
     }))
 
     // Rendering
@@ -68,7 +68,7 @@ export class Dom extends Agent {
       if (!prev || !next) return
 
       // HMR
-      if (equal(prev, next)) return
+      if (e.equal(prev, next)) return
 
       if (action === 'POP' && !next.hash) {
         // Stimulate the browser to restore the scroll position.

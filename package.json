@@ -1,6 +1,6 @@
 {
   "name": "prax",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "main": "dist/prax.js",
   "module": "es/prax.js",
   "scripts": {
@@ -21,7 +21,7 @@
   },
   "dependencies": {},
   "peerDependencies": {
-    "emerge": "^0.1.1",
+    "emerge": "^0.2.0",
     "espo": "^0.3.0",
     "fpx": "^0.4.0",
     "react": "*"
