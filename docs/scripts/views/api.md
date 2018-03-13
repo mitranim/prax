@@ -323,7 +323,7 @@ listener({type: 'greeting'}, {message: 'Hello world!'})
 Deep equality with a few safety rules for React elements. Used internally by
 [`praxComponent.shouldComponentUpdate`](#-praxcomponent-shouldcomponentupdate-).
 
-Defined in terms of [`emerge.equalBy`](https://github.com/Mitranim/emerge#equalbytest-one-other)
+Defined in terms of [`emerge.equalBy`](https://github.com/Mitranim/emerge#equalbyone-other-fun)
 
 ```js
 const {reactEqual} = require('react')
