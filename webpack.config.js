@@ -35,7 +35,7 @@ module.exports = {
         include: pt.resolve('docs'),
         use: [
           {loader: 'html-loader'},
-          {loader: 'md-loader'},
+          {loader: require.resolve('./md-loader')},
         ],
       },
     ],
@@ -44,12 +44,6 @@ module.exports = {
   resolve: {
     alias: {
       prax: process.cwd(),
-    },
-  },
-
-  resolveLoader: {
-    alias: {
-      'md-loader': pt.resolve('md-loader.js'),
     },
   },
 

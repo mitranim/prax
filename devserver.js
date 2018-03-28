@@ -1,7 +1,7 @@
 'use strict'
 
 const bs = require('browser-sync').create()
-const {log} = require('gulp-util')
+const log = require('fancy-log')
 const {mapVals} = require('fpx')
 const config = require('./webpack.config')
 

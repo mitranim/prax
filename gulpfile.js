@@ -5,16 +5,19 @@
 const $ = require('gulp-load-plugins')()
 const del = require('del')
 const gulp = require('gulp')
+const log = require('fancy-log')
+const rollup = require('rollup')
 const webpack = require('webpack')
 const {fork} = require('child_process')
 const statilConfig = require('./statil')
+const rollupConfig = require('./rollup.config')
 const webpackConfig = require('./webpack.config')
 
 /* ******************************** Globals **********************************/
 
 const _srcDir = 'src'
-const _esDir = 'es'
-const _distDir = 'dist'
+const esDir = 'es'
+const distDir = 'dist'
 const srcFiles = 'src/**/*.js'
 const _esFiles = 'es/**/*.js'
 const _distFiles = 'dist/**/*.js'
@@ -26,16 +29,47 @@ const docOutDir = 'gh-pages'
 const docOutStyleDir = 'gh-pages/styles'
 const docOutFontDir = 'gh-pages/fonts'
 
-const Err = (pluginName, err) => new $.util.PluginError(pluginName, err, {showProperties: false})
+const GulpErr = msg => ({showStack: false, toString: () => msg})
 
 /* ********************************* Tasks ***********************************/
 
 /* --------------------------------- Clear ---------------------------------- */
 
-gulp.task('clear', () => (
-  // Skips dotfiles like `.git` and `.gitignore`
-  del(`${docOutDir}/*`).catch(console.error.bind(console))
-))
+gulp.task('clear', async () => {
+  try {
+    // Skips dotfiles like `.git` and `.gitignore`
+    await del([`${distDir}/*`, `${esDir}/*`, `${docOutDir}/*`])
+  }
+  catch (err) {
+    console.error(err)
+  }
+})
+
+/* -------------------------------- Rollup --------------------------------- */
+
+gulp.task('rollup:build', async () => {
+  for (const config of rollupConfig) {
+    const bundle = await rollup.rollup(config)
+    await bundle.write(config.output)
+  }
+})
+
+gulp.task('rollup:watch', () => {
+  const watcher = rollup.watch(rollupConfig)
+
+  watcher.on('event', event => {
+    const {code, input, duration} = event
+
+    if (code === 'START' || code === 'BUNDLE_START' || code === 'END') return
+
+    if (code === 'BUNDLE_END') {
+      log('[rollup]', code, input, duration, 'ms')
+      return
+    }
+
+    log('[rollup]', event)
+  })
+})
 
 /* --------------------------------- HTML -----------------------------------*/
 
@@ -83,11 +117,11 @@ gulp.task('docs:fonts:watch', () => {
 gulp.task('docs:scripts:build', done => {
   webpack(webpackConfig, (err, stats) => {
     if (err) {
-      done(Err('webpack', err))
+      done(GulpErr(err))
     }
     else {
-      $.util.log('[webpack]', stats.toString(webpackConfig.stats))
-      done(stats.hasErrors() ? Err('webpack', 'plugin error') : null)
+      log('[webpack]', stats.toString(webpackConfig.stats))
+      done(stats.hasErrors() ? GulpErr('webpack error') : undefined)
     }
   })
 })
@@ -104,7 +138,7 @@ gulp.task('lint', () => (
 /* -------------------------------- Server ----------------------------------*/
 
 gulp.task('docs:server', () => {
-  let proc = null
+  let proc = undefined
 
   process.on('exit', () => {
     if (proc) proc.kill()
@@ -124,16 +158,17 @@ gulp.task('docs:server', () => {
 gulp.task('buildup', gulp.parallel(
   'docs:html:build',
   'docs:styles:build',
-  'docs:fonts:build'
+  'docs:fonts:build',
 ))
 
 gulp.task('watch', gulp.parallel(
+  'rollup:watch',
   'docs:html:watch',
   'docs:styles:watch',
   'docs:fonts:watch',
-  'docs:server'
+  'docs:server',
 ))
 
-gulp.task('build', gulp.series('clear', 'buildup', 'lint', 'docs:scripts:build'))
+gulp.task('build', gulp.series('clear', 'buildup', 'lint', 'rollup:build', 'docs:scripts:build'))
 
 gulp.task('default', gulp.series('build', 'watch'))
