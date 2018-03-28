@@ -158,7 +158,7 @@ gulp.task('docs:server', () => {
 gulp.task('buildup', gulp.parallel(
   'docs:html:build',
   'docs:styles:build',
-  'docs:fonts:build',
+  'docs:fonts:build'
 ))
 
 gulp.task('watch', gulp.parallel(
@@ -166,7 +166,7 @@ gulp.task('watch', gulp.parallel(
   'docs:html:watch',
   'docs:styles:watch',
   'docs:fonts:watch',
-  'docs:server',
+  'docs:server'
 ))
 
 gulp.task('build', gulp.series('clear', 'buildup', 'lint', 'rollup:build', 'docs:scripts:build'))
