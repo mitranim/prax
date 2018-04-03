@@ -4,7 +4,7 @@ Prax is a framework of time and state for React applications. It's heavily
 inspired by Clojure and ClojureScript libraries, particularly Reagent, and has
 been battle-tested in large apps since 2015. In terms of popular JS libraries,
 Prax's role in your app can be roughly described as: Redux with addons +
-ImmutableJS + RxJS + mini-runtime for deterministic object destructors.
+ImmutableJS + RxJS + Rust-style runtime for deterministic object destructors.
 
 Another, simplistic, way to describe Prax: it's like React for _everything_, not
 just for views.
@@ -24,15 +24,15 @@ unsubscriptions. This is equivalent to manual memory management, and we
 shouldn't have to do it.
 
 * Non-solution: manual subscriptions; humans can't be trusted with cleanup.
-Another non-solution: specialised "declarative" APIs like `react-redux`. They
-tend to be specialised for one purpose. We can do better.
+Another non-solution: specialized "declarative" APIs like `react-redux`. They
+tend to be specialized for one purpose. We can do better.
 
 * Prax solution: reactivity driven by _procedural_ data access. See
 [`PraxComponent`](api#-praxcomponent-) for a UI example,
 [Reactive Logic](examples#reactive-logic) for a side effect example, and
 [Reactive Computations](examples#reactive-computations) for a data example.
 
-Problem: unused resources should automatically deinitialise. I call this
+Problem: unused resources should automatically deinitialize. I call this
 [demand-driven design](misc#_demand-driven_). When nobody's looking, you should
 evict data from cache, abort requests, close websockets, etc., and it should be
 part of your reactivity model. This is crucial for a subscription-based API such
@@ -47,7 +47,7 @@ you're only dealing with data; pure functions can't track subscribers.
 manage the lifecycle of immutable data.
 
 Problem: coordinating async activities that depend on multiple conditions.
-Example: loading user profile when authorised, evicting it when deauthorised,
+Example: loading user profile when authorized, evicting it when deauthorized,
 and reloading it if the user has changed. It's even harder to write asynchronous
 code that may start an activity, then _restart_ or _change_ it when the
 conditions change.
@@ -75,14 +75,14 @@ _flow_ of data and side effects with OO tools such as
 [lazy observables](examples#demand-driven-resources) and
 [event streams](examples#event-system), or the novel tools offered by Prax.
 
-Centralise your resources and data into a hierarchy of ownership, starting with
+Centralize your resources and data into a hierarchy of ownership, starting with
 a root object. Make the root available everywhere in the app. This avoids the
 need for over-designed props, dependency injection, etc.
 
 ## Inspiration
 
 * Clojure, `clojure.core`: functional data structures, atoms
-* Redux: centralisation
+* Redux: centralization
 * Reagent, Re-frame: implicit reactivity
 * Redux, Re-frame: global event broadcast
 * Erlang: pattern matching

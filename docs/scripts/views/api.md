@@ -29,15 +29,15 @@ tool for procedural reactivity.
 const React = require('react')
 const {render} = require('react-dom')
 const {PraxComponent, byPath} = require('prax')
-const {Atom} = require('espo') // transitive dependency
-const {putIn} = require('emerge') // transitive dependency
+const {Atom} = require('espo') // peer dependency
+const {putIn} = require('emerge') // peer dependency
 
 // Observable reference acting as central data store
 const store = new Atom({message: {greeting: 'Hello', name: 'world'}})
 
 // Custom React component with implicit reactivity
 class View extends PraxComponent {
-  subrender ({deref}) {
+  render({deref}) {
     // Get data AND automatically subscribe
     const greeting = deref(byPath(store, ['message', 'greeting']))
     const name = deref(byPath(store, ['message', 'name']))
@@ -58,25 +58,31 @@ class View extends PraxComponent {
 render(<View />, document.getElementById('root'))
 ```
 
-### `praxComponent.subrender(reaction)`
+### `praxComponent.deref(observableRef)`
 
-In Prax components, you must define `subrender` instead of `render`.
+Prax components use `.deref` to pull data from [Espo observables](https://mitranim.com/espo/#-isobservableref-value-). When [reactivity is enabled](#-praxcomponent-enablereactivity-), this automatically initializes the observable and subscribes the component to it. See the `.render` example below.
 
-Receives the instance of
-[`espo.Reaction`](https://mitranim.com/espo/#-reaction-)
-associated with this component instance. Use `reaction.deref()` to pull data
-from observable refs and automatically subscribe.
+`.deref` is automatically bound to the instance for ES2015 destructuring.
+
+### `praxComponent.render(self)`
+
+In Prax, `.render` receives the component itself as an argument. With ES2015 destructuring, this provides convenient access to props, state, and the bound `deref` method.
+
+During rendering, use `this.deref(...)` to pull data from [Espo observables](https://mitranim.com/espo/#-isobservableref-value-). When [reactivity is enabled](#-praxcomponent-enablereactivity-), this automatically initializes the observable and subscribes the component to it.
+
+See [`espo.Reaction`](https://mitranim.com/espo/#-reaction-) for a more general version of this behavior that is not limited to React components.
 
 ```js
 const {PraxComponent, byPath} = require('prax')
-const {Atom} = require('espo') // transitive dependency
+const {Atom} = require('espo') // peer dependency
 
 const store = new Atom({msg: 'Hello world!'})
 
 class View extends PraxComponent {
-  subrender ({deref}) {
+  render({deref}) {
     // Subscribes to entire store
-    const _msg = deref(store)
+    const _state = deref(store)
+
     // Subscribes only to msg
     const msg = deref(byPath(store, ['msg']))
 
@@ -99,8 +105,8 @@ receive data from external observables, have shallow props aside from
 typically far cheaper than the redundant renders it prevents.
 
 **Note**: when defining and passing functions inline, you create a new reference
-every time, completely negating this optimisation. Make sure to prebind methods
-in component constructor:
+every time, completely negating this optimization. Make sure to prebind methods
+in the constructor:
 
 ```js
 class View extends PraxComponent {
@@ -109,12 +115,30 @@ class View extends PraxComponent {
     this.onAction = this.onAction.bind(this)
   }
 
-  subrender() {
+  onAction() {}
+
+  render() {
     // Fixed function reference makes equality check possible
     return <AnotherView onAction={this.onAction} />
   }
 }
 ```
+
+### `PraxComponent.enableReactivity`
+
+This property is static (assigned to the class, not an instance). It determines whether [`.deref`](#-praxcomponent-deref-observableref-) will automatically subscribe Prax components to observables. By default, it's `true` for all components:
+
+```js
+PraxComponent.enableReactivity = true
+```
+
+**You should globally disable this for server rendering:**
+
+```js
+PraxComponent.enableReactivity = false
+```
+
+The reason is that `react-dom/server` doesn't trigger `componentWillUnmount`, so there's no way for Prax to unsubscribe components from observables. On the server, you should load all required data first and then render in one pass, so reactivity is pointless, even wasteful or leaky.
 
 ---
 
@@ -128,7 +152,7 @@ All `PraxComponent` instances schedule their updates through the
 `RenderQue.global` singleton, which you can use to control their updates.
 
 React already uses pausing and batching internally, but only for DOM event
-listeners that it controls. `RenderQue` lets you deploy this optimisation
+listeners that it controls. `RenderQue` lets you deploy this optimization
 anywhere. The most common use case is a network callback. Example:
 
 ```js
@@ -174,8 +198,8 @@ Creates an observable that derives its value from `observableRef` by applying
 
 ```js
 const {PraxComponent, byPath} = require('prax')
-const {Atom} = require('espo') // transitive dependency
-const {putIn} = require('emerge') // transitive dependency
+const {Atom} = require('espo') // peer dependency
+const {putIn} = require('emerge') // peer dependency
 
 const atom = new Atom({msg: 'Hello', name: 'world'})
 
@@ -192,7 +216,7 @@ atom.swap(putIn, ['name'], 'sunshine')
 sub.deinit()
 
 class MyView extends PraxComponent {
-  subrender({deref}) {
+  render({deref}) {
     return <div>{deref(greeting)}</div>
   }
 }
@@ -218,7 +242,7 @@ at `path`.
 
 ```js
 const {PraxComponent, byPath} = require('prax')
-const {Atom} = require('espo') // transitive dependency
+const {Atom} = require('espo') // peer dependency
 
 const atom = new Atom({msg: {greeting: 'Hello world!'}})
 
@@ -250,7 +274,7 @@ See [Reactive Computations](examples#reactive-computations) for another example.
 
 ```js
 const {PraxComponent, computation} = require('prax')
-const {Atom} = require('espo') // transitive dependency
+const {Atom} = require('espo') // peer dependency
 
 const greeting = new Atom('Hello')
 const name = new Atom('world')
@@ -271,7 +295,7 @@ name.reset('sunshine')
 sub.deinit()
 
 class View extends PraxComponent {
-  subrender ({deref}) {
+  render({deref}) {
     return <div>{deref(msg)}</div>
   }
 }

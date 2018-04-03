@@ -5,7 +5,7 @@ const {maybeInterceptAnchorNavigation, correctPageAnchors} = require('../feature
 const {NavLink} = require('./link')
 
 export class Api extends PraxComponent {
-  subrender () {
+  render () {
     return (
       <div className='row-between-stretch padding-1-v'>
         <div className='flex-1 col-start-stretch'>
@@ -13,11 +13,17 @@ export class Api extends PraxComponent {
           <NavLink to='#-praxcomponent-' className='sidenav-link'>
             <code>PraxComponent</code>
           </NavLink>
-          <NavLink to='#-praxcomponent-subrender-reaction-' className='sidenav-link margin-1-l'>
-            <code>.subrender</code>
+          <NavLink to='#-praxcomponent-deref-observableref-' className='sidenav-link margin-1-l'>
+            <code>.deref</code>
+          </NavLink>
+          <NavLink to='#-praxcomponent-render-self-' className='sidenav-link margin-1-l'>
+            <code>.render</code>
           </NavLink>
           <NavLink to='#-praxcomponent-shouldcomponentupdate-' className='sidenav-link margin-1-l'>
             <code>.shouldComponentUpdate</code>
+          </NavLink>
+          <NavLink to='#-praxcomponent-enablereactivity-' className='sidenav-link margin-1-l'>
+            <code>.enableReactivity</code>
           </NavLink>
           <NavLink to='#-renderque-' className='sidenav-link'>
             <code>RenderQue</code>

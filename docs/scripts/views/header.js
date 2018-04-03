@@ -3,7 +3,7 @@ const {PraxComponent} = require('prax')
 const {Link, NavLink} = require('./link')
 
 export class Header extends PraxComponent {
-  subrender () {
+  render () {
     return (
       <div id='header' className='header-fixed row-between-stretch children-margin-2-h text-2'>
         <div className='row-start-stretch'>

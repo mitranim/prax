@@ -11,7 +11,7 @@ const {Misc} = require('./misc')
 const {NotFound} = require('./not-found')
 
 export class Root extends PraxComponent {
-  subrender () {
+  render () {
     return (
       <Router history={journal}>
         <Route component={Layout} />
@@ -21,7 +21,7 @@ export class Root extends PraxComponent {
 }
 
 class Layout extends PraxComponent {
-  subrender () {
+  render () {
     return (
       <div className='stretch-to-viewport-v'>
         <Header />

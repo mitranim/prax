@@ -3,16 +3,15 @@ const ReactDOM = require('react-dom')
 const {PraxComponent, byPath} = require('prax')
 const {Reaction, Agent} = require('espo')
 const e = require('emerge')
-const {test} = require('fpx')
-const {CleanupQue, addEvent, journal, originHref, onlyString,
-  smoothScrollYToWithin, smoothScrollToTop} = require('../utils')
+const f = require('fpx')
+const u = require('../utils')
 const {Root} = require('../views')
 
 export class Dom extends Agent {
   constructor (env) {
     super({
       reaction: new Reaction(),
-      cleanup: new CleanupQue(),
+      cleanup: new u.CleanupQue(),
       nav: null,
     })
     this.env = env
@@ -20,9 +19,9 @@ export class Dom extends Agent {
 
   updateNav () {
     this.swap(e.putBy, 'nav', nav => ({
-      lastAction: journal.action,
+      lastAction: u.journal.action,
       prevLocation: nav && nav.location,
-      location: journal.location,
+      location: u.journal.location,
     }))
   }
 
@@ -31,10 +30,6 @@ export class Dom extends Agent {
     const {cleanup, reaction} = this.deref()
 
     this.updateNav()
-
-    cleanup.push(addEvent(document, 'keydown', ({keyCode}) => {
-      env.swap(e.put, 'keyCode', keyCode)
-    }))
 
     // Rendering
 
@@ -61,7 +56,7 @@ export class Dom extends Agent {
         // because the browser doesn't account for the fixed header. If the page
         // got refreshed in-place, Chrome will overwrite this with the previous
         // scroll position, after a brief flicker. Haven't tested other browsers.
-        smoothScrollYToWithin({milliseconds: 300, selector: next.hash})
+        u.smoothScrollYToWithin({milliseconds: 300, selector: next.hash})
         return
       }
 
@@ -77,16 +72,16 @@ export class Dom extends Agent {
       }
 
       if (next.hash) {
-        smoothScrollYToWithin({milliseconds: 300, selector: next.hash})
+        u.smoothScrollYToWithin({milliseconds: 300, selector: next.hash})
         return
       }
 
-      smoothScrollToTop({milliseconds: 300})
+      u.smoothScrollToTop({milliseconds: 300})
     })
   }
 }
 
-const localHrefReg = new RegExp(`^${originHref}`, 'i')
+const localHrefReg = new RegExp(`^${u.originHref}`, 'i')
 
 // Makes a regular anchor click behave like a react-router link click. Can't
 // distinguish regular anchors from Links. Should be attached to elements that
@@ -102,7 +97,7 @@ export function maybeInterceptAnchorNavigation (event) {
     event.shiftKey
   ) return
   event.preventDefault()
-  journal.push(anchor.href.replace(localHrefReg, ''))
+  u.journal.push(anchor.href.replace(localHrefReg, ''))
 }
 
 function findParent (test, node) {
@@ -111,7 +106,7 @@ function findParent (test, node) {
     : node.parentNode && findParent(test, node.parentNode)
 }
 
-const isAnchor = test({tagName: 'A'})
+const isAnchor = f.test({tagName: 'A'})
 
 function forceLayoutHeight () {
   // Force height measurement to ensure proper scroll restoration when
@@ -125,7 +120,7 @@ function forceLayoutHeight () {
 export function correctPageAnchors ({hash, pathname}, text) {
   const id = hash.replace(/^#/, '')
   const path = pathname.replace(/^\//, '')
-  return onlyString(text)
+  return u.onlyString(text)
     .replace(/href="#(.*)"/g, `href="${path}#$1"`)
     .replace(`id="${id}"`, `id="${id}" class="hash-target-active"`)
 }

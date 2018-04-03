@@ -4,13 +4,13 @@
 const React = require('react')
 const {render} = require('react-dom')
 const {PraxComponent, byPath} = require('prax')
-const {Atom} = require('espo') // transitive dependency
-const {putIn} = require('emerge') // transitive dependency
+const {Atom} = require('espo') // peer dependency
+const {putIn} = require('emerge') // peer dependency
 
 const store = new Atom({message: {greeting: 'Hello world!'}})
 
 class View extends PraxComponent {
-  subrender ({deref}) {
+  render({deref}) {
     // Automatically subscribes to updates
     const msg = deref(byPath(store, ['message', 'greeting']))
 
@@ -33,8 +33,8 @@ render(<View />, document.getElementById('root'))
 ## Demand-Driven Resources
 
 Biggest disadvantage of centralising your data and making it all immutable: it
-becomes difficult to implement demand-driven design where resources initialise
-when used, and unused resources are deinitialised and evicted from cache.
+becomes difficult to implement demand-driven design where resources initialize
+when used, and unused resources are deinitialized and evicted from cache.
 
 "Unused resources" includes HTTP requests, websockets, blob URLs that must be
 [manually garbage-collected](https://developer.mozilla.org/en-US/docs/Web/API/URL/revokeObjectURL),
@@ -42,11 +42,11 @@ large data that could be moved to a disk cache, and so on.
 
 Prax makes it extremely easy with
 [lazy observables](https://mitranim.com/espo/#-observable-)
-that initialise/deinitialise based on subscription count.
+that initialize/deinitialize based on subscription count.
 
 ```js
 const {PraxComponent} = require('prax')
-const {Atom} = require('espo') // transitive dependency
+const {Atom} = require('espo') // peer dependency
 
 const {Xhttp} = require('xhttp')
 
@@ -73,7 +73,7 @@ const store = new Atom({
 })
 
 class View extends PraxComponent {
-  subrender ({deref}) {
+  render({deref}) {
     // Subscribes and activates resource
     // Resource will deactivate when nobody is pulling data from it
     const {syncing, response} = deref(store.deref().someResource)
@@ -114,7 +114,7 @@ You decide your own event format, argument count, and so on.
 
 ```js
 const {on} = require('prax')
-const {MessageQue} = require('espo') // transitive dependency
+const {MessageQue} = require('espo') // peer dependency
 
 const mq = new MessageQue()
 
@@ -184,8 +184,8 @@ This example also demonstrates [demand-driven resources](#demand-driven-resource
 
 ```js
 const {PraxComponent, byPath} = require('prax')
-const {Atom} = require('espo') // transitive dependency
-const {putIn} = require('emerge') // transitive dependency
+const {Atom} = require('espo') // peer dependency
+const {putIn} = require('emerge') // peer dependency
 
 const firebase = require('firebase/app').initializeApp(myConfig)
 
@@ -241,10 +241,10 @@ firebase.onAuthStateChanged(user => {
 })
 
 class MessagesView extends PraxComponent {
-  subrender ({deref}) {
+  render({deref}) {
     // (1) get data
     // (2) subscribe to updates
-    // (3) initialise resource; it will load messages when authed
+    // (3) initialize resource; it will load messages when authed
     const messages = deref(store.deref().messages)
 
     if (!messages) return null
@@ -271,7 +271,7 @@ This idea is lifted directly from [Reagent's `reaction`](https://github.com/Day8
 
 ```js
 const {PraxComponent, byPath, computation} = require('prax')
-const {Atom} = require('espo') // transitive dependency
+const {Atom} = require('espo') // peer dependency
 
 const store = new Atom({user: {firstName: 'Mira', lastName: 'Nova'}})
 
@@ -289,7 +289,7 @@ const sub = fullName.subscribe(fullName => {
 sub.deinit()
 
 class UserView extends PraxComponent {
-  subrender ({deref}) {
+  render({deref}) {
     return <div>{deref(fullName)}</div>
   }
 }

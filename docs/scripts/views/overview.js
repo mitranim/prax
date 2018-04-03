@@ -5,7 +5,7 @@ const {maybeInterceptAnchorNavigation, correctPageAnchors} = require('../feature
 const {NavLink} = require('./link')
 
 export class Overview extends PraxComponent {
-  subrender () {
+  render () {
     return (
       <div className='row-between-stretch padding-1-v'>
         <div className='flex-1 col-start-stretch'>

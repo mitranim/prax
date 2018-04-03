@@ -18,7 +18,7 @@ together and therefore don't form a concrete state.
 ### _resource_
 
 Something that can't be garbage-collected until you call some function or method
-to deinitialise it. May produce side effects until deinitialised. In
+to deinitialize it. May produce side effects until deinitialized. In
 Rust's terms, it has a _lifetime_ and must have an
 [_owner_](https://doc.rust-lang.org/book/ownership.html#ownership) responsible
 for it.
@@ -71,7 +71,7 @@ when it has subscribers, and drops it when nobody's looking.
 See [another example](examples#demand-driven-resources).
 
 ```js
-const {Atom} = require('espo') // transitive dependency
+const {Atom} = require('espo') // peer dependency
 const {Webbs} = require('webbs')
 
 class MyResource extends Atom {

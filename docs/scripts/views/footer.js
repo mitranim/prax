@@ -3,7 +3,7 @@ const {PraxComponent} = require('prax')
 const {smoothScrollToTop} = require('../utils')
 
 export class Footer extends PraxComponent {
-  subrender () {
+  render () {
     return (
       <div className='row-between-stretch children-margin-1-h margin-2-t padding-1'>
         <span className='flex-1 col-start-start'>

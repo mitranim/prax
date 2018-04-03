@@ -60,7 +60,9 @@ gulp.task('rollup:watch', () => {
   watcher.on('event', event => {
     const {code, input, duration} = event
 
-    if (code === 'START' || code === 'BUNDLE_START' || code === 'END') return
+    if (code === 'START' || code === 'BUNDLE_START' || code === 'END') {
+      return
+    }
 
     if (code === 'BUNDLE_END') {
       log('[rollup]', code, input, duration, 'ms')

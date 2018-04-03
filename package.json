@@ -1,6 +1,6 @@
 {
   "name": "prax",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "main": "dist/prax.js",
   "module": "es/prax.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "compile": "NODE_ENV=production gulp build",
     "prepublishOnly": "npm run -s compile"
   },
-  "description": "Framework of time and state in React applications",
+  "description": "Framework of time and state for React applications",
   "keywords": [],
   "authors": [
     "Mitranim <me@mitranim.com>",
@@ -52,10 +52,10 @@
     "envify": "4.0.0",
     "eslint-plugin-react": "6.10.3",
     "eslint_d": "4.2.5",
-    "espo": "^0.3.0",
+    "espo": "0.3.0",
     "fancy-log": "1.3.2",
     "font-awesome": "4.7.0",
-    "fpx": "^0.4.0",
+    "fpx": "0.4.0",
     "gulp": "4.0",
     "gulp-autoprefixer": "3.1.1",
     "gulp-clean-css": "3.0.4",
