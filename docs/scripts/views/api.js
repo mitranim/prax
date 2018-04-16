@@ -1,5 +1,5 @@
 const React = require('react')
-const {PraxComponent} = require('prax')
+const {PraxComponent} = require('prax/react')
 const {htmlProps} = require('../utils')
 const {maybeInterceptAnchorNavigation, correctPageAnchors} = require('../features/dom')
 const {NavLink} = require('./link')

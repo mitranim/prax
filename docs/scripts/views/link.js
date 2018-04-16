@@ -1,6 +1,6 @@
 const React = require('react')
 const {Link: RouterLink, NavLink: RouterNavLink} = require('react-router-dom')
-const {PraxComponent, byPath} = require('prax')
+const {PraxComponent, byPath} = require('prax/react')
 
 export const Link = RouterLink
 

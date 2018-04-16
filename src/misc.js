@@ -1,22 +1,22 @@
-import {PathQuery, Query, Computation} from 'espo'
-import {equal} from 'emerge'
-import {testBy, isList, validate} from 'fpx'
+import * as es from 'espo'
+import * as e from 'emerge'
+import * as f from 'fpx'
 
 export function byPath(observableRef, path) {
-  return new PathQuery(observableRef, path, equal)
+  return new es.PathQuery(observableRef, path, e.equal)
 }
 
 export function byQuery(observableRef, query) {
-  return new Query(observableRef, query, equal)
+  return new es.Query(observableRef, query, e.equal)
 }
 
 export function computation(def) {
-  return new Computation(def, equal)
+  return new es.Computation(def, e.equal)
 }
 
 export function on(argPattern, fun) {
-  validate(argPattern, isList)
+  f.validate(argPattern, f.isList)
   return function on_(arg) {
-    return testBy(arguments, argPattern) ? fun(...arguments) : arg
+    return f.testBy(arguments, argPattern) ? fun(...arguments) : arg
   }
 }

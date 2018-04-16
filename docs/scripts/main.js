@@ -30,7 +30,7 @@ env.init()
  * REPL
  */
 
-const prax = window.prax = require('prax')
+const prax = window.prax = require('prax/react')
 
 window.app = {
   ...window.app,
@@ -45,7 +45,7 @@ delete window.app.isNaN
 delete window.app.isFinite
 delete window.app.exports
 
-if (!window.ENV.prod) {
+if (!window.ENV.PROD) {
   Object.assign(window, window.app)
   ;['log', 'info', 'warn', 'error', 'clear'].forEach(key => {
     if (!/bound/.test(console[key].name)) {

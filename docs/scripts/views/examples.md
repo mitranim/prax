@@ -3,7 +3,7 @@
 ```js
 const React = require('react')
 const {render} = require('react-dom')
-const {PraxComponent, byPath} = require('prax')
+const {PraxComponent, byPath} = require('prax/react')
 const {Atom} = require('espo') // peer dependency
 const {putIn} = require('emerge') // peer dependency
 
@@ -45,7 +45,7 @@ Prax makes it extremely easy with
 that initialize/deinitialize based on subscription count.
 
 ```js
-const {PraxComponent} = require('prax')
+const {PraxComponent} = require('prax/react')
 const {Atom} = require('espo') // peer dependency
 
 const {Xhttp} = require('xhttp')
@@ -113,7 +113,7 @@ This combination is strictly more expressive than Node.js-style event emitters.
 You decide your own event format, argument count, and so on.
 
 ```js
-const {on} = require('prax')
+const {on} = require('prax/react')
 const {MessageQue} = require('espo') // peer dependency
 
 const mq = new MessageQue()
@@ -183,7 +183,7 @@ It should define _side effects as a function of current state_.
 This example also demonstrates [demand-driven resources](#demand-driven-resources).
 
 ```js
-const {PraxComponent, byPath} = require('prax')
+const {PraxComponent, byPath} = require('prax/react')
 const {Atom} = require('espo') // peer dependency
 const {putIn} = require('emerge') // peer dependency
 
@@ -270,7 +270,7 @@ Define your data as a reactive computation on other data by using
 This idea is lifted directly from [Reagent's `reaction`](https://github.com/Day8/re-frame/blob/master/docs/SubscriptionFlow.md#how-flow-happens-in-reagent).
 
 ```js
-const {PraxComponent, byPath, computation} = require('prax')
+const {PraxComponent, byPath, computation} = require('prax/react')
 const {Atom} = require('espo') // peer dependency
 
 const store = new Atom({user: {firstName: 'Mira', lastName: 'Nova'}})

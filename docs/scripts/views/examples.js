@@ -1,5 +1,5 @@
 const React = require('react')
-const {PraxComponent} = require('prax')
+const {PraxComponent} = require('prax/react')
 const {htmlProps} = require('../utils')
 const {maybeInterceptAnchorNavigation, correctPageAnchors} = require('../features/dom')
 const {NavLink} = require('./link')
@@ -19,7 +19,7 @@ export class Examples extends PraxComponent {
           className='flex-4 padding-stocky'
           onClick={maybeInterceptAnchorNavigation}
           {...htmlProps(correctPageAnchors(this.props.location, require('./examples.md')))}
-          />
+        />
       </div>
     )
   }

@@ -1,6 +1,6 @@
 const React = require('react')
 const {Router, Route, Switch} = require('react-router-dom')
-const {PraxComponent} = require('prax')
+const {PraxComponent} = require('prax/react')
 const {journal} = require('../utils')
 const {Header} = require('./header')
 const {Footer} = require('./footer')

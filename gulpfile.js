@@ -6,30 +6,34 @@ const $ = require('gulp-load-plugins')()
 const del = require('del')
 const gulp = require('gulp')
 const log = require('fancy-log')
-const rollup = require('rollup')
 const webpack = require('webpack')
-const {fork} = require('child_process')
-const statilConfig = require('./statil')
-const rollupConfig = require('./rollup.config')
+const cp = require('child_process')
+const {Transform} = require('stream')
 const webpackConfig = require('./webpack.config')
 
 /* ******************************** Globals **********************************/
 
-const _srcDir = 'src'
-const esDir = 'es'
-const distDir = 'dist'
-const srcFiles = 'src/**/*.js'
-const _esFiles = 'es/**/*.js'
-const _distFiles = 'dist/**/*.js'
-const docHtmlFiles = 'docs/html/**/*'
-const docStyleFiles = 'docs/styles/**/*.scss'
-const docStyleMain = 'docs/styles/main.scss'
-const docFontFiles = 'node_modules/font-awesome/fonts/**/*'
-const docOutDir = 'gh-pages'
-const docOutStyleDir = 'gh-pages/styles'
-const docOutFontDir = 'gh-pages/fonts'
+const srcScriptFiles = 'src/**/*.js'
+const srcDocHtmlFiles = 'docs/html/**/*'
+const srcDocStyleFiles = 'docs/styles/**/*.scss'
+const srcDocStyleMain = 'docs/styles/main.scss'
+const srcDocFontFiles = 'node_modules/font-awesome/fonts/**/*'
+
+const outEsDir = 'es'
+const outDistDir = 'dist'
+const outDocDir = 'gh-pages'
+const outDocStyleDir = 'gh-pages/styles'
+const outDocFontDir = 'gh-pages/fonts'
 
 const GulpErr = msg => ({showStack: false, toString: () => msg})
+
+const PROD = process.env.NODE_ENV === 'production'
+
+const COMMIT = cp.execSync('git rev-parse --short HEAD').toString().trim()
+
+process.env.COMMIT = COMMIT
+
+const VERSION = require('./package.json').version
 
 /* ********************************* Tasks ***********************************/
 
@@ -38,57 +42,59 @@ const GulpErr = msg => ({showStack: false, toString: () => msg})
 gulp.task('clear', async () => {
   try {
     // Skips dotfiles like `.git` and `.gitignore`
-    await del([`${distDir}/*`, `${esDir}/*`, `${docOutDir}/*`])
+    await del([`${outDistDir}/*`, `${outEsDir}/*`, `${outDocDir}/*`])
   }
   catch (err) {
     console.error(err)
   }
 })
 
-/* -------------------------------- Rollup --------------------------------- */
+/* ---------------------------------- Lib ---------------------------------- */
 
-gulp.task('rollup:build', async () => {
-  for (const config of rollupConfig) {
-    const bundle = await rollup.rollup(config)
-    await bundle.write(config.output)
-  }
-})
+gulp.task('lib:build', () => (
+  gulp.src(srcScriptFiles)
+    .pipe($.babel())
+    .pipe(gulp.dest(outEsDir))
+    .pipe($.babel({
+      plugins: [
+        'transform-es2015-modules-commonjs',
+      ],
+    }))
+    .pipe(gulp.dest(outDistDir))
+    // Ensures ES5 compliance and lets us measure minified size
+    .pipe($.uglify({
+      mangle: {toplevel: true},
+      compress: {warnings: false},
+    }))
+    .pipe(new Transform({
+      objectMode: true,
+      transform(file, __, done) {
+        log(`Minified size: ${file.relative} — ${file._contents.length} bytes`)
+        done()
+      },
+    }))
+))
 
-gulp.task('rollup:watch', () => {
-  const watcher = rollup.watch(rollupConfig)
-
-  watcher.on('event', event => {
-    const {code, input, duration} = event
-
-    if (code === 'START' || code === 'BUNDLE_START' || code === 'END') {
-      return
-    }
-
-    if (code === 'BUNDLE_END') {
-      log('[rollup]', code, input, duration, 'ms')
-      return
-    }
-
-    log('[rollup]', event)
-  })
+gulp.task('lib:watch', () => {
+  $.watch(srcScriptFiles, gulp.series('lib:build'))
 })
 
 /* --------------------------------- HTML -----------------------------------*/
 
 gulp.task('docs:html:build', () => (
-  gulp.src(docHtmlFiles)
-    .pipe($.statil(statilConfig))
-    .pipe(gulp.dest(docOutDir))
+  gulp.src(srcDocHtmlFiles)
+    .pipe($.statil({imports: {PROD, VERSION, COMMIT}}))
+    .pipe(gulp.dest(outDocDir))
 ))
 
 gulp.task('docs:html:watch', () => {
-  $.watch(docHtmlFiles, gulp.series('docs:html:build'))
+  $.watch(srcDocHtmlFiles, gulp.series('docs:html:build'))
 })
 
 /* -------------------------------- Styles ----------------------------------*/
 
 gulp.task('docs:styles:build', () => (
-  gulp.src(docStyleMain)
+  gulp.src(srcDocStyleMain)
     .pipe($.sass())
     .pipe($.autoprefixer())
     .pipe($.cleanCss({
@@ -97,21 +103,21 @@ gulp.task('docs:styles:build', () => (
       advanced: false,
       compatibility: {properties: {colors: false}},
     }))
-    .pipe(gulp.dest(docOutStyleDir))
+    .pipe(gulp.dest(outDocStyleDir))
 ))
 
 gulp.task('docs:styles:watch', () => {
-  $.watch(docStyleFiles, gulp.series('docs:styles:build'))
+  $.watch(srcDocStyleFiles, gulp.series('docs:styles:build'))
 })
 
 /* -------------------------------- Fonts -----------------------------------*/
 
 gulp.task('docs:fonts:build', () => (
-  gulp.src(docFontFiles).pipe(gulp.dest(docOutFontDir))
+  gulp.src(srcDocFontFiles).pipe(gulp.dest(outDocFontDir))
 ))
 
 gulp.task('docs:fonts:watch', () => {
-  $.watch(docFontFiles, gulp.series('docs:fonts:build'))
+  $.watch(srcDocFontFiles, gulp.series('docs:fonts:build'))
 })
 
 /* -------------------------------- Scripts ---------------------------------*/
@@ -131,7 +137,7 @@ gulp.task('docs:scripts:build', done => {
 /* --------------------------------- Lint ---------------------------------- */
 
 gulp.task('lint', () => (
-  gulp.src(srcFiles)
+  gulp.src(srcScriptFiles)
     .pipe($.eslint())
     .pipe($.eslint.format())
     .pipe($.eslint.failAfterError())
@@ -148,7 +154,7 @@ gulp.task('docs:server', () => {
 
   function restart () {
     if (proc) proc.kill()
-    proc = fork('./devserver')
+    proc = cp.fork('./devserver')
   }
 
   restart()
@@ -158,19 +164,20 @@ gulp.task('docs:server', () => {
 /* -------------------------------- Default ---------------------------------*/
 
 gulp.task('buildup', gulp.parallel(
+  'lib:build',
   'docs:html:build',
   'docs:styles:build',
   'docs:fonts:build'
 ))
 
 gulp.task('watch', gulp.parallel(
-  'rollup:watch',
+  'lib:watch',
   'docs:html:watch',
   'docs:styles:watch',
   'docs:fonts:watch',
   'docs:server'
 ))
 
-gulp.task('build', gulp.series('clear', 'buildup', 'lint', 'rollup:build', 'docs:scripts:build'))
+gulp.task('build', gulp.series('clear', 'buildup', 'lint', 'docs:scripts:build'))
 
 gulp.task('default', gulp.series('build', 'watch'))

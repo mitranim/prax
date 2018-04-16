@@ -1,6 +1,6 @@
 const React = require('react')
 const ReactDOM = require('react-dom')
-const {PraxComponent, byPath} = require('prax')
+const {PraxComponent, byPath} = require('prax/react')
 const {Reaction, Agent} = require('espo')
 const e = require('emerge')
 const f = require('fpx')

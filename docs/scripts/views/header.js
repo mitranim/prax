@@ -1,5 +1,5 @@
 const React = require('react')
-const {PraxComponent} = require('prax')
+const {PraxComponent} = require('prax/react')
 const {Link, NavLink} = require('./link')
 
 export class Header extends PraxComponent {

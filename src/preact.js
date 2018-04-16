@@ -1,4 +1,4 @@
-import {Component} from 'react'
+import {Component} from 'preact'
 import * as v from './view'
 
 export * from './misc'

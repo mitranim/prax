@@ -1,5 +1,5 @@
 const React = require('react')
-const {PraxComponent} = require('prax')
+const {PraxComponent} = require('prax/react')
 const {smoothScrollToTop} = require('../utils')
 
 export class Footer extends PraxComponent {

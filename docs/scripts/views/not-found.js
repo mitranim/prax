@@ -1,5 +1,5 @@
 const React = require('react')
-const {PraxComponent} = require('prax')
+const {PraxComponent} = require('prax/react')
 const {Link} = require('./link')
 
 export class NotFound extends PraxComponent {

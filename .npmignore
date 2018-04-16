@@ -1,14 +1,5 @@
-# Commonly ignored files
-*.log
-.DS_Store
-
-# Folders
-node_modules
-gh-pages
-docs
-test
-
-# Build-related files
-gulpfile.js
-statil.js
-webpack.config.js
+/*
+!/dist
+!/es
+!/src
+!/readme.md

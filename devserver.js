@@ -5,16 +5,16 @@ const log = require('fancy-log')
 const {mapVals} = require('fpx')
 const config = require('./webpack.config')
 
-const prod = process.env.NODE_ENV === 'production'
+const PROD = process.env.NODE_ENV === 'production'
 
-if (prod) {
+if (PROD) {
   require('webpack')(config).watch({}, (err, stats) => {
     log('[webpack]', stats.toString(config.stats))
     if (err) log('[webpack]', err.message)
   })
 }
 
-const compiler = prod ? null : require('webpack')(extend(config, {
+const compiler = PROD ? null : require('webpack')(extend(config, {
   entry: mapVals(
     config.entry,
     fsPath => ['webpack-hot-middleware/client?noInfo=true', fsPath]
@@ -30,7 +30,7 @@ bs.init({
         req.url = req.url.replace(/^\/prax\//, '').replace(/^[/]*/, '/')
         next()
       },
-      ...(prod ? [] : [
+      ...(PROD ? [] : [
         require('webpack-dev-middleware')(compiler, {
           publicPath: config.output.publicPath,
           stats: config.stats,

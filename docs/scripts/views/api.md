@@ -28,7 +28,7 @@ tool for procedural reactivity.
 ```js
 const React = require('react')
 const {render} = require('react-dom')
-const {PraxComponent, byPath} = require('prax')
+const {PraxComponent, byPath} = require('prax/react')
 const {Atom} = require('espo') // peer dependency
 const {putIn} = require('emerge') // peer dependency
 
@@ -73,7 +73,7 @@ During rendering, use `this.deref(...)` to pull data from [Espo observables](htt
 See [`espo.Reaction`](https://mitranim.com/espo/#-reaction-) for a more general version of this behavior that is not limited to React components.
 
 ```js
-const {PraxComponent, byPath} = require('prax')
+const {PraxComponent, byPath} = require('prax/react')
 const {Atom} = require('espo') // peer dependency
 
 const store = new Atom({msg: 'Hello world!'})
@@ -156,7 +156,7 @@ listeners that it controls. `RenderQue` lets you deploy this optimization
 anywhere. The most common use case is a network callback. Example:
 
 ```js
-const {RenderQue} = require('prax')
+const {RenderQue} = require('prax/react')
 const {Xhttp} = require('xhttp')
 
 function httpRequest (params, fun) {
@@ -197,7 +197,7 @@ Creates an observable that derives its value from `observableRef` by applying
 `query` to it. Can be used in views or reactions.
 
 ```js
-const {PraxComponent, byPath} = require('prax')
+const {PraxComponent, byPath} = require('prax/react')
 const {Atom} = require('espo') // peer dependency
 const {putIn} = require('emerge') // peer dependency
 
@@ -241,7 +241,7 @@ Creates an observable that derives its value by reading it from `observableRef`
 at `path`.
 
 ```js
-const {PraxComponent, byPath} = require('prax')
+const {PraxComponent, byPath} = require('prax/react')
 const {Atom} = require('espo') // peer dependency
 
 const atom = new Atom({msg: {greeting: 'Hello world!'}})
@@ -273,7 +273,7 @@ update when it has no subscribers. Can be used in views or reactions.
 See [Reactive Computations](examples#reactive-computations) for another example.
 
 ```js
-const {PraxComponent, computation} = require('prax')
+const {PraxComponent, computation} = require('prax/react')
 const {Atom} = require('espo') // peer dependency
 
 const greeting = new Atom('Hello')
@@ -316,7 +316,7 @@ pattern matches.
 Pattern matching is done by [`fpx.test`](https://mitranim.com/fpx/#-test-pattern-).
 
 ```js
-const {on} = require('prax')
+const {on} = require('prax/react')
 
 const listener = on(
   // 1st arg pattern     2nd arg pattern

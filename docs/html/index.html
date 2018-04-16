@@ -3,10 +3,10 @@
 <base href="/prax/">
 <meta charset="utf-8">
 <title>prax</title>
-<link rel="stylesheet" href="styles/main.css">
+<link rel="stylesheet" href="styles/main.css?{{COMMIT || ''}}">
 <link rel="icon" href="data:;base64,=">
 
-<!-- Prevent index.html caching -->
+<!-- Prevent caching -->
 <meta http-equiv="cache-control" content="max-age=0" />
 <meta http-equiv="cache-control" content="no-cache" />
 <meta http-equiv="expires" content="0" />
@@ -17,8 +17,14 @@
 
 <div id="root"></div>
 
+{% if (!PROD) { %}
 <script>
-  window.ENV = {prod: {{Boolean(prod)}}, version: '{{version}}'}
+  window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = {isDisabled: true}
+</script>
+{% } %}
+
+<script>
+  window.ENV = {PROD: {{Boolean(PROD)}}, VERSION: {{JSON.stringify(VERSION)}}}
 </script>
 
-<script src="scripts/main.js"></script>
+<script src="scripts/main.js?{{COMMIT || ''}}"></script>

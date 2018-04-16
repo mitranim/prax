@@ -2,7 +2,7 @@
 
 const pt = require('path')
 const webpack = require('webpack')
-const prod = process.env.NODE_ENV === 'production'
+const PROD = process.env.NODE_ENV === 'production'
 
 module.exports = {
   entry: {
@@ -23,7 +23,7 @@ module.exports = {
         include: pt.resolve('docs/scripts'),
         use: {loader: 'babel-loader'},
       },
-      ...(!prod ? [] : [
+      ...(!PROD ? [] : [
         {
           test: /react.*\.jsx?$/,
           include: /node_modules/,
@@ -43,12 +43,12 @@ module.exports = {
 
   resolve: {
     alias: {
-      prax: process.cwd(),
+      prax: pt.join(process.cwd(), 'es'),
     },
   },
 
   plugins: [
-    ...(!prod ? [
+    ...(!PROD ? [
       new webpack.HotModuleReplacementPlugin(),
     ] : [
       new webpack.optimize.UglifyJsPlugin({
@@ -60,7 +60,7 @@ module.exports = {
     ]),
   ],
 
-  devtool: prod ? 'source-map' : false,
+  devtool: PROD ? 'source-map' : false,
 
   // See gulpfile and devserver.
   stats: {
