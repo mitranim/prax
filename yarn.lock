@@ -1945,11 +1945,9 @@ eslint_d@5.3.0:
     resolve "^1.1.7"
     supports-color "^3.1.2"
 
-espo@0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/espo/-/espo-0.3.0.tgz#de6710c807990452dadf552f928830ec31daf6b6"
-  dependencies:
-    fpx "^0.4.0"
+espo@0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/espo/-/espo-0.4.0.tgz#91b1f64975d782e41cdd832578e397974a227d26"
 
 espree@^3.5.4:
   version "3.5.4"
@@ -2305,11 +2303,7 @@ formidable@1.0.x:
   version "1.0.17"
   resolved "https://registry.yarnpkg.com/formidable/-/formidable-1.0.17.tgz#ef5491490f9433b705faa77249c99029ae348559"
 
-fpx@0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/fpx/-/fpx-0.4.0.tgz#c1ea6f19b46e6d37642d43577f7b8a9e08acbb13"
-
-fpx@^0.4.0:
+fpx@0.4.6:
   version "0.4.6"
   resolved "https://registry.yarnpkg.com/fpx/-/fpx-0.4.6.tgz#d14ea262c3f27945628c0c526e463fc82e290895"
 

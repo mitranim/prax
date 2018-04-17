@@ -57,7 +57,7 @@ gulp.task('lib:build', () => (
     .pipe(gulp.dest(outEsDir))
     .pipe($.babel({
       plugins: [
-        'transform-es2015-modules-commonjs',
+        ['transform-es2015-modules-commonjs', {strict: true}],
       ],
     }))
     .pipe(gulp.dest(outDistDir))

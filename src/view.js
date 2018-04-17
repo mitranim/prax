@@ -3,22 +3,25 @@
 import * as es from 'espo'
 import * as e from 'emerge'
 import * as f from 'fpx'
+import * as m from './misc'
 
 // Purpose: batching view updates. When updating observables in a way that can
 // trigger multiple redundant renders, we can `.dam()` the shared render que,
 // update the observables, then flush the que, rendering only once.
-export class RenderQue extends es.Que {
-  static global = new RenderQue()
-
-  constructor() {
-    super(forceUpdate)
-  }
-
-  push(value) {
-    f.validate(value, isComponent)
-    if (!f.includes(this.pending, value)) super.push(value)
-  }
+export function RenderQue() {
+  m.validateInstance(this, RenderQue)
+  es.Que.call(this, forceUpdate)
 }
+
+const RQP = RenderQue.prototype = Object.create(es.Que.prototype)
+
+RQP.push = function push(value) {
+  f.validate(value, isComponent)
+  if (this.has(value)) return
+  es.Que.prototype.push.call(this, value)
+}
+
+RenderQue.global = new RenderQue()
 
 function forceUpdate(value) {value.forceUpdate()}
 
