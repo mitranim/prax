@@ -120,7 +120,7 @@ function forceLayoutHeight () {
 export function correctPageAnchors ({hash, pathname}, text) {
   const id = hash.replace(/^#/, '')
   const path = pathname.replace(/^\//, '')
-  return u.onlyString(text)
+  return f.onlyString(text)
     .replace(/href="#(.*)"/g, `href="${path}#$1"`)
     .replace(`id="${id}"`, `id="${id}" class="hash-target-active"`)
 }

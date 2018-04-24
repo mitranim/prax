@@ -1,8 +1,8 @@
 const {TaskQue} = require('espo')
-const {ifelse, id, val, noop, isFunction, isString, isFinite, validate} = require('fpx')
+const f = require('fpx')
 
 export function addEvent (target, name, fun, useCapture = false) {
-  validate(fun, isFunction)
+  f.validate(fun, f.isFunction)
   target.addEventListener(name, fun, useCapture)
   return function removeEvent () {
     target.removeEventListener(name, fun, useCapture)
@@ -19,8 +19,6 @@ export function jsonDecode (value) {
   catch (_) {return null}
 }
 
-export const onlyString = ifelse(isString, id, val(''))
-
 export function htmlProps (html) {
   return {dangerouslySetInnerHTML: {__html: html}}
 }
@@ -34,8 +32,8 @@ export function toInt32 (value) {
 const PX_ERROR_MARGIN = 3
 
 export function smoothScrollY ({velocity, getDeltaY}) {
-  validate(velocity, isFinite)
-  validate(getDeltaY, isFunction)
+  f.validate(velocity, f.isFinite)
+  f.validate(getDeltaY, f.isFunction)
 
   // Used to track deltaY changes between frames.
   let lastDeltaY = null
@@ -44,9 +42,9 @@ export function smoothScrollY ({velocity, getDeltaY}) {
     const deltaY = getDeltaY()
 
     if (
-      !isFinite(deltaY) ||
+      !f.isFinite(deltaY) ||
       // Couldn't move, must have reached the end.
-      (isFinite(lastDeltaY) && Math.abs(lastDeltaY - deltaY) <= PX_ERROR_MARGIN) ||
+      (f.isFinite(lastDeltaY) && Math.abs(lastDeltaY - deltaY) <= PX_ERROR_MARGIN) ||
       // Close enough.
       Math.abs(deltaY) <= PX_ERROR_MARGIN
     ) {
@@ -74,7 +72,7 @@ export function smoothScrollYTo ({velocity, selector}) {
 export function smoothScrollYWithin ({milliseconds, minVelocity, getDeltaY}) {
   const deltaY = getDeltaY()
 
-  if (!isFinite(deltaY)) return noop
+  if (!f.isFinite(deltaY)) return f.noop
 
   // This is so stupid. How much web animation code is going to break when
   // refresh rates change? And there's no API to get the actual refresh rate!

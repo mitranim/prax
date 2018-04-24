@@ -1710,9 +1710,9 @@ elliptic@^6.0.0:
     minimalistic-assert "^1.0.0"
     minimalistic-crypto-utils "^1.0.0"
 
-emerge@0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/emerge/-/emerge-0.2.1.tgz#11c95472cda3d2565385620fc30b2852f1bc3e69"
+emerge@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/emerge/-/emerge-0.3.0.tgz#c4e81c661bceacbfb4b36e280543fa9ec714cad9"
 
 emitter-steward@^1.0.0:
   version "1.0.0"
@@ -1945,9 +1945,9 @@ eslint_d@5.3.0:
     resolve "^1.1.7"
     supports-color "^3.1.2"
 
-espo@0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/espo/-/espo-0.4.0.tgz#91b1f64975d782e41cdd832578e397974a227d26"
+espo@0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/espo/-/espo-0.4.1.tgz#ebf77ab1640a63eff5757974fc3f5f22a529134f"
 
 espree@^3.5.4:
   version "3.5.4"
@@ -2303,9 +2303,9 @@ formidable@1.0.x:
   version "1.0.17"
   resolved "https://registry.yarnpkg.com/formidable/-/formidable-1.0.17.tgz#ef5491490f9433b705faa77249c99029ae348559"
 
-fpx@0.4.6:
-  version "0.4.6"
-  resolved "https://registry.yarnpkg.com/fpx/-/fpx-0.4.6.tgz#d14ea262c3f27945628c0c526e463fc82e290895"
+fpx@0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/fpx/-/fpx-0.5.0.tgz#8b575e95d2135484674696589161dc340046ca70"
 
 fragment-cache@^0.2.1:
   version "0.2.1"
