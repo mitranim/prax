@@ -21,7 +21,6 @@ export function on(argPattern, fun) {
   }
 }
 
-// Internal
 export function validateInstance(instance, Class) {
-  if (!f.isInstance(instance, Class)) throw Error(`Cannot call a class as a function`)
+  f.validateInstance(instance, Class)
 }

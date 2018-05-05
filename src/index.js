@@ -1,2 +1,2 @@
 export * from './misc'
-export * from './view'
+export * from './render'

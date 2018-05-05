@@ -1,7 +1,6 @@
 /* eslint-disable no-invalid-this */
 
 import * as es from 'espo'
-import * as e from 'emerge'
 import * as f from 'fpx'
 import * as m from './misc'
 
@@ -27,14 +26,6 @@ function forceUpdate(value) {value.forceUpdate()}
 
 export function isComponent(value) {
   return f.isObject(value) && f.isFunction(value.forceUpdate)
-}
-
-export function reactEqual(left, right) {
-  return isReactElement(left)
-    ? isReactElement(right) && reactElemEqual(left, right)
-    : isPreactElement(left)
-    ? isPreactElement(right) && preactElemEqual(left, right)
-    : e.equalBy(left, right, reactEqual)
 }
 
 /**
@@ -111,53 +102,4 @@ function clearSubscriptions(component) {
 
 function proto(value) {
   return value.constructor.prototype
-}
-
-// function isVirtualElement(value) {
-//   return isReactElement(value) || isPreactElement(value)
-// }
-
-function isReactElement(value) {
-  return f.isDict(value) &&
-    (f.isString(value.type) || f.isFunction(value.type)) &&
-    f.isDict(value.props)
-}
-
-function isPreactElement(value) {
-  return f.isObject(value) && (f.isString(value.nodeName) || f.isFunction(value.nodeName))
-}
-
-function reactElemEqual(left, right) {
-  return (
-    e.is(left.type, right.type) &&
-    e.is(left.key, right.key) &&
-    propsEqual(left.props, right.props)
-  )
-}
-
-function preactElemEqual(left, right) {
-  return (
-    e.is(left.nodeName, right.nodeName) &&
-    e.is(left.key, right.key) &&
-    propsEqual(left.props, right.props) &&
-    reactEqual(left.children, right.children)
-  )
-}
-
-function propsEqual(left, right) {
-  // In Preact, props can be `undefined`, and regular virtual elements are
-  // special objects, not dicts.
-  if (!f.isObject(left) || !f.isObject(right)) return left === right
-
-  for (const key in left) {
-    if (key === 'children') continue
-    if (!reactEqual(left[key], right[key])) return false
-  }
-
-  for (const key in right) {
-    if (key === 'children') continue
-    if (!reactEqual(left[key], right[key])) return false
-  }
-
-  return reactEqual(left.children, right.children)
 }
