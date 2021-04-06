@@ -1,0 +1,58 @@
+<!doctype html>
+
+<base href="/ptax/">
+<meta charset="utf-8">
+<title>ptax</title>
+<link rel="icon" href="data:;base64,=">
+
+<style>
+  :root {
+    --color-bg: hsl(200, 5%, 10%);
+    --color-fg: hsl(0, 0%, 90%);
+    --color-link: hsl(230, 70%, 80%);
+
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+  }
+
+  a[href]                       {color: var(--color-link);}
+  .size-double                  {font-size: 2rem;}
+  .text-center                  {text-align: center; }
+  .high                         {min-height: 100vh }
+  .gaps-v-2 > :not(:last-child) {margin-bottom: 2rem; }
+
+  .font-monospace {
+    font-family: SF Mono, Menlo, Monaco, DejaVu Sans Mono, Consolas, monospace;
+  }
+
+  .flex {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+  }
+
+  .col-center-center {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+  }
+</style>
+
+<body class="high flex col-center-center gaps-v-2 font-monospace text-center">
+  <p class="size-double">
+    Documentation moved to readme.md:
+    <br>
+    <a href="https://github.com/mitranim/prax">https://github.com/mitranim/prax</a>
+  </p>
+
+  <p>
+    Why: for simplicity and ease of maintenance
+  </p>
+</body>

@@ -1,12 +1,9 @@
 {
-  "parser": "babel-eslint",
-  "parserOptions": {
-    "sourceType": "script"
-  },
+  "parserOptions": {"sourceType": "module"},
   "env": {
-    "browser": false,
-    "node": true,
-    "es6": true
+    "es2020": true,
+    "browser": true,
+    "node": true
   },
   "rules": {
     // Logic
@@ -54,14 +51,14 @@
     "no-implicit-coercion": "error",
     "no-implicit-globals": "error",
     "no-implied-eval": "error",
-    "no-invalid-this": "error",
+    // "no-invalid-this": "error",
     // "no-labels": "error",
     "no-lone-blocks": "error",
     "no-loop-func": "error",
     // "no-magic-numbers": "error",
     "no-new": "error",
     "no-new-func": "error",
-    "no-new-wrappers": "error",
+    // "no-new-wrappers": "error",
     "no-octal": "error",
     "no-octal-escape": "error",
     // "no-param-reassign": "error",
@@ -133,7 +130,7 @@
     "indent": ["error", 2, {
       "SwitchCase": 1,
       "flatTernaryExpressions": true,
-      "ignoredNodes": ["ConditionalExpression"]
+      "ignoredNodes": ["ConditionalExpression"],
     }],
     // "key-spacing": ["error", {"align": "value"}],
     // "key-spacing": "error",
@@ -157,7 +154,7 @@
     "object-curly-spacing": "error",
     "one-var": ["error", "never"],
     "operator-assignment": ["error", "always"],
-    "operator-linebreak": ["error", "after", {"overrides": {"?": "off", ":": "off"}}],
+    "operator-linebreak": ["error", "after", {"overrides": {"?": "before", ":": "before"}}],
     "padded-blocks": ["error", "never"],
     "quote-props": ["error", "as-needed"],
     "quotes": ["error", "single", {"allowTemplateLiterals": true, "avoidEscape": true}],
@@ -176,7 +173,7 @@
     // "no-confusing-arrow": "error",
     "no-const-assign": "error",
     "no-dupe-class-members": "error",
-    "no-duplicate-imports": "error",
+    // "no-duplicate-imports": "error",
     "no-new-symbol": "error",
     "no-this-before-super": "error",
     "no-useless-computed-key": "error",
@@ -186,7 +183,7 @@
     "object-shorthand": "error",
     "prefer-const": "error",
     "prefer-numeric-literals": "error",
-    "prefer-spread": "error",
+    // "prefer-spread": "error",
     "prefer-template": "error",
     // "require-yield": "error",
     "rest-spread-spacing": "error",

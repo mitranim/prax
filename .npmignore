@@ -1,7 +1,2 @@
 /*
-!/dist
-!/es
-!/src
-!/readme.md
-!/react.js
-!/preact.js
+!/*.mjs
