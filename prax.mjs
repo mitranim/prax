@@ -2,6 +2,8 @@ import * as f from 'fpx'
 
 /* Public API */
 
+export const e = E.bind.bind(E, undefined)
+
 export function E(name, props, ...nodes) {
   f.valid(name, f.isStr)
   const node = document.createElement(name)
@@ -32,7 +34,7 @@ export function removeNodes(node) {
 
 export function appendNodes(node, nodes) {
   f.valid(node, isNode)
-  f.each(nodes, appendNode, node)
+  for (const val of nodes) appendChild(node, val)
 }
 
 export function cls(...vals) {
@@ -55,12 +57,13 @@ export const boolAttrs = new Set([
 
 /* Internal Utils */
 
-function appendNode(val, i, node) {
+function appendChild(node, val) {
   if      (f.isNil(val))  {}
+  else if (val === '')    {}
   else if (isNode(val))   node.appendChild(val)
   else if (f.isList(val)) appendNodes(node, val)
   else if (f.isPrim(val)) node.appendChild(new Text(val))
-  else                    appendNode(primValueOf(val), i, node)
+  else                    appendChild(node, primValueOf(val))
 }
 
 // Should be kept in sync with `node.mjs` -> `encodeProp`.

@@ -1,5 +1,5 @@
 import * as x from '../prax.mjs'
-import {E, cls} from '../prax.mjs'
+import {E, cls, e} from '../prax.mjs'
 import {is, eq, throws} from './test-utils.mjs'
 
 Object.assign(window, x)
@@ -87,11 +87,10 @@ try {
   }()
 
   void function testChildFlattening() {
-    asHtml(
-      `<outer>one<mid>two<inner>three</inner>four</mid>five</outer>`,
+    const elem = (
       E('outer', {},
         undefined,
-        [[[]]],
+        [[['']]],
         [[['one']]],
         [
           null,
@@ -102,9 +101,28 @@ try {
             'four',
           ),
         ],
+        '',
         'five',
-      ),
+      )
     )
+
+    asHtml(
+      `<outer>one<mid>two<inner>three</inner>four</mid>five</outer>`,
+      elem,
+    )
+
+    eq(['one', ['two', ['three'], 'four'], 'five'], toChildTextTree(elem))
+  }()
+
+  void function testChildKidnapping() {
+    const prev = E('div', {}, 'one', 'two', 'three')
+    const next = E('p', {}, ...prev.childNodes)
+
+    asHtml(`<div></div>`, prev)
+    asHtml(`<p>onetwothree</p>`, next)
+
+    eq([], toChildTextTree(prev))
+    eq(['one', 'two', 'three'], toChildTextTree(next))
   }()
 
   // Unlike the Node version, the browser version prefers to assign props
@@ -253,9 +271,17 @@ try {
     throws(cls, {})
   }()
 
+  void function testBoundE() {
+    asHtml(`<div></div>`,                      e('div')())
+    asHtml(`<div class="one"></div>`,          e('div', {class: 'one'})())
+    asHtml(`<div class="one">some text</div>`, e('div', {class: 'one'}, 'some text')())
+    asHtml(`<div class="one">some text</div>`, e('div', {class: 'one'})('some text'))
+    asHtml(`<div class="one">some text</div>`, e('div')({class: 'one'}, 'some text'))
+  }()
+
   void function testOk() {
     x.reset(document.body, {},
-      E('p', {class: 'size-double'}, '[test] ok!'),
+      E('p', {class: 'size-double text-center'}, '[test] ok!'),
     )
   }()
 }
@@ -266,4 +292,10 @@ catch (err) {
 
 function asHtml(str, node) {
   is(str, node.outerHTML)
+}
+
+function toChildTextTree(node) {
+  if (node instanceof Element) return [...node.childNodes].map(toChildTextTree)
+  if (node instanceof Text) return node.textContent
+  throw Error(`unexpected non-element, non-text node ${f.show(node)}`)
 }

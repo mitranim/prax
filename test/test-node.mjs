@@ -1,4 +1,4 @@
-import {E, Raw, cls} from '../node.mjs'
+import {E, Raw, cls, e} from '../node.mjs'
 import {eq, throws} from './test-utils.mjs'
 
 void function testBasicMarkup() {
@@ -257,6 +257,14 @@ void function testCls() {
   throws(cls, true)
   throws(cls, false)
   throws(cls, {})
+}()
+
+void function testBoundE() {
+  eq(new Raw(`<div></div>`),                      e('div')())
+  eq(new Raw(`<div class="one"></div>`),          e('div', {class: 'one'})())
+  eq(new Raw(`<div class="one">some text</div>`), e('div', {class: 'one'}, 'some text')())
+  eq(new Raw(`<div class="one">some text</div>`), e('div', {class: 'one'})('some text'))
+  eq(new Raw(`<div class="one">some text</div>`), e('div')({class: 'one'}, 'some text'))
 }()
 
 console.log('[test] ok!')

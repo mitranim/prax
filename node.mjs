@@ -5,6 +5,8 @@ import {boolAttrs} from './prax.mjs'
 
 export {cls, boolAttrs} from './prax.mjs'
 
+export const e = E.bind.bind(E, undefined)
+
 export function E(name, props, ...nodes) {
   return new Raw(encodeHtml(name, props, nodes))
 }
