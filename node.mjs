@@ -3,15 +3,15 @@ import {boolAttrs} from './prax.mjs'
 
 /* Public API */
 
-export {cls} from './prax.mjs'
+export {cls, boolAttrs} from './prax.mjs'
 
-export const dom = false
-
-export function E(type, props, ...nodes) {
-  return new Raw(encodeHtml(type, props, nodes))
+export function E(name, props, ...nodes) {
+  return new Raw(encodeHtml(name, props, nodes))
 }
 
-export class Raw extends String {}
+export function X(name, props, ...nodes) {
+  return new Raw(encodeXml(name, props, nodes))
+}
 
 export function encodeHtml(name, props, nodes) {
   return encodeXml(name, props, nodes, voidElems, boolAttrs)
@@ -19,14 +19,15 @@ export function encodeHtml(name, props, nodes) {
 
 export function encodeXml(name, props, nodes, vElems, bAttrs) {
   f.valid(name, isValidElementName)
-
   if (vElems) f.valid(vElems, isSet)
   if (bAttrs) f.valid(bAttrs, isSet)
 
   const open = `<${name}${encodeProps(props, bAttrs)}>`
 
   if (vElems && vElems.has(name)) {
-    if (nodes.length) throw Error(`got unexpected child nodes for void element "${name}"`)
+    if (!f.isNil(nodes) && nodes.length) {
+      throw Error(`got unexpected child nodes for void element "${name}"`)
+    }
     return open
   }
 
@@ -35,22 +36,16 @@ export function encodeXml(name, props, nodes, vElems, bAttrs) {
 
 // https://www.w3.org/TR/html52/syntax.html#escaping-a-string
 export function escapeText(val) {
-  return f.str(val).replace(/[&\u00a0<>]/g, escapeChar)
+  val = f.str(val)
+  const reg = /[&\u00a0<>]/g
+  return reg.test(val) ? val.replace(reg, escapeChar) : val
 }
 
 // https://www.w3.org/TR/html52/syntax.html#escaping-a-string
 export function escapeAttr(val) {
-  return f.str(val).replace(/[&\u00a0"]/g, escapeChar)
-}
-
-// https://www.w3.org/TR/html52/syntax.html#escaping-a-string
-function escapeChar(char) {
-  if (char === '&')      return '&amp;'
-  if (char === '\u00a0') return '&nbsp;'
-  if (char === '"')      return '&quot;'
-  if (char === '<')      return '&lt;'
-  if (char === '>')      return '&gt;'
-  return char
+  val = f.str(val)
+  const reg = /[&\u00a0"]/g
+  return reg.test(val) ? val.replace(reg, escapeChar) : val
 }
 
 // https://www.w3.org/TR/html52/
@@ -60,10 +55,12 @@ export const voidElems = new Set([
   'param', 'source', 'track', 'wbr',
 ])
 
+export class Raw extends String {}
+
 /* Internal Utils */
 
 function encodeNodes(nodes) {
-  return f.fold(nodes, '', appendEncodeNode)
+  return foldArr(nodes, '', appendEncodeNode)
 }
 
 function appendEncodeNode(acc, node) {
@@ -71,13 +68,13 @@ function appendEncodeNode(acc, node) {
 }
 
 function encodeNode(node) {
-  if (f.isList(node)) return encodeNodes(node)
-  if (f.isPrim(node)) return escapeText(encodePrim(node))
+  if (f.isArr(node)) return encodeNodes(node)
+  if (f.isStr(node)) return escapeText(node)
   return encodePrim(primValueOf(node))
 }
 
 function encodeProps(props, bAttrs) {
-  return f.foldVals(f.dict(props), '', appendEncodeProp, bAttrs)
+  return foldDict(props, '', appendEncodeProp, bAttrs)
 }
 
 function appendEncodeProp(acc, val, key, bAttrs) {
@@ -100,7 +97,7 @@ function encodeProp(key, val, bAttrs) {
 }
 
 function encodeAttrs(attrs, bAttrs) {
-  return f.foldVals(f.dict(attrs), '', appendEncodeAttr, bAttrs)
+  return foldDict(attrs, '', appendEncodeAttr, bAttrs)
 }
 
 function appendEncodeAttr(acc, val, key, bAttrs) {
@@ -109,7 +106,7 @@ function appendEncodeAttr(acc, val, key, bAttrs) {
 
 // Should be kept in sync with `prax.mjs` -> `setStyle`.
 function encodeStyle(val) {
-  if (f.isDict(val)) return f.foldVals(val, '', appendEncodeStyle)
+  if (f.isDict(val)) return foldDict(val, '', appendEncodeStyle)
   return maybeStr(val)
 }
 
@@ -128,16 +125,15 @@ function encodeStylePair(key, val) {
 }
 
 function encodeDataset(dataset) {
-  return f.foldVals(f.dict(dataset), '', appendEncodeDataAttr)
+  return foldDict(dataset, '', appendEncodeDataAttr)
 }
 
-function appendEncodeDataAttr(acc, val, key, bAttrs) {
-  return acc + attr(`data-${camelToKebab(key)}`, val, bAttrs)
+function appendEncodeDataAttr(acc, val, key) {
+  return acc + attr(`data-${camelToKebab(key)}`, val)
 }
 
 // Should be kept in sync with `prax.mjs` -> `setAttr`.
 function attr(key, val, bAttrs) {
-  f.valid(key, isValidAttrName)
   if (f.isNil(val)) return ``
 
   if (bAttrs && bAttrs.has(key)) {
@@ -156,7 +152,7 @@ function toAria(key) {
 }
 
 // Should match the browser algorithm for dataset keys.
-// Probably inefficient.
+// Probably very inefficient.
 function camelToKebab(val) {
   f.valid(val, f.isStr)
 
@@ -169,19 +165,27 @@ function camelToKebab(val) {
   return out
 }
 
+// https://www.w3.org/TR/html52/syntax.html#escaping-a-string
+function escapeChar(char) {
+  if (char === '&')      return '&amp;'
+  if (char === '\u00a0') return '&nbsp;'
+  if (char === '"')      return '&quot;'
+  if (char === '<')      return '&lt;'
+  if (char === '>')      return '&gt;'
+  return char
+}
+
+// Extremely permissive. Should prevent common gotchas while not interfering
+// with non-ASCII XML, which we do support.
+//
+// Reference for HTML:
 // https://www.w3.org/TR/html52/syntax.html#tag-name
 // https://www.w3.org/TR/html52/infrastructure.html#alphanumeric-ascii-characters
 //
-// Probably not compliant.
-function isValidElementName(val) {
-  return f.isStr(val) && /^[a-z][a-z0-9_-]*$/.test(val)
-}
-
+// Also see for attrs, unused:
 // https://www.w3.org/TR/html52/syntax.html#elements-attributes
-//
-// Probably not compliant.
-function isValidAttrName(val) {
-  return f.isStr(val) && /^(?:[a-z][a-z0-9_-]+:)?[^\s'">/=]+$/.test(val)
+function isValidElementName(val) {
+  return f.isStr(val) && /^[^\s<>"]+$/.test(val)
 }
 
 function validAt(key, val, fun) {
@@ -199,7 +203,8 @@ function encodePrim(val) {
 }
 
 function primValueOf(val) {
-  if (f.isObj(val) && 'valueOf' in val) return f.prim(val.valueOf())
+  if (f.isObj(val) && 'valueOf' in val) val = val.valueOf()
+  if (f.isPrim(val)) return val
   throw Error(`can't convert ${f.show(val)} to primitive`)
 }
 
@@ -209,4 +214,20 @@ function isSet(val) {
 
 function useInstead(good, bad) {
   throw Error(`use "${good}" instead of "${bad}"`)
+}
+
+function foldArr(val, acc, fun, ...args) {
+  if (!f.isNil(val)) {
+    f.valid(val, f.isArr)
+    for (let i = 0; i < val.length; i += 1) acc = fun(acc, val[i], i, ...args)
+  }
+  return acc
+}
+
+function foldDict(val, acc, fun, ...args) {
+  if (!f.isNil(val)) {
+    f.valid(val, f.isDict)
+    for (const key in val) acc = fun(acc, val[key], key, ...args)
+  }
+  return acc
 }

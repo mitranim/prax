@@ -2,11 +2,9 @@ import * as f from 'fpx'
 
 /* Public API */
 
-export const dom = true
-
-export function E(type, props, ...nodes) {
-  f.valid(type, f.isStr)
-  const node = document.createElement(type)
+export function E(name, props, ...nodes) {
+  f.valid(name, f.isStr)
+  const node = document.createElement(name)
   return reset(node, props, ...nodes)
 }
 

@@ -184,7 +184,7 @@
     "prefer-const": "error",
     "prefer-numeric-literals": "error",
     // "prefer-spread": "error",
-    "prefer-template": "error",
+    // "prefer-template": "error",
     // "require-yield": "error",
     "rest-spread-spacing": "error",
     "template-curly-spacing": "error"
