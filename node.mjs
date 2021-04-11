@@ -140,17 +140,30 @@ function appendEncodeDataAttr(acc, val, key) {
   return acc + attr(`data-${camelToKebab(key)}`, val)
 }
 
-// Should be kept in sync with `prax.mjs` -> `setAttr`.
+/*
+Should be kept in sync with `prax.mjs` -> `setAttr`.
+
+The HTML specification permits empty attrs without `=""`:
+
+> https://www.w3.org/TR/html52/syntax.html#elements-attributes
+> Empty attribute syntax
+> Just the attribute name. The value is implicitly the empty string.
+
+However, this is not permitted in XML which we aim to support, and some
+ostensibly HTML-specific tools, like the `tidy` pretty-printer, balk and barf
+at such ostentatious notions! In addition, browsers tend to serialize the
+`=""`. We follow their lead for consistency.
+*/
 function attr(key, val, bAttrs) {
   if (f.isNil(val)) return ``
 
   if (bAttrs && bAttrs.has(key)) {
     validAt(key, val, f.isBool)
-    return !val ? `` : ` ${key}`
+    return !val ? `` : ` ${key}=""`
   }
 
   validAt(key, val, f.isStr)
-  return !val ? ` ${key}` : ` ${key}="${escapeAttr(val)}"`
+  return ` ${key}="${val && escapeAttr(val)}"`
 }
 
 // ARIA attributes appear to be case-insensitive, with only the `aria-` prefix

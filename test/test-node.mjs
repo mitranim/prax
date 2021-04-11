@@ -232,17 +232,17 @@ void function testAria() {
 
 void function testBoolAttrs() {
   eq(
-    new Raw(`<input type="checkbox" hidden autofocus disabled checked>`),
+    new Raw(`<input type="checkbox" hidden="" autofocus="" disabled="" checked="">`),
     E('input', {type: 'checkbox', hidden: true, autofocus: true, disabled: true, checked: true}),
   )
 
   eq(
-    new Raw(`<input type="checkbox" disabled checked>`),
+    new Raw(`<input type="checkbox" disabled="" checked="">`),
     E('input', {type: 'checkbox', hidden: false, autofocus: false, disabled: true, checked: true}),
   )
 
   eq(
-    new Raw(`<input type="checkbox" hidden autofocus>`),
+    new Raw(`<input type="checkbox" hidden="" autofocus="">`),
     E('input', {type: 'checkbox', hidden: true, autofocus: true, disabled: null, checked: undefined}),
   )
 
@@ -254,7 +254,7 @@ void function testBoolAttrs() {
 // Supported in both for consistency.
 void function testAttributesEscapeHatch() {
   eq(
-    new Raw(`<div nonbool="one" hidden></div>`),
+    new Raw(`<div nonbool="one" hidden=""></div>`),
     E('div', {attributes: {nonbool: 'one', hidden: true, disabled: false}}),
   )
 
