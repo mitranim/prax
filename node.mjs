@@ -94,13 +94,9 @@ function encodeProp(key, val, bAttrs) {
   if (key === 'attributes')   return encodeAttrs(val, bAttrs)
   if (key === 'className')    return attr('class', val, bAttrs)
   if (key === 'style')        return attr(key, encodeStyle(val), bAttrs)
-  if (key === 'httpEquiv')    return attr('http-equiv', val, bAttrs)
   if (key === 'dataset')      return encodeDataset(val)
+  if (key === 'httpEquiv')    return attr('http-equiv', val, bAttrs)
   if (/^aria[A-Z]/.test(key)) return attr(toAria(key), val, bAttrs)
-  if (key === 'styles')       useInstead(`style`,     `styles`)
-  if (key === 'http-equiv')   useInstead(`httpEquiv`, `http-equiv`)
-  if (/^data-/.test(key))     useInstead(`dataset`,   `data-*`)
-  if (/^aria-/.test(key))     useInstead(`aria*`,     `aria-*`)
   return attr(key, val, bAttrs)
 }
 
@@ -227,10 +223,6 @@ function primValueOf(val) {
 
 function isSet(val) {
   return f.isObj(val) && f.isFun(val.has)
-}
-
-function useInstead(good, bad) {
-  throw Error(`use "${good}" instead of "${bad}"`)
 }
 
 function foldArr(val, acc, fun, ...args) {

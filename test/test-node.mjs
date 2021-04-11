@@ -36,11 +36,6 @@ void function testBasicMarkup() {
       throws(E, 'div', {dataset: 'str'})
       throws(E, 'div', {dataset: []})
       throws(E, 'div', {dataset: new class {}()})
-      throws(E, 'div', {styles: 'str'})
-      throws(E, 'div', {styles: {}})
-      throws(E, 'div', {'http-equiv': 'str'})
-      throws(E, 'div', {'data-val': 'str'})
-      throws(E, 'div', {'aria-label': 'str'})
       throws(E, 'div', {children: 'str'})
       throws(E, 'div', {children: 10})
       throws(E, 'div', {children: {}})
@@ -225,22 +220,25 @@ void function testDataset() {
     E('div', {dataset: {one: 'two', ThreeFour: 'five', six: undefined, seven: null}}, 'content'),
   )
 
-  throws(E, 'div', {'data-one': 'one'})
+  eq(
+    new Raw(`<div data-one="two" data-three="four">content</div>`),
+    E('div', {dataset: {one: 'two'}, 'data-three': 'four'}, 'content'),
+  )
+
   throws(E, 'div', {dataset: {one: 10}})
+  throws(E, 'div', {'data-one': 10})
 }()
 
 void function testAria() {
   eq(
-    new Raw(`<a aria-current="page">text</a>`),
-    E('a', {ariaCurrent: 'page'}, 'text'),
+    new Raw(`<a aria-current="page" aria-checked="mixed">text</a>`),
+    E('a', {ariaCurrent: 'page', 'aria-checked': 'mixed'}, 'text'),
   )
 
   eq(
     new Raw(`<a aria-autocomplete="page">text</a>`),
     E('a', {ariaAutoComplete: 'page'}, 'text'),
   )
-
-  throws(E, 'div', {'aria-current': 'page'})
 }()
 
 void function testBoolAttrs() {
@@ -276,13 +274,27 @@ void function testAttributesEscapeHatch() {
   throws(E, 'div', {attributes: {hidden: 10}})
 }()
 
+void function testUnknownWeirdAttrs() {
+  eq(
+    new Raw(`<div one-two="three" four.five="six"></div>`),
+    E('div', {'one-two': 'three', 'four.five': 'six'}),
+  )
+
+  throws(E, 'div', {'one-two': 10})
+  throws(E, 'div', {'one.two': 10})
+}()
+
 void function testMeta() {
   eq(
     new Raw(`<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">`),
     E('meta', {httpEquiv: 'X-UA-Compatible', content: 'IE=edge,chrome=1'}),
   )
 
-  throws(E, 'meta', {'http-equiv': 'X-UA-Compatible'})
+  eq(new Raw(`<meta http-equiv="">`), E('meta', {httpEquiv: ''}))
+  eq(new Raw(`<meta http-equiv="">`), E('meta', {'http-equiv': ''}))
+
+  throws(E, 'meta', {httpEquiv: 10})
+  throws(E, 'meta', {'http-equiv': 10})
 }()
 
 void function testCls() {

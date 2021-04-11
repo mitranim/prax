@@ -98,10 +98,7 @@ function setProp(val, key, node) {
   else if (key === 'style')      setStyle(node, val)
   else if (key === 'dataset')    setDataset(node, val)
   else if (boolAttrs.has(key))   setAttr(val, key, node)
-  else if (key === 'styles')     useInstead(`style`,     `styles`)
-  else if (key === 'http-equiv') useInstead(`httpEquiv`, `http-equiv`)
-  else if (/^data-/.test(key))   useInstead(`dataset`,   `data-*`)
-  else if (/^aria-/.test(key))   useInstead(`aria*`,     `aria-*`)
+  else if (!isPropKey(key))      setAttr(val, key, node)
   else                           node[key] = val
 }
 
@@ -196,9 +193,7 @@ function primValueOf(val) {
   throw Error(`can't convert ${f.show(val)} to primitive`)
 }
 
-function useInstead(good, bad) {
-  throw Error(`use "${good}" instead of "${bad}"`)
-}
+function isPropKey(key) {return /^[a-z][\w]*$/.test(key)}
 
 function mapChildrenIter(i, val, _i, acc, fun, ...args) {
   if (f.isNil(val)) return i
