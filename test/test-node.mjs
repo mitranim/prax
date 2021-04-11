@@ -25,6 +25,9 @@ void function testBasicMarkup() {
       throws(E, 'div', {class: 10})
       throws(E, 'div', {class: new class {}()})
       throws(E, 'div', {class: []})
+      throws(E, 'div', {className: 10})
+      throws(E, 'div', {className: new class {}()})
+      throws(E, 'div', {className: []})
       throws(E, 'div', {style: 10})
       throws(E, 'div', {style: []})
       throws(E, 'div', {style: new class {}()})
@@ -33,12 +36,14 @@ void function testBasicMarkup() {
       throws(E, 'div', {dataset: 'str'})
       throws(E, 'div', {dataset: []})
       throws(E, 'div', {dataset: new class {}()})
-      throws(E, 'div', {className: 'str'})
       throws(E, 'div', {styles: 'str'})
       throws(E, 'div', {styles: {}})
       throws(E, 'div', {'http-equiv': 'str'})
       throws(E, 'div', {'data-val': 'str'})
       throws(E, 'div', {'aria-label': 'str'})
+      throws(E, 'div', {children: 'str'})
+      throws(E, 'div', {children: 10})
+      throws(E, 'div', {children: {}})
 
       // Node-only.
       throws(E, 'div', {unknown: 10})
@@ -192,6 +197,14 @@ void function testAttrEscaping() {
     new Raw(`<outer><inner attr="<one>&amp;&quot;</one>"></inner></outer>`),
     E('outer', {}, E('inner', {attr: `<one>&"</one>`})),
   )
+}()
+
+// Recommendation: prefer `class` for brevity.
+void function testClassVsClassName() {
+  eq(new Raw(`<div class="one"></div>`),             E('div', {class:     'one'}))
+  eq(new Raw(`<div class="one"></div>`),             E('div', {className: 'one'}))
+  eq(new Raw(`<div class="one" class="two"></div>`), E('div', {class:     'one', className: 'two'}))
+  eq(new Raw(`<div class="one" class="two"></div>`), E('div', {className: 'one', class: 'two'}))
 }()
 
 void function testStyle() {

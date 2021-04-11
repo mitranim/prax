@@ -29,6 +29,9 @@ try {
         throws(E, 'div', {class: 10})
         throws(E, 'div', {class: new class {}()})
         throws(E, 'div', {class: []})
+        throws(E, 'div', {className: 10})
+        throws(E, 'div', {className: new class {}()})
+        throws(E, 'div', {className: []})
         throws(E, 'div', {style: 10})
         throws(E, 'div', {style: []})
         throws(E, 'div', {style: new class {}()})
@@ -37,7 +40,6 @@ try {
         throws(E, 'div', {dataset: 'str'})
         throws(E, 'div', {dataset: []})
         throws(E, 'div', {dataset: new class {}()})
-        throws(E, 'div', {className: 'str'})
         throws(E, 'div', {styles: 'str'})
         throws(E, 'div', {styles: {}})
         throws(E, 'div', {'http-equiv': 'str'})
@@ -192,6 +194,14 @@ try {
       `<outer><inner attr="<one>&amp;&quot;</one>"></inner></outer>`,
       E('outer', {}, E('inner', {attributes: {attr: `<one>&"</one>`}})),
     )
+  }()
+
+  // Recommendation: prefer `class` for brevity.
+  void function testClassVsClassName() {
+    asHtml(`<div class="one"></div>`, E('div', {class:     'one'}))
+    asHtml(`<div class="one"></div>`, E('div', {className: 'one'}))
+    asHtml(`<div class="two"></div>`, E('div', {class:     'one', className: 'two'}))
+    asHtml(`<div class="two"></div>`, E('div', {className: 'one', class: 'two'}))
   }()
 
   void function testStyle() {

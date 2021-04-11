@@ -92,11 +92,11 @@ function appendEncodeProp(acc, val, key, bAttrs) {
 function encodeProp(key, val, bAttrs) {
   if (key === 'children')     return (f.validOpt(val, f.isList), '')
   if (key === 'attributes')   return encodeAttrs(val, bAttrs)
+  if (key === 'className')    return attr('class', val, bAttrs)
   if (key === 'style')        return attr(key, encodeStyle(val), bAttrs)
   if (key === 'httpEquiv')    return attr('http-equiv', val, bAttrs)
   if (key === 'dataset')      return encodeDataset(val)
   if (/^aria[A-Z]/.test(key)) return attr(toAria(key), val, bAttrs)
-  if (key === 'className')    useInstead(`class`,     `className`)
   if (key === 'styles')       useInstead(`style`,     `styles`)
   if (key === 'http-equiv')   useInstead(`httpEquiv`, `http-equiv`)
   if (/^data-/.test(key))     useInstead(`dataset`,   `data-*`)
