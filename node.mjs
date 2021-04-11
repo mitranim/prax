@@ -1,9 +1,9 @@
 import * as f from 'fpx'
-import {boolAttrs} from './prax.mjs'
+import {Raw, boolAttrs} from './prax.mjs'
 
 /* Public API */
 
-export {cls, boolAttrs} from './prax.mjs'
+export {Raw, boolAttrs, cls, countChildren, mapChildren} from './prax.mjs'
 
 export const e = E.bind.bind(E, undefined)
 
@@ -15,14 +15,18 @@ export function X(name, props, ...nodes) {
   return new Raw(encodeXml(name, props, nodes))
 }
 
+export function P(props, ...nodes) {
+  return {...f.opt(props, f.isDict), children: nodes}
+}
+
 export function encodeHtml(name, props, nodes) {
   return encodeXml(name, props, nodes, voidElems, boolAttrs)
 }
 
 export function encodeXml(name, props, nodes, vElems, bAttrs) {
   f.valid(name, isValidElementName)
-  if (vElems) f.valid(vElems, isSet)
-  if (bAttrs) f.valid(bAttrs, isSet)
+  f.validOpt(vElems, isSet)
+  f.validOpt(bAttrs, isSet)
 
   const open = `<${name}${encodeProps(props, bAttrs)}>`
 
@@ -33,7 +37,8 @@ export function encodeXml(name, props, nodes, vElems, bAttrs) {
     return open
   }
 
-  return `${open}${encodeNodes(nodes)}</${name}>`
+  const inner = `${props ? encodeNodes(props.children) : ''}${encodeNodes(nodes)}`
+  return `${open}${inner}</${name}>`
 }
 
 // https://www.w3.org/TR/html52/syntax.html#escaping-a-string
@@ -57,8 +62,6 @@ export const voidElems = new Set([
   'param', 'source', 'track', 'wbr',
 ])
 
-export class Raw extends String {}
-
 /* Internal Utils */
 
 function encodeNodes(nodes) {
@@ -72,7 +75,7 @@ function appendEncodeNode(acc, node) {
 function encodeNode(node) {
   if (f.isArr(node)) return encodeNodes(node)
   if (f.isStr(node)) return escapeText(node)
-  return encodePrim(primValueOf(node))
+  return f.toStr(primValueOf(node))
 }
 
 function encodeProps(props, bAttrs) {
@@ -84,7 +87,10 @@ function appendEncodeProp(acc, val, key, bAttrs) {
 }
 
 // Should be kept in sync with `prax.mjs` -> `setProp`.
+// Expected to accumulate more special cases over time.
+// TODO: skip this for XML rendering.
 function encodeProp(key, val, bAttrs) {
+  if (key === 'children')     return (f.validOpt(val, f.isList), '')
   if (key === 'attributes')   return encodeAttrs(val, bAttrs)
   if (key === 'style')        return attr(key, encodeStyle(val), bAttrs)
   if (key === 'httpEquiv')    return attr('http-equiv', val, bAttrs)
@@ -198,10 +204,6 @@ function validAt(key, val, fun) {
 
 function maybeStr(val) {
   return f.isNil(val) ? undefined : f.str(val)
-}
-
-function encodePrim(val) {
-  return f.isNil(val) ? '' : String(f.prim(val))
 }
 
 function primValueOf(val) {

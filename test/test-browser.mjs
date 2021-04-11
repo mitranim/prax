@@ -1,5 +1,6 @@
+import * as f from 'fpx'
 import * as x from '../prax.mjs'
-import {E, cls, e} from '../prax.mjs'
+import {E, cls, e, countChildren, mapChildren} from '../prax.mjs'
 import {is, eq, throws} from './test-utils.mjs'
 
 Object.assign(window, x)
@@ -42,6 +43,9 @@ try {
         throws(E, 'div', {'http-equiv': 'str'})
         throws(E, 'div', {'data-val': 'str'})
         throws(E, 'div', {'aria-label': 'str'})
+        throws(E, 'div', {children: 'str'})
+        throws(E, 'div', {children: 10})
+        throws(E, 'div', {children: {}})
       }()
     }()
 
@@ -112,6 +116,22 @@ try {
     )
 
     eq(['one', ['two', ['three'], 'four'], 'five'], toChildTextTree(elem))
+  }()
+
+  void function testPropsChildren() {
+    asHtml(`<div>one</div>`, E('div', {children: ['one']}))
+
+    asHtml(
+      `<outer><inner>one</inner></outer>`,
+      E('outer', {children: [E('inner', {}, 'one')]}),
+    )
+
+    void function testPropsChildrenComeBeforeOtherNodes() {
+      asHtml(
+        `<div>onetwo</div>`,
+        E('div', {children: ['one']}, 'two'),
+      )
+    }()
   }()
 
   void function testChildKidnapping() {
@@ -277,6 +297,31 @@ try {
     asHtml(`<div class="one">some text</div>`, e('div', {class: 'one'}, 'some text')())
     asHtml(`<div class="one">some text</div>`, e('div', {class: 'one'})('some text'))
     asHtml(`<div class="one">some text</div>`, e('div')({class: 'one'}, 'some text'))
+  }()
+
+  void function testCountChildren() {
+    eq(0, countChildren())
+    eq(0, countChildren(undefined))
+    eq(0, countChildren(null))
+    eq(1, countChildren(10))
+    eq(1, countChildren([10]))
+    eq(1, countChildren([[10]]))
+    eq(3, countChildren([[10], null, 20, undefined, [[30]]]))
+  }()
+
+  void function testMapChildren() {
+    eq([],                 mapChildren(undefined, id))
+    eq([],                 mapChildren(null, id))
+    eq([],                 mapChildren([undefined], id))
+    eq([],                 mapChildren([null], id))
+    eq([10, 20],           mapChildren([null, [[[10], 20]], undefined], id))
+    eq([[10, 0], [20, 1]], mapChildren([null, [[[10], 20]], undefined], args))
+
+    throws(mapChildren)
+    throws(mapChildren, [])
+
+    function id(val) {return val}
+    function args(...args) {return args}
   }()
 
   void function testOk() {

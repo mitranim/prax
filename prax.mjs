@@ -5,14 +5,19 @@ import * as f from 'fpx'
 export const e = E.bind.bind(E, undefined)
 
 export function E(name, props, ...nodes) {
-  f.valid(name, f.isStr)
-  const node = document.createElement(name)
+  const node = document.createElement(f.str(name))
   return reset(node, props, ...nodes)
+}
+
+export function P(props, ...nodes) {
+  return {...f.opt(props, f.isDict), children: nodes}
 }
 
 export function reset(node, props, ...nodes) {
   resetProps(node, props)
-  resetNodes(node, nodes)
+  removeNodes(node)
+  if (props) appendNodes(node, props.children)
+  appendNodes(node, nodes)
   return node
 }
 
@@ -34,11 +39,26 @@ export function removeNodes(node) {
 
 export function appendNodes(node, nodes) {
   f.valid(node, isNode)
+  if (f.isNil(nodes)) return
+  f.valid(nodes, f.isList)
   for (const val of nodes) appendChild(node, val)
 }
 
 export function cls(...vals) {
   return f.fold(vals, '', addClass)
+}
+
+export function countChildren(val) {
+  if (f.isNil(val)) return 0
+  if (f.isList(val)) return f.sumBy(val, countChildren)
+  return 1
+}
+
+export function mapChildren(val, fun, ...args) {
+  f.valid(fun, f.isFun)
+  const acc = []
+  mapChildrenIter(0, val, 0, acc, fun, ...args)
+  return acc
 }
 
 // The specification postulates the concept, but where's the standard list?
@@ -55,6 +75,8 @@ export const boolAttrs = new Set([
   'truespeed',
 ])
 
+export class Raw extends String {}
+
 /* Internal Utils */
 
 function appendChild(node, val) {
@@ -67,8 +89,10 @@ function appendChild(node, val) {
 }
 
 // Should be kept in sync with `node.mjs` -> `encodeProp`.
+// Expected to accumulate more special cases over time.
 function setProp(val, key, node) {
-  if      (key === 'attributes') setAttrs(node, val)
+  if      (key === 'children')   f.validOpt(val, f.isList)
+  else if (key === 'attributes') setAttrs(node, val)
   else if (key === 'class')      setClass(node, val)
   else if (key === 'style')      setStyle(node, val)
   else if (key === 'dataset')    setDataset(node, val)
@@ -174,4 +198,11 @@ function primValueOf(val) {
 
 function useInstead(good, bad) {
   throw Error(`use "${good}" instead of "${bad}"`)
+}
+
+function mapChildrenIter(i, val, _i, acc, fun, ...args) {
+  if (f.isNil(val)) return i
+  if (f.isList(val)) return f.fold(val, i, mapChildrenIter, acc, fun, ...args)
+  acc.push(fun(val, i, ...args))
+  return i + 1
 }

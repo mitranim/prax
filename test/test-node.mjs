@@ -1,4 +1,4 @@
-import {E, Raw, cls, e} from '../node.mjs'
+import {E, Raw, cls, e, countChildren, mapChildren} from '../node.mjs'
 import {eq, throws} from './test-utils.mjs'
 
 void function testBasicMarkup() {
@@ -130,11 +130,43 @@ void function testChildFlattening() {
   )
 }()
 
+void function testPropsChildren() {
+  eq(new Raw(`<div>one</div>`), E('div', {children: ['one']}))
+
+  eq(
+    new Raw(`<outer><inner>one</inner></outer>`),
+    E('outer', {children: [E('inner', {}, 'one')]}),
+  )
+
+  void function testPropsChildrenComeBeforeOtherNodes() {
+    eq(
+      new Raw(`<div>onetwo</div>`),
+      E('div', {children: ['one']}, 'two'),
+    )
+  }()
+}()
+
 void function testTextEscaping() {
   void function testEscapePrimitiveString() {
     eq(
       new Raw(`<div>&lt;one&gt;&amp;"&lt;/one&gt;</div>`),
       E('div', {}, `<one>&"</one>`),
+    )
+
+    eq(
+      new Raw(`<outer><inner>&lt;one&gt;&amp;"&lt;/one&gt;</inner></outer>`),
+      E('outer', {}, E('inner', {}, `<one>&"</one>`)),
+    )
+
+    // This horribly breaks inline scripts... which might be a decent default.
+    // Users must escape them in an appropriate language-specific way and then
+    // use `Raw`. We might be unable to provide a generic solution because
+    // script languages/syntaxes are technically an open set. Even just for JS
+    // and JSON, the correct way to escape </script> depends on the syntactic
+    // context.
+    eq(
+      new Raw(`<script>console.log('&lt;/script&gt;')</script>`),
+      E('script', {}, `console.log('</script>')`),
     )
   }()
 
@@ -148,11 +180,6 @@ void function testTextEscaping() {
       E('outer', {}, new Raw(`<<&>>`)),
     )
   }()
-
-  eq(
-    new Raw(`<outer><inner>&lt;one&gt;&amp;"&lt;/one&gt;</inner></outer>`),
-    E('outer', {}, E('inner', {}, `<one>&"</one>`)),
-  )
 }()
 
 void function testAttrEscaping() {
@@ -265,6 +292,31 @@ void function testBoundE() {
   eq(new Raw(`<div class="one">some text</div>`), e('div', {class: 'one'}, 'some text')())
   eq(new Raw(`<div class="one">some text</div>`), e('div', {class: 'one'})('some text'))
   eq(new Raw(`<div class="one">some text</div>`), e('div')({class: 'one'}, 'some text'))
+}()
+
+void function testCountChildren() {
+  eq(0, countChildren())
+  eq(0, countChildren(undefined))
+  eq(0, countChildren(null))
+  eq(1, countChildren(10))
+  eq(1, countChildren([10]))
+  eq(1, countChildren([[10]]))
+  eq(3, countChildren([[10], null, 20, undefined, [[30]]]))
+}()
+
+void function testMapChildren() {
+  eq([],                 mapChildren(undefined, id))
+  eq([],                 mapChildren(null, id))
+  eq([],                 mapChildren([undefined], id))
+  eq([],                 mapChildren([null], id))
+  eq([10, 20],           mapChildren([null, [[[10], 20]], undefined], id))
+  eq([[10, 0], [20, 1]], mapChildren([null, [[[10], 20]], undefined], args))
+
+  throws(mapChildren)
+  throws(mapChildren, [])
+
+  function id(val) {return val}
+  function args(...args) {return args}
 }()
 
 console.log('[test] ok!')
