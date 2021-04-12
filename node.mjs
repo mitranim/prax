@@ -11,22 +11,12 @@ export function E(name, props, ...children) {
   return new Raw(encodeHtml(name, props, children))
 }
 
-export function X(name, props, ...children) {
-  return new Raw(encodeXml(name, props, children))
-}
-
 export function encodeHtml(name, props, children) {
-  return encodeXml(name, props, children, voidElems, boolAttrs)
-}
-
-export function encodeXml(name, props, children, vElems, bAttrs) {
   f.valid(name, isValidElemName)
-  f.validOpt(vElems, isSet)
-  f.validOpt(bAttrs, isSet)
 
-  const open = `<${name}${encodeProps(props, bAttrs)}>`
+  const open = `<${name}${encodeProps(props)}>`
 
-  if (vElems && vElems.has(name)) {
+  if (voidElems.has(name)) {
     if (!f.isNil(children) && children.length) {
       throw Error(`got unexpected children for void element "${name}"`)
     }
@@ -74,34 +64,34 @@ function encodeChild(node) {
   return f.toStr(primValueOf(node))
 }
 
-function encodeProps(props, bAttrs) {
-  return foldDict(props, '', appendEncodeProp, bAttrs)
+function encodeProps(props) {
+  return foldDict(props, '', appendEncodeProp)
 }
 
-function appendEncodeProp(acc, val, key, bAttrs) {
-  return acc + encodeProp(key, val, bAttrs)
+function appendEncodeProp(acc, val, key) {
+  return acc + encodeProp(key, val)
 }
 
 // Should be kept in sync with `prax.mjs` -> `setProp`.
 // Expected to accumulate more special cases over time.
 // TODO: skip this for XML rendering.
-function encodeProp(key, val, bAttrs) {
+function encodeProp(key, val) {
   if (key === 'children')     return ''
-  if (key === 'attributes')   return encodeAttrs(val, bAttrs)
-  if (key === 'className')    return attr('class', val, bAttrs)
-  if (key === 'style')        return attr(key, encodeStyle(val), bAttrs)
+  if (key === 'attributes')   return encodeAttrs(val)
+  if (key === 'className')    return attr('class', val)
+  if (key === 'style')        return attr(key, encodeStyle(val))
   if (key === 'dataset')      return encodeDataset(val)
-  if (key === 'httpEquiv')    return attr('http-equiv', val, bAttrs)
-  if (/^aria[A-Z]/.test(key)) return attr(toAria(key), val, bAttrs)
-  return attr(key, val, bAttrs)
+  if (key === 'httpEquiv')    return attr('http-equiv', val)
+  if (/^aria[A-Z]/.test(key)) return attr(toAria(key), val)
+  return attr(key, val)
 }
 
-function encodeAttrs(attrs, bAttrs) {
-  return foldDict(attrs, '', appendEncodeAttr, bAttrs)
+function encodeAttrs(attrs) {
+  return foldDict(attrs, '', appendEncodeAttr)
 }
 
-function appendEncodeAttr(acc, val, key, bAttrs) {
-  return acc + attr(key, val, bAttrs)
+function appendEncodeAttr(acc, val, key) {
+  return acc + attr(key, val)
 }
 
 // Should be kept in sync with `prax.mjs` -> `setStyle`.
@@ -146,11 +136,11 @@ ostensibly HTML-specific tools, like the `tidy` pretty-printer, balk and barf
 at such ostentatious notions! In addition, browsers tend to serialize the
 `=""`. We follow their lead for consistency.
 */
-function attr(key, val, bAttrs) {
+function attr(key, val) {
   f.valid(key, isValidAttrName)
   if (f.isNil(val)) return ``
 
-  if (bAttrs && bAttrs.has(key)) {
+  if (boolAttrs.has(key)) {
     validAt(key, val, f.isBool)
     return !val ? `` : ` ${key}=""`
   }
@@ -216,8 +206,6 @@ function primValueOf(val) {
   if (f.isPrim(val)) return val
   throw Error(`can't convert ${f.show(val)} to primitive`)
 }
-
-function isSet(val) {return f.isObj(val) && f.isFun(val.has)}
 
 function foldArr(val, acc, fun, ...args) {
   if (!f.isNil(val)) {
