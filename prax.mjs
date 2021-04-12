@@ -4,16 +4,16 @@ import * as f from 'fpx'
 
 export const e = E.bind.bind(E, undefined)
 
-export function E(name, props, ...nodes) {
+export function E(name, props, ...children) {
   const node = document.createElement(f.only(name, f.isStr), props)
-  return reset(node, props, ...nodes)
+  return reset(node, props, ...children)
 }
 
-export function reset(node, props, ...nodes) {
+export function reset(node, props, ...children) {
   resetProps(node, props)
   removeNodes(node)
   if (props) appendChild(node, props.children)
-  appendNodes(node, nodes)
+  appendChildren(node, children)
   return node
 }
 
@@ -22,20 +22,14 @@ export function resetProps(node, props) {
   f.eachVal(f.dict(props), setProp, node)
 }
 
-export function resetNodes(node, nodes) {
+export function resetChildren(node, children) {
   removeNodes(node)
-  appendNodes(node, nodes)
+  appendChildren(node, children)
 }
 
-export function removeNodes(node) {
-  f.valid(node, isNode)
-  while (node.firstChild) node.firstChild.remove()
-  return node
-}
-
-export function appendNodes(node, nodes) {
-  if (f.isNil(nodes)) return
-  for (const val of f.list(nodes)) appendChild(node, val)
+export function appendChildren(node, children) {
+  if (f.isNil(children)) return
+  for (const val of f.list(children)) appendChild(node, val)
 }
 
 export function cls(...vals) {
@@ -73,11 +67,17 @@ export class Raw extends String {}
 
 /* Internal Utils */
 
+function removeNodes(node) {
+  f.valid(node, isNode)
+  while (node.firstChild) node.firstChild.remove()
+  return node
+}
+
 function appendChild(node, val) {
   if      (f.isNil(val))  {}
   else if (val === '')    {}
   else if (isNode(val))   node.appendChild(val)
-  else if (f.isList(val)) appendNodes(node, val)
+  else if (f.isList(val)) appendChildren(node, val)
   else if (f.isPrim(val)) node.appendChild(new Text(val))
   else                    appendChild(node, primValueOf(val))
 }
@@ -162,13 +162,8 @@ function addClass(acc, val) {
   return `${acc} ${val}`
 }
 
-function isNode(val) {
-  return f.isInst(val, Node)
-}
-
-function isElement(val) {
-  return f.isInst(val, Element)
-}
+function isNode(val) {return f.isInst(val, Node)}
+function isElement(val) {return f.isInst(val, Element)}
 
 function validAt(key, val, fun) {
   if (!fun(val)) {

@@ -138,7 +138,7 @@ void function testPropsChildren() {
     E('outer', {children: [E('inner', {}, 'one')]}),
   )
 
-  void function testPropsChildrenComeBeforeOtherNodes() {
+  void function testPropsChildrenComeBeforeOtherChildren() {
     eq(
       new Raw(`<div>onetwo</div>`),
       E('div', {children: ['one']}, 'two'),

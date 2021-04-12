@@ -123,7 +123,7 @@ try {
       E('outer', {children: [E('inner', {}, 'one')]}),
     )
 
-    void function testPropsChildrenComeBeforeOtherNodes() {
+    void function testPropsChildrenComeBeforeOtherChildren() {
       asHtml(
         `<div>onetwo</div>`,
         E('div', {children: ['one']}, 'two'),

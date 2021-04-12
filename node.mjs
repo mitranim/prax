@@ -7,19 +7,19 @@ export {Raw, boolAttrs, cls, countChildren, mapChildren} from './prax.mjs'
 
 export const e = E.bind.bind(E, undefined)
 
-export function E(name, props, ...nodes) {
-  return new Raw(encodeHtml(name, props, nodes))
+export function E(name, props, ...children) {
+  return new Raw(encodeHtml(name, props, children))
 }
 
-export function X(name, props, ...nodes) {
-  return new Raw(encodeXml(name, props, nodes))
+export function X(name, props, ...children) {
+  return new Raw(encodeXml(name, props, children))
 }
 
-export function encodeHtml(name, props, nodes) {
-  return encodeXml(name, props, nodes, voidElems, boolAttrs)
+export function encodeHtml(name, props, children) {
+  return encodeXml(name, props, children, voidElems, boolAttrs)
 }
 
-export function encodeXml(name, props, nodes, vElems, bAttrs) {
+export function encodeXml(name, props, children, vElems, bAttrs) {
   f.valid(name, isValidElemName)
   f.validOpt(vElems, isSet)
   f.validOpt(bAttrs, isSet)
@@ -27,13 +27,13 @@ export function encodeXml(name, props, nodes, vElems, bAttrs) {
   const open = `<${name}${encodeProps(props, bAttrs)}>`
 
   if (vElems && vElems.has(name)) {
-    if (!f.isNil(nodes) && nodes.length) {
-      throw Error(`got unexpected child nodes for void element "${name}"`)
+    if (!f.isNil(children) && children.length) {
+      throw Error(`got unexpected children for void element "${name}"`)
     }
     return open
   }
 
-  const inner = `${props ? encodeNode(props.children) : ''}${encodeNodes(nodes)}`
+  const inner = `${props ? encodeChild(props.children) : ''}${encodeChildren(children)}`
   return `${open}${inner}</${name}>`
 }
 
@@ -60,16 +60,16 @@ export const voidElems = new Set([
 
 /* Internal Utils */
 
-function encodeNodes(nodes) {
-  return foldArr(nodes, '', appendEncodeNode)
+function encodeChildren(children) {
+  return foldArr(children, '', appendEncodeChild)
 }
 
-function appendEncodeNode(acc, node) {
-  return acc + encodeNode(node)
+function appendEncodeChild(acc, node) {
+  return acc + encodeChild(node)
 }
 
-function encodeNode(node) {
-  if (f.isArr(node)) return encodeNodes(node)
+function encodeChild(node) {
+  if (f.isArr(node)) return encodeChildren(node)
   if (f.isStr(node)) return escapeText(node)
   return f.toStr(primValueOf(node))
 }
