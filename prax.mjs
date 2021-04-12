@@ -5,18 +5,14 @@ import * as f from 'fpx'
 export const e = E.bind.bind(E, undefined)
 
 export function E(name, props, ...nodes) {
-  const node = document.createElement(f.str(name))
+  const node = document.createElement(f.only(name, f.isStr), props)
   return reset(node, props, ...nodes)
-}
-
-export function P(props, ...nodes) {
-  return {...f.opt(props, f.isDict), children: nodes}
 }
 
 export function reset(node, props, ...nodes) {
   resetProps(node, props)
   removeNodes(node)
-  if (props) appendNodes(node, props.children)
+  if (props) appendChild(node, props.children)
   appendNodes(node, nodes)
   return node
 }
@@ -38,10 +34,8 @@ export function removeNodes(node) {
 }
 
 export function appendNodes(node, nodes) {
-  f.valid(node, isNode)
   if (f.isNil(nodes)) return
-  f.valid(nodes, f.isList)
-  for (const val of nodes) appendChild(node, val)
+  for (const val of f.list(nodes)) appendChild(node, val)
 }
 
 export function cls(...vals) {
@@ -91,7 +85,7 @@ function appendChild(node, val) {
 // Should be kept in sync with `node.mjs` -> `encodeProp`.
 // Expected to accumulate more special cases over time.
 function setProp(val, key, node) {
-  if      (key === 'children')   f.validOpt(val, f.isList)
+  if      (key === 'children')   {}
   else if (key === 'attributes') setAttrs(node, val)
   else if (key === 'class')      setClass(node, val)
   else if (key === 'className')  setClass(node, val)

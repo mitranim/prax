@@ -40,8 +40,6 @@ try {
         throws(E, 'div', {dataset: 'str'})
         throws(E, 'div', {dataset: []})
         throws(E, 'div', {dataset: new class {}()})
-        throws(E, 'div', {children: 'str'})
-        throws(E, 'div', {children: 10})
         throws(E, 'div', {children: {}})
       }()
     }()
@@ -116,6 +114,8 @@ try {
   }()
 
   void function testPropsChildren() {
+    asHtml(`<div>one</div>`, E('div', {children: 'one'}))
+
     asHtml(`<div>one</div>`, E('div', {children: ['one']}))
 
     asHtml(

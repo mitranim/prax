@@ -36,8 +36,6 @@ void function testBasicMarkup() {
       throws(E, 'div', {dataset: 'str'})
       throws(E, 'div', {dataset: []})
       throws(E, 'div', {dataset: new class {}()})
-      throws(E, 'div', {children: 'str'})
-      throws(E, 'div', {children: 10})
       throws(E, 'div', {children: {}})
 
       // Node-only.
@@ -131,7 +129,9 @@ void function testChildFlattening() {
 }()
 
 void function testPropsChildren() {
-  eq(new Raw(`<div>one</div>`), E('div', {children: ['one']}))
+  eq(new Raw(`<div>one</div>`), E('div', {children: 'one'}))
+
+  eq(new Raw(`<div>onetwo</div>`), E('div', {children: ['one', 'two']}))
 
   eq(
     new Raw(`<outer><inner>one</inner></outer>`),

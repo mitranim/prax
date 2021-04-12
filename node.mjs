@@ -15,16 +15,12 @@ export function X(name, props, ...nodes) {
   return new Raw(encodeXml(name, props, nodes))
 }
 
-export function P(props, ...nodes) {
-  return {...f.opt(props, f.isDict), children: nodes}
-}
-
 export function encodeHtml(name, props, nodes) {
   return encodeXml(name, props, nodes, voidElems, boolAttrs)
 }
 
 export function encodeXml(name, props, nodes, vElems, bAttrs) {
-  f.valid(name, isValidElementName)
+  f.valid(name, isValidElemName)
   f.validOpt(vElems, isSet)
   f.validOpt(bAttrs, isSet)
 
@@ -37,7 +33,7 @@ export function encodeXml(name, props, nodes, vElems, bAttrs) {
     return open
   }
 
-  const inner = `${props ? encodeNodes(props.children) : ''}${encodeNodes(nodes)}`
+  const inner = `${props ? encodeNode(props.children) : ''}${encodeNodes(nodes)}`
   return `${open}${inner}</${name}>`
 }
 
@@ -90,7 +86,7 @@ function appendEncodeProp(acc, val, key, bAttrs) {
 // Expected to accumulate more special cases over time.
 // TODO: skip this for XML rendering.
 function encodeProp(key, val, bAttrs) {
-  if (key === 'children')     return (f.validOpt(val, f.isList), '')
+  if (key === 'children')     return ''
   if (key === 'attributes')   return encodeAttrs(val, bAttrs)
   if (key === 'className')    return attr('class', val, bAttrs)
   if (key === 'style')        return attr(key, encodeStyle(val), bAttrs)
@@ -151,6 +147,7 @@ at such ostentatious notions! In addition, browsers tend to serialize the
 `=""`. We follow their lead for consistency.
 */
 function attr(key, val, bAttrs) {
+  f.valid(key, isValidAttrName)
   if (f.isNil(val)) return ``
 
   if (bAttrs && bAttrs.has(key)) {
@@ -201,9 +198,10 @@ function escapeChar(char) {
 //
 // Also see for attrs, unused:
 // https://www.w3.org/TR/html52/syntax.html#elements-attributes
-function isValidElementName(val) {
-  return f.isStr(val) && /^[^\s<>"]+$/.test(val)
-}
+function isValidElemName(val) {return f.isStr(val) && /^[^\s<>"]+$/.test(val)}
+
+// Extremely permissive. Intended only to prevent weird gotchas.
+function isValidAttrName(val) {return /\S+/.test(val)}
 
 function validAt(key, val, fun) {
   if (!fun(val)) {
@@ -211,9 +209,7 @@ function validAt(key, val, fun) {
   }
 }
 
-function maybeStr(val) {
-  return f.isNil(val) ? undefined : f.str(val)
-}
+function maybeStr(val) {return f.isNil(val) ? undefined : f.str(val)}
 
 function primValueOf(val) {
   if (f.isObj(val) && 'valueOf' in val) val = val.valueOf()
@@ -221,9 +217,7 @@ function primValueOf(val) {
   throw Error(`can't convert ${f.show(val)} to primitive`)
 }
 
-function isSet(val) {
-  return f.isObj(val) && f.isFun(val.has)
-}
+function isSet(val) {return f.isObj(val) && f.isFun(val.has)}
 
 function foldArr(val, acc, fun, ...args) {
   if (!f.isNil(val)) {
