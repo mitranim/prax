@@ -1,7 +1,7 @@
 // import * as f from 'fpx'
 import * as x from '../prax.mjs'
-import {E, F, cls, e} from '../prax.mjs'
-import {is, eq, throws} from './test-utils.mjs'
+import {E, F} from '../prax.mjs'
+import {is, eq} from './test-utils.mjs'
 import {testCommon} from './test-common.mjs'
 
 Error.stackTraceLimit = Infinity

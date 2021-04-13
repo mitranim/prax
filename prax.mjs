@@ -108,7 +108,31 @@ function setProp(val, key, node) {
   if (key === 'style')      return void setStyle(node, val)
   if (key === 'dataset')    return void setDataset(node, val)
   if (boolAttrs.has(key))   return void setAttr(val, key, node)
-  if (key in node)          return void (node[key] = normNil(val))
+  setUnknownProp(node, key, val)
+}
+
+// Careful balancing act: minimizing gotchas AND special-case knowledge. Likely
+// to get revised many, many times.
+function setUnknownProp(node, key, val) {
+  if (key in node) {
+    const prev = node[key]
+    if (f.isNil(prev) || f.isFun(prev)) {
+      node[key] = normNil(val)
+      return
+    }
+
+    if (f.isStr(prev)) {
+      node[key] = toStr(val)
+      return
+    }
+
+    if (f.isPrim(prev)) {
+      if (!f.isPrim(val)) throw Error(`can't set non-primitive "${key}": ${f.show(val)} on ${node}`)
+      node[key] = val
+      return
+    }
+  }
+
   setAttr(val, key, node)
 }
 
@@ -135,8 +159,9 @@ function setAttr(val, key, node) {
   node.setAttribute(key, toStr(val))
 }
 
+// Attr over `.className` for SVG compatibility. Might revise.
 function setClass(node, val) {
-  node.className = toStr(val)
+  node.setAttribute('class', toStr(val))
 }
 
 // Should be kept in sync with `node.mjs` -> `encodeStyle`.
@@ -192,11 +217,11 @@ function toStr(val) {
   if (f.isNil(val)) return ''
   if (f.isStr(val)) return val
   if (f.isPrim(val)) return val.toString()
-  f.valid(val, isStringable)
+  f.valid(val, isStringableObj)
   return toStr(val.toString())
 }
 
-function isStringable(val) {
+function isStringableObj(val) {
   const {toString} = val
   return (
     f.isObj(val) &&
