@@ -23,14 +23,15 @@ export function throws(fun, ...args) {
     throw Error(`Expected a function, got ${fun}`)
   }
 
+  let val
   try {
-    fun(...args)
+    val = fun(...args)
   }
   catch (_err) {
     return
   }
 
-  throw Error(`Expected function "${fun.name || fun}" to throw`)
+  throw Error(`Expected function "${fun.name || fun}" to throw; got ${f.show(val)}`)
 }
 
 function equiv(one, two) {

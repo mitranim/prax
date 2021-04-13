@@ -2,51 +2,30 @@ import * as f from 'fpx'
 
 /* Public API */
 
-export const e = E.bind.bind(E, undefined)
-
 export function E(name, props, ...children) {
-  const node = document.createElement(f.only(name, f.isStr), props)
-  return reset(node, props, ...children)
+  elemValid(name, children)
+  const node = document.createElement(name, props)
+  return initNode(node, props, children)
+}
+
+export function S(name, props, ...children) {
+  f.valid(name, f.isStr)
+  const node = document.createElementNS(`http://www.w3.org/2000/svg`, name, props)
+  return initNode(node, props, children)
+}
+
+export function F(...children) {
+  return appendChildren(new DocumentFragment(), children)
 }
 
 export function reset(node, props, ...children) {
+  f.isInst(node, Element)
   resetProps(node, props)
-  removeNodes(node)
-  if (props) appendChild(node, props.children)
-  appendChildren(node, children)
-  return node
-}
-
-export function resetProps(node, props) {
-  f.valid(node, isElement)
-  f.eachVal(f.dict(props), setProp, node)
-}
-
-export function resetChildren(node, children) {
-  removeNodes(node)
-  appendChildren(node, children)
-}
-
-export function appendChildren(node, children) {
-  if (f.isNil(children)) return
-  for (const val of f.list(children)) appendChild(node, val)
+  return resetChildren(node, children)
 }
 
 export function cls(...vals) {
   return f.fold(vals, '', addClass)
-}
-
-export function countChildren(val) {
-  if (f.isNil(val)) return 0
-  if (f.isList(val)) return f.sumBy(val, countChildren)
-  return 1
-}
-
-export function mapChildren(val, fun, ...args) {
-  f.valid(fun, f.isFun)
-  const acc = []
-  mapChildrenIter(0, val, 0, acc, fun, ...args)
-  return acc
 }
 
 // The specification postulates the concept, but where's the standard list?
@@ -63,37 +42,74 @@ export const boolAttrs = new Set([
   'truespeed',
 ])
 
+// https://www.w3.org/TR/html52/
+// https://www.w3.org/TR/html52/syntax.html#writing-html-documents-elements
+export const voidElems = new Set([
+  'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta',
+  'param', 'source', 'track', 'wbr',
+])
+
 export class Raw extends String {}
+
+export const e = E.bind.bind(E, undefined)
 
 /* Internal Utils */
 
+function initNode(node, props, children) {
+  resetProps(node, props)
+  return appendChildren(node, children)
+}
+
+function resetProps(node, props) {
+  f.eachVal(f.dict(props), setProp, node)
+}
+
+// See `impl.md`.
+function resetChildren(node, children) {
+  const frag = F(...children)
+  removeNodes(node)
+  node.append(frag)
+  return node
+}
+
 function removeNodes(node) {
-  f.valid(node, isNode)
+  f.isInst(node, Node)
   while (node.firstChild) node.firstChild.remove()
+}
+
+function appendChildren(node, children) {
+  if (children.length) for (const val of children) appendChild(node, val)
   return node
 }
 
 function appendChild(node, val) {
-  if      (f.isNil(val))  {}
-  else if (val === '')    {}
-  else if (isNode(val))   node.appendChild(val)
-  else if (f.isList(val)) appendChildren(node, val)
-  else if (f.isPrim(val)) node.appendChild(new Text(val))
-  else                    appendChild(node, primValueOf(val))
+  if (f.isNil(val))          return
+  if (val === '')            return
+  if (f.isInst(val, Node))   return void node.append(val)
+  if (f.isInst(val, String)) return void appendRawChild(node, val)
+  if (f.isList(val))         return void appendChildren(node, val)
+  node.append(toStr(val))
+}
+
+// Inefficient. There are better solutions, but let's benchmark first.
+function appendRawChild(node, val) {
+  const clone = node.cloneNode()
+  clone.innerHTML = val
+  appendChildren(node, clone.childNodes)
 }
 
 // Should be kept in sync with `node.mjs` -> `encodeProp`.
 // Expected to accumulate more special cases over time.
 function setProp(val, key, node) {
-  if      (key === 'children')   {}
-  else if (key === 'attributes') setAttrs(node, val)
-  else if (key === 'class')      setClass(node, val)
-  else if (key === 'className')  setClass(node, val)
-  else if (key === 'style')      setStyle(node, val)
-  else if (key === 'dataset')    setDataset(node, val)
-  else if (boolAttrs.has(key))   setAttr(val, key, node)
-  else if (!isPropKey(key))      setAttr(val, key, node)
-  else                           node[key] = val
+  if (key === 'children')   throw Error(`use {R} from 'prax/rcompat.mjs' for children-in-props`)
+  if (key === 'attributes') return void setAttrs(node, val)
+  if (key === 'class')      return void setClass(node, normStr(val))
+  if (key === 'className')  return void setClass(node, normStr(val))
+  if (key === 'style')      return void setStyle(node, val)
+  if (key === 'dataset')    return void setDataset(node, val)
+  if (boolAttrs.has(key))   return void setAttr(val, key, node)
+  if (key in node)          return void (node[key] = normNil(val))
+  setAttr(val, key, node)
 }
 
 function setAttrs(node, attrs) {
@@ -116,26 +132,23 @@ function setAttr(val, key, node) {
     return
   }
 
-  node.setAttribute(key, f.str(val))
+  node.setAttribute(key, toStr(val))
 }
 
 function setClass(node, val) {
-  node.className = maybeStr(val)
+  node.className = toStr(val)
 }
 
 // Should be kept in sync with `node.mjs` -> `encodeStyle`.
 function setStyle(node, val) {
-  if (f.isDict(val)) f.eachVal(val, setStyleProp, node.style)
-  else setAttr(val, 'style', node)
+  if (f.isNil(val) || f.isStr(val)) return setAttr(val, 'style', node)
+  if (f.isDict(val)) return f.eachVal(val, setStyleProp, node.style)
+  throw Error(`style must be string or dict, got ${f.show(val)}`)
 }
 
 function setStyleProp(val, key, style) {
-  if (f.isNil(val)) {
-    // Must be `null`, not `undefined`.
-    style[key] = null
-    return
-  }
-
+  val = normNil(val)
+  if (f.isNil(val)) return void (style[key] = val)
   validAt(key, val, f.isStr)
   style[key] = val
 }
@@ -145,13 +158,8 @@ function setDataset(node, val) {
 }
 
 function setDatasetProp(val, key, dataset) {
-  if (f.isNil(val)) {
-    delete dataset[key]
-    return
-  }
-
-  validAt(key, val, f.isStr)
-  dataset[key] = val
+  if (f.isNil(val)) delete dataset[key]
+  else dataset[key] = toStr(val)
 }
 
 function addClass(acc, val) {
@@ -162,31 +170,38 @@ function addClass(acc, val) {
   return `${acc} ${val}`
 }
 
-function isNode(val) {return f.isInst(val, Node)}
-function isElement(val) {return f.isInst(val, Element)}
-
 function validAt(key, val, fun) {
   if (!fun(val)) {
     throw Error(`invalid property "${key}": expected ${f.show(val)} to satisfy ${f.show(fun)}`)
   }
 }
 
-// Intentional divergence from the Node version: DOM APIs tend to have special
-// support for `null` but not `undefined`.
-function maybeStr(val) {
-  return f.isNil(val) ? null : f.str(val)
+// See `impl.md` on void elems.
+function elemValid(name, children) {
+  f.valid(name, f.isStr)
+  if (children.length && voidElems.has(name)) {
+    throw Error(`got unexpected children for void element "${name}"`)
+  }
 }
 
-function primValueOf(val) {
-  if (f.isObj(val) && 'valueOf' in val) return f.prim(val.valueOf())
-  throw Error(`can't convert ${f.show(val)} to primitive`)
+// Many DOM APIs consider only `null` to be nil.
+function normNil(val) {return val === undefined ? null : val}
+function normStr(val) {return f.isNil(val) ? null : f.str(val)}
+
+function toStr(val) {
+  if (f.isNil(val)) return ''
+  if (f.isStr(val)) return val
+  if (f.isPrim(val)) return val.toString()
+  f.valid(val, isStringable)
+  return toStr(val.toString())
 }
 
-function isPropKey(key) {return /^[a-z][\w]*$/.test(key)}
-
-function mapChildrenIter(i, val, _i, acc, fun, ...args) {
-  if (f.isNil(val)) return i
-  if (f.isList(val)) return f.fold(val, i, mapChildrenIter, acc, fun, ...args)
-  acc.push(fun(val, i, ...args))
-  return i + 1
+function isStringable(val) {
+  const {toString} = val
+  return (
+    f.isObj(val) &&
+    f.isFun(toString) &&
+    toString !== Object.prototype.toString &&
+    toString !== Array.prototype.toString
+  )
 }

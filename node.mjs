@@ -1,30 +1,18 @@
 import * as f from 'fpx'
-import {Raw, boolAttrs} from './prax.mjs'
+import {Raw, boolAttrs, voidElems} from './prax.mjs'
 
 /* Public API */
 
-export {Raw, boolAttrs, cls, countChildren, mapChildren} from './prax.mjs'
-
-export const e = E.bind.bind(E, undefined)
+export {Raw, boolAttrs, voidElems, cls} from './prax.mjs'
 
 export function E(name, props, ...children) {
   return new Raw(encodeHtml(name, props, children))
 }
 
-export function encodeHtml(name, props, children) {
-  f.valid(name, isValidElemName)
+export const S = E
 
-  const open = `<${name}${encodeProps(props)}>`
-
-  if (voidElems.has(name)) {
-    if (!f.isNil(children) && children.length) {
-      throw Error(`got unexpected children for void element "${name}"`)
-    }
-    return open
-  }
-
-  const inner = `${props ? encodeChild(props.children) : ''}${encodeChildren(children)}`
-  return `${open}${inner}</${name}>`
+export function F(...children) {
+  return new Raw(encodeChildren(children))
 }
 
 // https://www.w3.org/TR/html52/syntax.html#escaping-a-string
@@ -41,77 +29,77 @@ export function escapeAttr(val) {
   return reg.test(val) ? val.replace(reg, escapeChar) : val
 }
 
-// https://www.w3.org/TR/html52/
-// https://www.w3.org/TR/html52/syntax.html#writing-html-documents-elements
-export const voidElems = new Set([
-  'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta',
-  'param', 'source', 'track', 'wbr',
-])
+export const e = E.bind.bind(E, undefined)
 
 /* Internal Utils */
 
-function encodeChildren(children) {
-  return foldArr(children, '', appendEncodeChild)
+function encodeHtml(name, props, children) {
+  f.valid(name, isValidElemName)
+
+  const open = `<${name}${encodeProps(props)}>`
+
+  if (voidElems.has(name)) {
+    if (children.length) {
+      throw Error(`got unexpected children for void element "${name}"`)
+    }
+    return open
+  }
+
+  const innerHtml = toStr(props && props.innerHTML)
+  const inner = encodeChildren(children)
+  return `${open}${innerHtml}${inner}</${name}>`
 }
 
-function appendEncodeChild(acc, node) {
-  return acc + encodeChild(node)
-}
+function encodeChildren(val) {return foldArr(val, '', appendEncodeChild)}
+function appendEncodeChild(acc, node) {return acc + encodeChild(node)}
 
 function encodeChild(node) {
   if (f.isArr(node)) return encodeChildren(node)
-  if (f.isStr(node)) return escapeText(node)
-  return f.toStr(primValueOf(node))
+  if (f.isInst(node, String)) return node
+  return escapeText(toStr(node))
 }
 
-function encodeProps(props) {
-  return foldDict(props, '', appendEncodeProp)
-}
-
-function appendEncodeProp(acc, val, key) {
-  return acc + encodeProp(key, val)
-}
+function encodeProps(props) {return foldDict(props, '', appendEncodeProp)}
+function appendEncodeProp(acc, val, key) {return acc + encodeProp(key, val)}
 
 // Should be kept in sync with `prax.mjs` -> `setProp`.
 // Expected to accumulate more special cases over time.
 // TODO: skip this for XML rendering.
 function encodeProp(key, val) {
-  if (key === 'children')     return ''
+  if (key === 'children')     throw Error(`use {R} from 'prax/rcompat.mjs' for children-in-props`)
   if (key === 'attributes')   return encodeAttrs(val)
-  if (key === 'className')    return attr('class', val)
-  if (key === 'style')        return attr(key, encodeStyle(val))
+  if (key === 'class')        return attr('class', f.opt(val, f.isStr))
+  if (key === 'className')    return attr('class', f.opt(val, f.isStr))
+  if (key === 'style')        return encodeStyles(val)
   if (key === 'dataset')      return encodeDataset(val)
   if (key === 'httpEquiv')    return attr('http-equiv', val)
   if (/^aria[A-Z]/.test(key)) return attr(toAria(key), val)
+  if (key === 'innerHTML')    return ''
   return attr(key, val)
 }
 
-function encodeAttrs(attrs) {
-  return foldDict(attrs, '', appendEncodeAttr)
-}
-
-function appendEncodeAttr(acc, val, key) {
-  return acc + attr(key, val)
-}
+function encodeAttrs(attrs) {return foldDict(attrs, '', appendEncodeAttr)}
+function appendEncodeAttr(acc, val, key) {return acc + attr(key, val)}
 
 // Should be kept in sync with `prax.mjs` -> `setStyle`.
-function encodeStyle(val) {
-  if (f.isDict(val)) return foldDict(val, '', appendEncodeStyle)
-  return maybeStr(val)
+function encodeStyles(val) {
+  if (f.isNil(val)) return ''
+  if (f.isStr(val)) return val && attr('style', val)
+  if (f.isDict(val)) return encodeStyles(foldDict(val, '', appendEncodeStyle))
+  throw Error(`style must be string or dict, got ${f.show(val)}`)
 }
 
 function appendEncodeStyle(acc, val, key) {
   val = encodeStylePair(key, val)
-  return acc && val ? `${acc}; ${val}` : acc || val
+  return acc && val ? `${acc} ${val}` : acc || val
 }
 
-// Semi-placeholder.
 // Might need smarter conversion from JS to CSS properties.
 // Probably want to detect and reject unquoted `:;` in values.
 function encodeStylePair(key, val) {
   if (f.isNil(val)) return ''
   validAt(key, val, f.isStr)
-  return `${camelToKebab(key)}: ${val}`
+  return `${camelToKebab(key)}: ${toStr(val)};`
 }
 
 function encodeDataset(dataset) {
@@ -119,7 +107,8 @@ function encodeDataset(dataset) {
 }
 
 function appendEncodeDataAttr(acc, val, key) {
-  return acc + attr(`data-${camelToKebab(key)}`, val)
+  if (f.isNil(val)) return acc
+  return acc + attr(`data-${camelToKebab(key)}`, toStr(val))
 }
 
 /*
@@ -145,8 +134,7 @@ function attr(key, val) {
     return !val ? `` : ` ${key}=""`
   }
 
-  validAt(key, val, f.isStr)
-  return ` ${key}="${val && escapeAttr(val)}"`
+  return ` ${key}="${escapeAttr(toStr(val))}"`
 }
 
 // ARIA attributes appear to be case-insensitive, with only the `aria-` prefix
@@ -199,12 +187,22 @@ function validAt(key, val, fun) {
   }
 }
 
-function maybeStr(val) {return f.isNil(val) ? undefined : f.str(val)}
+function toStr(val) {
+  if (f.isNil(val)) return ''
+  if (f.isStr(val)) return val
+  if (f.isPrim(val)) return val.toString()
+  f.valid(val, isStringable)
+  return toStr(val.toString())
+}
 
-function primValueOf(val) {
-  if (f.isObj(val) && 'valueOf' in val) val = val.valueOf()
-  if (f.isPrim(val)) return val
-  throw Error(`can't convert ${f.show(val)} to primitive`)
+function isStringable(val) {
+  const {toString} = val
+  return (
+    f.isObj(val) &&
+    f.isFun(toString) &&
+    toString !== Object.prototype.toString &&
+    toString !== Array.prototype.toString
+  )
 }
 
 function foldArr(val, acc, fun, ...args) {
