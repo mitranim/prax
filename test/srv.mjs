@@ -5,7 +5,7 @@ const srv = new ht.Server()
 const aio = new afr.Aio()
 
 aio.watch('test')
-aio.watch('prax.mjs')
+aio.watch('.', /[.]mjs$/)
 aio.serve('test', /^test[/]test.html$/)
 aio.serve('.')
 

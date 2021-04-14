@@ -36,6 +36,7 @@ export function mapChildren(val, fun, ...args) {
 }
 
 function propsToReact(props, children) {
+  props.key = undefined
   props.children = comb(trim(props.children), trim(children))
 }
 
