@@ -1,5 +1,15 @@
 # Implementation Notes
 
+## E, S, F
+
+The names of these functions are abbreviated because they're typed and read _A LOT_.
+
+"E" stands for "element" or "HTML element". In Node, it performs HTML serialization, with HTML-specific special cases. In browsers, it creates regular DOM nodes (without an explicit namespace).
+
+"S" stands for "SVG". In Node, it should perform XML serialization without HTML special cases (but currently just calls E for simplicity; this should be fixed). In browsers, it creates DOM nodes that belong to the SVG namespace.
+
+"F" stands for "fragment". In Node, it encodes multiple children without any wrappers or delimiters. In browsers, it creates a `DocumentFragment`, which serves the same purpose: a single node that stands for multiple nodes.
+
 ## `reset`
 
 `reset` buffers child nodes in a `DocumentFragment` _before_ removing old nodes, to avoid blanking old content, failing with a rendering exception, and ending with a blank page.
@@ -12,7 +22,7 @@ The worst case scenario is:
 
     content -> exception -> old content
 
-`E` bypasses this because it always creates a new node. Exceptions wouldn't break existing content.
+`E` bypasses this because it always creates a new node. Exceptions during `E` don't break existing content, unless someone passes an array of pre-existing nodes to be "stolen".
 
 ## Strconv
 

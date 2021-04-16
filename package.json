@@ -11,6 +11,6 @@
     "prepublishOnly": "node test/test-node.mjs"
   },
   "devDependencies": {
-    "fpx": "0.9.0"
+    "afr": "0.2.0"
   }
 }

@@ -116,5 +116,8 @@ function only(val, test) {valid(val, test); return val}
 function dict(val) {return isNil(val) ? {} : only(val, isDict)}
 
 function valid(val, test) {
-  if (!test(val)) throw Error(`expected ${val} to satisfy test ${test}`)
+  if (!test(val)) throw Error(`expected ${show(val)} to satisfy test ${show(test)}`)
 }
+
+// Placeholder, might improve.
+function show(val) {return String(val)}

@@ -426,6 +426,10 @@ export function testCommon({E, F, Raw, cls, e}, eqm) {
           `<outer><inner>text</inner></outer>`,
           E('outer', {}, new Raw(`<inner>text</inner>`)),
         )
+        eqm(
+          `<div><a>one</a><b>two</b><c>three</c></div>`,
+          E('div', {}, new Raw(`<a>one</a><b>two</b><c>three</c>`)),
+        )
       }()
     }()
 

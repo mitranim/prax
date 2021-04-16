@@ -1,4 +1,3 @@
-// import * as f from 'fpx'
 import * as x from '../prax.mjs'
 import {E, F} from '../prax.mjs'
 import {is, eq} from './test-utils.mjs'

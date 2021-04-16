@@ -1,4 +1,5 @@
-import * as f from 'fpx'
+// See `impl.md` for implementation notes.
+
 import {Raw, boolAttrs, voidElems} from './prax.mjs'
 
 /* Public API */
@@ -9,6 +10,7 @@ export function E(name, props, ...children) {
   return new Raw(encodeHtml(name, props, children))
 }
 
+// TODO: this should use XML encoding, without HTML special cases.
 export const S = E
 
 export function F(...children) {
@@ -17,14 +19,14 @@ export function F(...children) {
 
 // https://www.w3.org/TR/html52/syntax.html#escaping-a-string
 export function escapeText(val) {
-  val = f.str(val)
+  val = str(val)
   const reg = /[&\u00a0<>]/g
   return reg.test(val) ? val.replace(reg, escapeChar) : val
 }
 
 // https://www.w3.org/TR/html52/syntax.html#escaping-a-string
 export function escapeAttr(val) {
-  val = f.str(val)
+  val = str(val)
   const reg = /[&\u00a0"]/g
   return reg.test(val) ? val.replace(reg, escapeChar) : val
 }
@@ -34,7 +36,7 @@ export const e = E.bind.bind(E, undefined)
 /* Internal Utils */
 
 function encodeHtml(name, props, children) {
-  f.valid(name, isValidElemName)
+  valid(name, isValidElemName)
 
   const open = `<${name}${encodeProps(props)}>`
 
@@ -54,8 +56,8 @@ function encodeChildren(val) {return foldArr(val, '', appendEncodeChild)}
 function appendEncodeChild(acc, node) {return acc + encodeChild(node)}
 
 function encodeChild(node) {
-  if (f.isArr(node)) return encodeChildren(node)
-  if (f.isInst(node, String)) return node
+  if (isArr(node)) return encodeChildren(node)
+  if (isInst(node, String)) return node
   return escapeText(toStr(node))
 }
 
@@ -68,8 +70,8 @@ function appendEncodeProp(acc, val, key) {return acc + encodeProp(key, val)}
 function encodeProp(key, val) {
   if (key === 'children')     throw Error(`use {R} from 'prax/rcompat.mjs' for children-in-props`)
   if (key === 'attributes')   return encodeAttrs(val)
-  if (key === 'class')        return attr('class', f.opt(val, f.isStr))
-  if (key === 'className')    return attr('class', f.opt(val, f.isStr))
+  if (key === 'class')        return attr('class', optStr(val))
+  if (key === 'className')    return attr('class', optStr(val))
   if (key === 'style')        return encodeStyles(val)
   if (key === 'dataset')      return encodeDataset(val)
   if (key === 'httpEquiv')    return attr('http-equiv', val)
@@ -84,10 +86,10 @@ function appendEncodeAttr(acc, val, key) {return acc + attr(key, val)}
 
 // Should be kept in sync with `prax.mjs` -> `setStyle`.
 function encodeStyles(val) {
-  if (f.isNil(val)) return ''
-  if (f.isStr(val)) return val && attr('style', val)
-  if (f.isDict(val)) return encodeStyles(foldDict(val, '', appendEncodeStyle))
-  throw Error(`style must be string or dict, got ${f.show(val)}`)
+  if (isNil(val)) return ''
+  if (isStr(val)) return val && attr('style', val)
+  if (isDict(val)) return encodeStyles(foldDict(val, '', appendEncodeStyle))
+  throw Error(`style must be string or dict, got ${show(val)}`)
 }
 
 function appendEncodeStyle(acc, val, key) {
@@ -98,8 +100,8 @@ function appendEncodeStyle(acc, val, key) {
 // Might need smarter conversion from JS to CSS properties.
 // Probably want to detect and reject unquoted `:;` in values.
 function encodeStylePair(key, val) {
-  if (f.isNil(val)) return ''
-  validAt(key, val, f.isStr)
+  if (isNil(val)) return ''
+  validAt(key, val, isStr)
   return `${camelToKebab(key)}: ${toStr(val)};`
 }
 
@@ -108,7 +110,7 @@ function encodeDataset(dataset) {
 }
 
 function appendEncodeDataAttr(acc, val, key) {
-  if (f.isNil(val)) return acc
+  if (isNil(val)) return acc
   return acc + attr(`data-${camelToKebab(key)}`, toStr(val))
 }
 
@@ -127,11 +129,11 @@ at such ostentatious notions! In addition, browsers tend to serialize the
 `=""`. We follow their lead for consistency.
 */
 function attr(key, val) {
-  f.valid(key, isValidAttrName)
-  if (f.isNil(val)) return ``
+  valid(key, isValidAttrName)
+  if (isNil(val)) return ``
 
   if (boolAttrs.has(key)) {
-    validAt(key, val, f.isBool)
+    validAt(key, val, isBool)
     return !val ? `` : ` ${key}=""`
   }
 
@@ -147,7 +149,7 @@ function toAria(key) {
 // Should match the browser algorithm for dataset keys.
 // Probably very inefficient.
 function camelToKebab(val) {
-  f.valid(val, f.isStr)
+  valid(val, isStr)
 
   let out = ''
   for (const char of val) {
@@ -177,47 +179,69 @@ function escapeChar(char) {
 //
 // Also see for attrs, unused:
 // https://www.w3.org/TR/html52/syntax.html#elements-attributes
-function isValidElemName(val) {return f.isStr(val) && /^[^\s<>"]+$/.test(val)}
+function isValidElemName(val) {return isStr(val) && /^[^\s<>"]+$/.test(val)}
 
 // Extremely permissive. Intended only to prevent weird gotchas.
 function isValidAttrName(val) {return /\S+/.test(val)}
 
 function validAt(key, val, fun) {
   if (!fun(val)) {
-    throw Error(`invalid property "${key}": expected ${f.show(val)} to satisfy ${f.show(fun)}`)
+    throw Error(`invalid property "${key}": expected ${show(val)} to satisfy ${show(fun)}`)
   }
 }
 
 function toStr(val) {
-  if (f.isNil(val)) return ''
-  if (f.isStr(val)) return val
-  if (f.isPrim(val)) return val.toString()
-  f.valid(val, isStringable)
+  if (isNil(val)) return ''
+  if (isStr(val)) return val
+  if (isPrim(val)) return val.toString()
+  valid(val, isStringableObj)
   return toStr(val.toString())
 }
 
-function isStringable(val) {
+function isStringableObj(val) {
   const {toString} = val
   return (
-    f.isObj(val) &&
-    f.isFun(toString) &&
+    isObj(val) &&
+    isFun(toString) &&
     toString !== Object.prototype.toString &&
     toString !== Array.prototype.toString
   )
 }
 
 function foldArr(val, acc, fun, ...args) {
-  if (!f.isNil(val)) {
-    f.valid(val, f.isArr)
+  if (!isNil(val)) {
+    valid(val, isArr)
     for (let i = 0; i < val.length; i += 1) acc = fun(acc, val[i], i, ...args)
   }
   return acc
 }
 
 function foldDict(val, acc, fun, ...args) {
-  if (!f.isNil(val)) {
-    f.valid(val, f.isDict)
+  if (!isNil(val)) {
+    valid(val, isDict)
     for (const key in val) acc = fun(acc, val[key], key, ...args)
   }
   return acc
 }
+
+function isNil(val) {return val == null}
+function isBool(val) {return typeof val === 'boolean'}
+function isStr(val) {return typeof val === 'string'}
+function isPrim(val) {return !isComp(val)}
+function isComp(val) {return isObj(val) || isFun(val)}
+function isFun(val) {return typeof val === 'function'}
+function isObj(val) {return val !== null && typeof val === 'object'}
+function isArr(val) {return isInst(val, Array)}
+function isDict(val) {return isObj(val) && Object.getPrototypeOf(val) === Object.prototype}
+function isInst(val, Cls) {return isComp(val) && val instanceof Cls}
+
+function only(val, test) {valid(val, test); return val}
+function str(val) {return isNil(val) ? '' : only(val, isStr)}
+function optStr(val) {return isNil(val) ? undefined : str(val)}
+
+function valid(val, test) {
+  if (!test(val)) throw Error(`expected ${show(val)} to satisfy test ${show(test)}`)
+}
+
+// Placeholder, might improve.
+function show(val) {return String(val)}

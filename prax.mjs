@@ -1,4 +1,4 @@
-import * as f from 'fpx'
+// See `impl.md` for implementation notes.
 
 /* Public API */
 
@@ -9,7 +9,7 @@ export function E(name, props, ...children) {
 }
 
 export function S(name, props, ...children) {
-  f.valid(name, f.isStr)
+  valid(name, isStr)
   const node = document.createElementNS(`http://www.w3.org/2000/svg`, name, props)
   return initNode(node, props, children)
 }
@@ -19,13 +19,13 @@ export function F(...children) {
 }
 
 export function reset(node, props, ...children) {
-  f.isInst(node, Element)
+  isInst(node, Element)
   resetProps(node, props)
   return resetChildren(node, children)
 }
 
 export function cls(...vals) {
-  return f.fold(vals, '', addClass)
+  return fold(vals, '', addClass)
 }
 
 // The specification postulates the concept, but where's the standard list?
@@ -61,7 +61,7 @@ function initNode(node, props, children) {
 }
 
 function resetProps(node, props) {
-  f.eachVal(f.dict(props), setProp, node)
+  eachVal(props, setProp, node)
 }
 
 // See `impl.md`.
@@ -73,29 +73,31 @@ function resetChildren(node, children) {
 }
 
 function removeNodes(node) {
-  f.isInst(node, Node)
+  isInst(node, Node)
   while (node.firstChild) node.firstChild.remove()
 }
 
 function appendChildren(node, children) {
-  if (children.length) for (const val of children) appendChild(node, val)
+  children.forEach(appendChildTo, node)
   return node
 }
 
+function appendChildTo(child) {appendChild(this, child)}
+
 function appendChild(node, val) {
-  if (f.isNil(val))          return
-  if (val === '')            return
-  if (f.isInst(val, Node))   return void node.append(val)
-  if (f.isInst(val, String)) return void appendRawChild(node, val)
-  if (f.isList(val))         return void appendChildren(node, val)
+  if (isNil(val))          return
+  if (val === '')          return
+  if (isInst(val, Node))   return void node.append(val)
+  if (isInst(val, String)) return void appendRawChild(node, val)
+  if (isArr(val))          return void appendChildren(node, val)
   node.append(toStr(val))
 }
 
-// Inefficient. There are better solutions, but let's benchmark first.
+// Probably inefficient. Might be better solutions, but let's benchmark first.
 function appendRawChild(node, val) {
   const clone = node.cloneNode()
   clone.innerHTML = val
-  appendChildren(node, clone.childNodes)
+  while (clone.firstChild) node.append(clone.firstChild)
 }
 
 // Should be kept in sync with `node.mjs` -> `encodeProp`.
@@ -116,18 +118,18 @@ function setProp(val, key, node) {
 function setUnknownProp(node, key, val) {
   if (key in node) {
     const prev = node[key]
-    if (f.isNil(prev) || f.isFun(prev)) {
+    if (isNil(prev) || isFun(prev)) {
       node[key] = normNil(val)
       return
     }
 
-    if (f.isStr(prev)) {
+    if (isStr(prev)) {
       node[key] = toStr(val)
       return
     }
 
-    if (f.isPrim(prev)) {
-      if (!f.isPrim(val)) throw Error(`can't set non-primitive "${key}": ${f.show(val)} on ${node}`)
+    if (isPrim(prev)) {
+      if (!isPrim(val)) throw Error(`can't set non-primitive "${key}": ${show(val)} on ${node}`)
       node[key] = val
       return
     }
@@ -137,20 +139,20 @@ function setUnknownProp(node, key, val) {
 }
 
 function setAttrs(node, attrs) {
-  f.eachVal(f.dict(attrs), setAttr, node)
+  eachVal(attrs, setAttr, node)
 }
 
 // Should be kept in sync with `node.mjs` -> `attr`.
 function setAttr(val, key, node) {
-  f.valid(key, f.isStr)
+  valid(key, isStr)
 
-  if (f.isNil(val)) {
+  if (isNil(val)) {
     node.removeAttribute(key)
     return
   }
 
   if (boolAttrs.has(key)) {
-    validAt(key, val, f.isBool)
+    validAt(key, val, isBool)
     if (val) node.setAttribute(key, '')
     else node.removeAttribute(key)
     return
@@ -166,47 +168,47 @@ function setClass(node, val) {
 
 // Should be kept in sync with `node.mjs` -> `encodeStyle`.
 function setStyle(node, val) {
-  if (f.isNil(val) || f.isStr(val)) return setAttr(val, 'style', node)
-  if (f.isDict(val)) return f.eachVal(val, setStyleProp, node.style)
-  throw Error(`style must be string or dict, got ${f.show(val)}`)
+  if (isNil(val) || isStr(val)) return setAttr(val, 'style', node)
+  if (isDict(val)) return eachVal(val, setStyleProp, node.style)
+  throw Error(`style must be string or dict, got ${show(val)}`)
 }
 
 function setStyleProp(val, key, style) {
   val = normNil(val)
-  if (f.isNil(val)) return void (style[key] = val)
-  validAt(key, val, f.isStr)
+  if (isNil(val)) return void (style[key] = val)
+  validAt(key, val, isStr)
   style[key] = val
 }
 
 function setDataset(node, val) {
-  f.eachVal(f.dict(val), setDatasetProp, node.dataset)
+  eachVal(val, setDatasetProp, node.dataset)
 }
 
 function setDatasetProp(val, key, dataset) {
-  if (f.isNil(val)) delete dataset[key]
+  if (isNil(val)) delete dataset[key]
   else dataset[key] = toStr(val)
 }
 
 function addClass(acc, val) {
-  if (f.isList(val)) return f.fold(val, acc, addClass)
+  if (isArr(val)) return fold(val, acc, addClass)
 
   // For convenience, any falsy value is skipped, allowing `a && b`.
   if (!val) return acc
 
-  val = f.str(val)
+  val = str(val)
   if (!acc) return val
   return `${acc} ${val}`
 }
 
 function validAt(key, val, fun) {
   if (!fun(val)) {
-    throw Error(`invalid property "${key}": expected ${f.show(val)} to satisfy ${f.show(fun)}`)
+    throw Error(`invalid property "${key}": expected ${show(val)} to satisfy ${show(fun)}`)
   }
 }
 
 // See `impl.md` on void elems.
 function elemValid(name, children) {
-  f.valid(name, f.isStr)
+  valid(name, isStr)
   if (children.length && voidElems.has(name)) {
     throw Error(`got unexpected children for void element "${name}"`)
   }
@@ -214,22 +216,54 @@ function elemValid(name, children) {
 
 // Many DOM APIs consider only `null` to be nil.
 function normNil(val) {return val === undefined ? null : val}
-function normStr(val) {return f.isNil(val) ? null : f.str(val)}
+function normStr(val) {return isNil(val) ? null : str(val)}
 
 function toStr(val) {
-  if (f.isNil(val)) return ''
-  if (f.isStr(val)) return val
-  if (f.isPrim(val)) return val.toString()
-  f.valid(val, isStringableObj)
+  if (isNil(val)) return ''
+  if (isStr(val)) return val
+  if (isPrim(val)) return val.toString()
+  valid(val, isStringableObj)
   return toStr(val.toString())
 }
 
 function isStringableObj(val) {
   const {toString} = val
   return (
-    f.isObj(val) &&
-    f.isFun(toString) &&
+    isObj(val) &&
+    isFun(toString) &&
     toString !== Object.prototype.toString &&
     toString !== Array.prototype.toString
   )
 }
+
+function fold(val, acc, fun, ...args) {
+  for (let i = 0; i < val.length; i += 1) acc = fun(acc, val[i], i, ...args)
+  return acc
+}
+
+function eachVal(val, fun, ...args) {
+  if (isNil(val)) return
+  valid(val, isDict)
+  for (const key in val) fun(val[key], key, ...args)
+}
+
+function isNil(val) {return val == null}
+function isBool(val) {return typeof val === 'boolean'}
+function isStr(val) {return typeof val === 'string'}
+function isPrim(val) {return !isComp(val)}
+function isComp(val) {return isObj(val) || isFun(val)}
+function isFun(val) {return typeof val === 'function'}
+function isObj(val) {return val !== null && typeof val === 'object'}
+function isArr(val) {return isInst(val, Array)}
+function isDict(val) {return isObj(val) && Object.getPrototypeOf(val) === Object.prototype}
+function isInst(val, Cls) {return isComp(val) && val instanceof Cls}
+
+function str(val) {return isNil(val) ? '' : only(val, isStr)}
+function only(val, test) {valid(val, test); return val}
+
+function valid(val, test) {
+  if (!test(val)) throw Error(`expected ${show(val)} to satisfy test ${show(test)}`)
+}
+
+// Placeholder, might improve.
+function show(val) {return String(val)}
