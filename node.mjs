@@ -73,6 +73,7 @@ function encodeProp(key, val) {
   if (key === 'style')        return encodeStyles(val)
   if (key === 'dataset')      return encodeDataset(val)
   if (key === 'httpEquiv')    return attr('http-equiv', val)
+  if (key === 'htmlFor')      return attr('for', val)
   if (/^aria[A-Z]/.test(key)) return attr(toAria(key), val)
   if (key === 'innerHTML')    return ''
   return attr(key, val)

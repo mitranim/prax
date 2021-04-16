@@ -447,14 +447,14 @@ export function testCommon({E, F, Raw, cls, e}, eqm) {
   }()
 
   void function testCls() {
-    throws(cls, 0)
     throws(cls, true)
-    throws(cls, false)
     throws(cls, {})
 
     eq('', cls())
-    eq('', cls(undefined))
     eq('', cls(null))
+    eq('', cls(undefined))
+    eq('', cls(0))
+    eq('', cls(false))
     eq('one', cls(null, undefined, 'one'))
     eq('one', cls('one', null, undefined))
     eq('one two three', cls('one', null, ['two', undefined], null, [['three']]))

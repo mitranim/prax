@@ -112,7 +112,7 @@ function setProp(val, key, node) {
 }
 
 // Careful balancing act: minimizing gotchas AND special-case knowledge. Likely
-// to get revised many, many times.
+// to get revised many, many times. Also likely one of the bottlenecks.
 function setUnknownProp(node, key, val) {
   if (key in node) {
     const prev = node[key]
@@ -189,8 +189,11 @@ function setDatasetProp(val, key, dataset) {
 
 function addClass(acc, val) {
   if (f.isList(val)) return f.fold(val, acc, addClass)
-  val = f.str(val)
+
+  // For convenience, any falsy value is skipped, allowing `a && b`.
   if (!val) return acc
+
+  val = f.str(val)
   if (!acc) return val
   return `${acc} ${val}`
 }
