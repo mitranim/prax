@@ -19,7 +19,7 @@ export function F(...children) {
 }
 
 export function reset(node, props, ...children) {
-  isInst(node, Element)
+  validInst(node, Element)
   resetProps(node, props)
   return resetChildren(node, children)
 }
@@ -49,6 +49,8 @@ export const voidElems = new Set([
   'param', 'source', 'track', 'wbr',
 ])
 
+// Provided to make code more explicit/intentional. In reality, any `new String`
+// object serves as a "raw" marker.
 export class Raw extends String {}
 
 export const e = E.bind.bind(E, undefined)
@@ -73,7 +75,7 @@ function resetChildren(node, children) {
 }
 
 function removeNodes(node) {
-  isInst(node, Node)
+  validInst(node, Node)
   while (node.firstChild) node.firstChild.remove()
 }
 
@@ -175,7 +177,7 @@ function setStyle(node, val) {
 
 function setStyleProp(val, key, style) {
   val = normNil(val)
-  if (isNil(val)) return void (style[key] = val)
+  if (isNil(val)) return void (style[key] = null)
   validAt(key, val, isStr)
   style[key] = val
 }
@@ -263,6 +265,12 @@ function only(val, test) {valid(val, test); return val}
 
 function valid(val, test) {
   if (!test(val)) throw Error(`expected ${show(val)} to satisfy test ${show(test)}`)
+}
+
+function validInst(val, Cls) {
+  if (!isInst(val, Cls)) {
+    throw Error(`expected ${show(val)} to be an instance of ${show(Cls)}`)
+  }
 }
 
 // Placeholder, might improve.
