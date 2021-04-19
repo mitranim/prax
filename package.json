@@ -1,7 +1,7 @@
 {
   "name": "prax",
   "version": "0.5.0",
-  "private": true,
+  "type": "module",
   "main": "./node.mjs",
   "browser": "./prax.mjs",
   "scripts": {
