@@ -105,6 +105,7 @@ function appendRawChild(node, val) {
 // Should be kept in sync with `node.mjs` -> `encodeProp`.
 // Expected to accumulate more special cases over time.
 function setProp(val, key, node) {
+  if (key === 'is')         return undefined
   if (key === 'children')   throw Error(`use {R} from 'prax/rcompat.mjs' for children-in-props`)
   if (key === 'attributes') return void setAttrs(node, val)
   if (key === 'class')      return void setClass(node, normStr(val))

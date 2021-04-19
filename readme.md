@@ -9,7 +9,7 @@ Experimental HTML/DOM rendering system for hybrid SSR + SPA apps. See [Why](#why
 * No intermediate representations. Render directly to a string in Node, directly to DOM nodes in browsers.
 * Render only once. Use native [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) for state. (Out of scope for Prax.)
 * Replace instead of reflowing.
-* No build system required.
+* Nice-to-use in plain JS. No build system required.
 
 Tiny (a few kilobytes _un_-minified) and dependency-free. Native JS module.
 
@@ -345,7 +345,7 @@ Additional environment-specific rules:
 * In Node, everything non-special-cased is assumed to be an attribute, and must be `nil` or [stringable](#stringable).
 * In browsers, there's a heuristic for deciding whether to assign a property or attribute. Prax will try to default to properties, but use attributes as a fallback for properties that are completely unknown or whose value doesn't match the type expected by the DOM.
 
-Unlike React, Prax has _no made-up properties_ or weird renaming. Use `onclick` rather than `onClick`, `oninput` rather than `onChange`, and so on.
+Unlike React, Prax has _no made-up properties_ or weird renamings. Use `autocomplete` rather than `autoComplete`, `oninput` rather than `onChange`, and so on.
 
 ## Children
 
