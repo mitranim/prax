@@ -405,6 +405,12 @@ function Inner({children, ...props}) {
 }
 ```
 
+## Changelog
+
+### `0.5.0`
+
+Prior versions were a weird cross-section of several libraries, whose functionality eventually got integrated into those libraries. `0.5.0` is an entirely new and different system, completely standalone. See the docs.
+
 ## License
 
 https://unlicense.org
