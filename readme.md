@@ -294,7 +294,9 @@ Unlike most "modern" rendering libraries, Prax doesn't stand between you and DOM
 
 Isomorphic code that runs in Node and browsers must use `E`, because in Node you always render to a string. However, code that runs _only_ in the browser is free to use direct instantiation, with custom constructor signatures.
 
-The following example is a trivial custom element that takes an observable object and displays one of its properties as text. Subscription and unsubscription is automatic. (Observable signature from [Espo → `Obs`](https://github.com/mitranim/espo).) You can simply `new MyElem()`, passing arbitrary inputs. No "props" involved in this. When using TS or Flow, signatures can be properly typed, without hacks and workarounds such as "prop types".
+The following example is a trivial custom element that takes an observable object and displays one of its properties as text. Subscription and unsubscription is automatic. (Observable signature approximated from [Espo → `isObs`](https://github.com/mitranim/espo).)
+
+You can simply `new RecText(obs)`, passing a specific observable. No "props" involved in this. No weird library gotchas to deal with. When using TS or Flow, signatures can be properly typed, without hacks and workarounds such as "prop types".
 
 ```js
 import {E, reset} from 'prax'
@@ -311,14 +313,14 @@ class RecText extends HTMLElement {
 
   connectedCallback() {
     this.obs.sub(this)
-    this.trigger()
+    this.trig()
   }
 
   disconnectedCallback() {
     this.obs.unsub(this)
   }
 
-  trigger() {
+  trig() {
     this.textContent = this.obs.val
   }
 }
