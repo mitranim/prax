@@ -285,18 +285,18 @@ export function testCommon({E, F, Raw, cls, e}, eqm) {
       throws(E, 'input', {hidden: 10})
 
       eqm(
-        `<input type="checkbox" hidden="" autofocus="" disabled="" checked="">`,
-        E('input', {type: 'checkbox', hidden: true, autofocus: true, disabled: true, checked: true}),
+        `<input hidden="" autofocus="" disabled="">`,
+        E('input', {hidden: true, autofocus: true, disabled: true}),
       )
 
       eqm(
-        `<input type="checkbox" disabled="" checked="">`,
-        E('input', {type: 'checkbox', hidden: false, autofocus: false, disabled: true, checked: true}),
+        `<input disabled="">`,
+        E('input', {hidden: false, autofocus: false, disabled: true}),
       )
 
       eqm(
-        `<input type="checkbox" hidden="" autofocus="">`,
-        E('input', {type: 'checkbox', hidden: true, autofocus: true, disabled: null, checked: undefined}),
+        `<input hidden="">`,
+        E('input', {hidden: true, autofocus: null, disabled: undefined}),
       )
     }()
 
@@ -324,9 +324,9 @@ export function testCommon({E, F, Raw, cls, e}, eqm) {
     }()
 
     void function testMetaAttrs() {
-      eqm(`<meta http-equiv="">`, E('meta', {httpEquiv: ''}))
+      eqm(`<meta http-equiv="content-type">`, E('meta', {httpEquiv: 'content-type'}))
 
-      eqm(`<meta http-equiv="">`, E('meta', {'http-equiv': ''}))
+      eqm(`<meta http-equiv="content-type">`, E('meta', {'http-equiv': 'content-type'}))
 
       eqm(
         `<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">`,

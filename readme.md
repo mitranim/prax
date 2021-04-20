@@ -3,7 +3,7 @@
 Experimental HTML/DOM rendering system for hybrid SSR + SPA apps. See [Why](#why). In short: performance and _radical_ simplicity.
 
 * No VDOM.
-* No diffing.
+* No diffing (mostly).
 * No library classes.
 * No templates. No string parsing. Just function calls.
 * No intermediate representations. Render directly to a string in Node, directly to DOM nodes in browsers.
@@ -21,7 +21,8 @@ Tiny (a few kilobytes _un_-minified) and dependency-free. Native JS module.
   * [`E`](#etype-props-children)
   * [`S`](#stype-props-children)
   * [`F`](#fchildren)
-  * [`reset`](#resetelement-props-children)
+  * [`reset`](#resetelem-props-children)
+  * [`resetProps`](#resetelem-props)
   * [`e`](#etype-props-children-1)
   * [Undocumented](#undocumented)
   * [React Compat](#react-compat)
@@ -202,7 +203,7 @@ function SomeIcon() {
 
 Short for "fragment". Renders the children without an enclosing element. In Node, this simply combines their markup without any wrappers or delimiters, and returns a string as `Raw`. In browsers, this returns a [`DocumentFragment`](https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment).
 
-You will rarely use this, because [`E`](#etype-props-children) supports arrays of children, nested to any depth. `F` is used internally by [`reset`](#resetelement-props-children). It's also handy for prepending a doctype at the top level. You could also interpolate strings, but `F` will sensibly handle nils, arrays, and so on.
+You will rarely use this, because [`E`](#etype-props-children) supports arrays of children, nested to any depth. `F` is used internally by [`reset`](#resetelem-props-children). It's also handy for prepending a doctype at the top level. You could also interpolate strings, but `F` will sensibly handle nils, arrays, and so on.
 
 ```js
 import {E, F, Raw} from 'prax'
@@ -220,13 +221,13 @@ function Html() {
 }
 ```
 
-### `reset(Element, props, ...children)`
+### `reset(elem, props, ...children)`
 
 (Browser-specific API, only in `prax.mjs`.)
 
-Mutates the element, resetting it to the given props and children, removing any previously-existing children. Attributes and properties missing from `props` are not affected. To unset existing attributes or properties, include them with the appropriate "zero value" (usually `null`/`undefined`).
+Mutates the element, resetting it to the given props via [`resetProps`](#resetpropselem-props) and replacing its children; see [children rules](#children).
 
-`reset` carefully avoids destroying existing content in case of rendering exceptions. It buffers children in a temporary `DocumentFragment`, replacing the previous children only when fully built.
+`reset` carefully avoids destroying existing content on render exceptions. It buffers children in a temporary `DocumentFragment`, replacing the previous children only when fully built.
 
 ```js
 import * as x from 'prax'
@@ -242,6 +243,20 @@ class Btn extends HTMLButtonElement {
   }
 }
 customElements.define('a-btn', Btn, {extends: 'button'})
+```
+
+### `resetProps(elem, props)`
+
+(Browser-specific API, only in `prax.mjs`.)
+
+Mutates the element, resetting its properties and attributes. Properties and attributes missing from `props` are not affected. To unset existing ones, include them with the appropriate "zero value" (usually `null`/`undefined`).
+
+For any given property, if the previous value is identical (via `Object.is`), the new value is not assigned. Many DOM properties are setters; assigning even an identical value may have expensive side effects.
+
+```js
+import * as x from 'prax'
+
+x.resetProps(elem, {class: 'new-class', hidden: false})
 ```
 
 ### `e(type, props, ...children)`
@@ -284,7 +299,7 @@ The optional module `rcompat.mjs` exports a few functions for JSX compatibility 
 
 Imperative control flow and immediate, synchronous side effects are precious things. Don't squander them carelessly.
 
-In Prax, everything is immediate. Rendering exceptions can be caught via `try/catch`. Magic context can be setup trivially in user code, via `try/finally`, without library support. Lifecycle stages such as "before render" and "after DOM mounting" can be done just by placing lines of code before and after a [`reset`](#resetelement-props-children) call. (Also via native lifecycle callbacks in custom elements.)
+In Prax, everything is immediate. Rendering exceptions can be caught via `try/catch`. Magic context can be setup trivially in user code, via `try/finally`, without library support. Lifecycle stages such as "before render" and "after DOM mounting" can be done just by placing lines of code before and after a [`reset`](#resetelem-props-children) call. (Also via native lifecycle callbacks in custom elements.)
 
 Compare the hacks and workarounds invented in React to implement the same trivial things.
 
@@ -351,7 +366,7 @@ Unlike React, Prax has _no made-up properties_ or weird renamings. Use `autocomp
 
 ## Children
 
-All rendering functions, such as [`E`](#etype-props-children) or [`reset`](#resetelement-props-children), take `...children` as [rest parameters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/rest_parameters) and follow the same rules:
+All rendering functions, such as [`E`](#etype-props-children) or [`reset`](#resetelem-props-children), take `...children` as [rest parameters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/rest_parameters) and follow the same rules:
 
 * Nil (`null` or `undefined`) is ignored.
 * `''` is also ignored (doesn't create a `Text` node).
@@ -408,6 +423,10 @@ function Inner({children, ...props}) {
 ```
 
 ## Changelog
+
+### `0.5.1`
+
+`resetProps` and `reset` avoid reassigning identical prop values. This sometimes avoids expensive style recalculations.
 
 ### `0.5.0`
 

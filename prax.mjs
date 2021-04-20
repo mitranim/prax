@@ -24,6 +24,11 @@ export function reset(node, props, ...children) {
   return resetChildren(node, children)
 }
 
+export function resetProps(node, props) {
+  validInst(node, Element)
+  eachVal(props, setProp, node)
+}
+
 export function cls(...vals) {
   return fold(vals, '', addClass)
 }
@@ -60,10 +65,6 @@ export const e = E.bind.bind(E, undefined)
 function initNode(node, props, children) {
   resetProps(node, props)
   return appendChildren(node, children)
-}
-
-function resetProps(node, props) {
-  eachVal(props, setProp, node)
 }
 
 // See `impl.md`.
@@ -112,33 +113,34 @@ function setProp(val, key, node) {
   if (key === 'className')  return void setClass(node, normStr(val))
   if (key === 'style')      return void setStyle(node, val)
   if (key === 'dataset')    return void setDataset(node, val)
-  if (boolAttrs.has(key))   return void setAttr(val, key, node)
-  setUnknownProp(node, key, val)
-}
 
-// Careful balancing act: minimizing gotchas AND special-case knowledge. Likely
-// to get revised many, many times. Also likely one of the bottlenecks.
-function setUnknownProp(node, key, val) {
+  // Careful balancing act: minimizing gotchas AND special-case knowledge. Likely
+  // to get revised many, many times. Also likely one of the bottlenecks.
   if (key in node) {
     const prev = node[key]
     if (isNil(prev) || isFun(prev)) {
-      node[key] = normNil(val)
+      maybeSetProp(node, key, prev, normNil(val))
       return
     }
 
     if (isStr(prev)) {
-      node[key] = toStr(val)
+      maybeSetProp(node, key, prev, toStr(val))
       return
     }
 
     if (isPrim(prev)) {
-      if (!isPrim(val)) throw Error(`can't set non-primitive "${key}": ${show(val)} on ${node}`)
-      node[key] = val
+      if (!isPrim(val)) throw Error(`can't set non-primitive "${show(key)}": ${show(val)} on ${show(node)}`)
+      if (!isNil(val) && boolAttrs.has(key)) validAt(key, val, isBool)
+      maybeSetProp(node, key, prev, val)
       return
     }
   }
 
   setAttr(val, key, node)
+}
+
+function maybeSetProp(node, key, prev, next) {
+  if (!is(prev, next)) node[key] = next
 }
 
 function setAttrs(node, attrs) {
@@ -178,9 +180,14 @@ function setStyle(node, val) {
 
 function setStyleProp(val, key, style) {
   val = normNil(val)
-  if (isNil(val)) return void (style[key] = null)
+
+  if (isNil(val)) {
+    style[key] = null
+    return
+  }
+
   validAt(key, val, isStr)
-  style[key] = val
+  if (!is(style[key], val)) style[key] = val
 }
 
 function setDataset(node, val) {
@@ -205,7 +212,7 @@ function addClass(acc, val) {
 
 function validAt(key, val, fun) {
   if (!fun(val)) {
-    throw Error(`invalid property "${key}": expected ${show(val)} to satisfy ${show(fun)}`)
+    throw Error(`invalid property "${show(key)}": expected ${show(val)} to satisfy ${show(fun)}`)
   }
 }
 
@@ -213,7 +220,7 @@ function validAt(key, val, fun) {
 function elemValid(name, children) {
   valid(name, isStr)
   if (children.length && voidElems.has(name)) {
-    throw Error(`got unexpected children for void element "${name}"`)
+    throw Error(`got unexpected children for void element "${show(name)}"`)
   }
 }
 
@@ -250,6 +257,7 @@ function eachVal(val, fun, ...args) {
   for (const key in val) fun(val[key], key, ...args)
 }
 
+function is(a, b) {return Object.is(a, b)}
 function isNil(val) {return val == null}
 function isBool(val) {return typeof val === 'boolean'}
 function isStr(val) {return typeof val === 'string'}

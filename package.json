@@ -1,6 +1,6 @@
 {
   "name": "prax",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "type": "module",
   "main": "./node.mjs",
   "browser": "./prax.mjs",
@@ -11,6 +11,6 @@
     "prepublishOnly": "node test/test-node.mjs"
   },
   "devDependencies": {
-    "afr": "0.2.0"
+    "afr": "0.2.1"
   }
 }
