@@ -19,7 +19,6 @@ export function F(...children) {
 }
 
 export function reset(node, props, ...children) {
-  validInst(node, Element)
   resetProps(node, props)
   return resetChildren(node, children)
 }
@@ -30,7 +29,7 @@ export function resetProps(node, props) {
 }
 
 export function cls(...vals) {
-  return fold(vals, '', addClass)
+  return vals.reduce(addClass, '')
 }
 
 // The specification postulates the concept, but where's the standard list?
@@ -106,8 +105,8 @@ function appendRawChild(node, val) {
 // Should be kept in sync with `node.mjs` -> `encodeProp`.
 // Expected to accumulate more special cases over time.
 function setProp(val, key, node) {
-  if (key === 'is')         return undefined
   if (key === 'children')   throw Error(`use {R} from 'prax/rcompat.mjs' for children-in-props`)
+  if (key === 'is')         return undefined
   if (key === 'attributes') return void setAttrs(node, val)
   if (key === 'class')      return void setClass(node, normStr(val))
   if (key === 'className')  return void setClass(node, normStr(val))
@@ -139,8 +138,9 @@ function setProp(val, key, node) {
   setAttr(val, key, node)
 }
 
-function maybeSetProp(node, key, prev, next) {
-  if (!is(prev, next)) node[key] = next
+// Diffing sometimes avoids style/layout recalculations.
+function maybeSetProp(tar, key, prev, next) {
+  if (!is(prev, next)) tar[key] = next
 }
 
 function setAttrs(node, attrs) {
@@ -166,9 +166,17 @@ function setAttr(val, key, node) {
   node.setAttribute(key, toStr(val))
 }
 
-// Attr over `.className` for SVG compatibility. Might revise.
 function setClass(node, val) {
-  node.setAttribute('class', toStr(val))
+  const prev = node.className
+
+  // `HTMLElement`.
+  if (isStr(prev)) {
+    maybeSetProp(node, 'className', prev, toStr(val))
+    return
+  }
+
+  // `SVGElement` and possibly others.
+  setAttr(val, 'class', node)
 }
 
 // Should be kept in sync with `node.mjs` -> `encodeStyle`.
@@ -179,15 +187,9 @@ function setStyle(node, val) {
 }
 
 function setStyleProp(val, key, style) {
-  val = normNil(val)
-
-  if (isNil(val)) {
-    style[key] = null
-    return
-  }
-
+  if (isNil(val)) val = ''
   validAt(key, val, isStr)
-  if (!is(style[key], val)) style[key] = val
+  maybeSetProp(style, key, style[key], val)
 }
 
 function setDataset(node, val) {
@@ -200,7 +202,7 @@ function setDatasetProp(val, key, dataset) {
 }
 
 function addClass(acc, val) {
-  if (isArr(val)) return fold(val, acc, addClass)
+  if (isArr(val)) return val.reduce(addClass, acc)
 
   // For convenience, any falsy value is skipped, allowing `a && b`.
   if (!val) return acc
@@ -225,7 +227,7 @@ function elemValid(name, children) {
 }
 
 // Many DOM APIs consider only `null` to be nil.
-function normNil(val) {return val === undefined ? null : val}
+function normNil(val) {return isNil(val) ? null : val}
 function normStr(val) {return isNil(val) ? null : str(val)}
 
 function toStr(val) {
@@ -244,11 +246,6 @@ function isStringableObj(val) {
     toString !== Object.prototype.toString &&
     toString !== Array.prototype.toString
   )
-}
-
-function fold(val, acc, fun, ...args) {
-  for (let i = 0; i < val.length; i += 1) acc = fun(acc, val[i], i, ...args)
-  return acc
 }
 
 function eachVal(val, fun, ...args) {

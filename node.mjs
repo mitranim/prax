@@ -20,15 +20,13 @@ export function F(...children) {
 // https://www.w3.org/TR/html52/syntax.html#escaping-a-string
 export function escapeText(val) {
   val = str(val)
-  const reg = /[&\u00a0<>]/g
-  return reg.test(val) ? val.replace(reg, escapeChar) : val
+  return reText.test(val) ? val.replace(reText, escapeChar) : val
 }
 
 // https://www.w3.org/TR/html52/syntax.html#escaping-a-string
 export function escapeAttr(val) {
   val = str(val)
-  const reg = /[&\u00a0"]/g
-  return reg.test(val) ? val.replace(reg, escapeChar) : val
+  return reAttr.test(val) ? val.replace(reAttr, escapeChar) : val
 }
 
 export const e = E.bind.bind(E, undefined)
@@ -72,7 +70,7 @@ function encodeProp(key, val) {
   if (key === 'attributes')   return encodeAttrs(val)
   if (key === 'class')        return attr('class', optStr(val))
   if (key === 'className')    return attr('class', optStr(val))
-  if (key === 'style')        return encodeStyles(val)
+  if (key === 'style')        return encodeStyle(val)
   if (key === 'dataset')      return encodeDataset(val)
   if (key === 'httpEquiv')    return attr('http-equiv', val)
   if (key === 'htmlFor')      return attr('for', val)
@@ -85,10 +83,10 @@ function encodeAttrs(attrs) {return foldDict(attrs, '', appendEncodeAttr)}
 function appendEncodeAttr(acc, val, key) {return acc + attr(key, val)}
 
 // Should be kept in sync with `prax.mjs` -> `setStyle`.
-function encodeStyles(val) {
+function encodeStyle(val) {
   if (isNil(val)) return ''
   if (isStr(val)) return val && attr('style', val)
-  if (isDict(val)) return encodeStyles(foldDict(val, '', appendEncodeStyle))
+  if (isDict(val)) return encodeStyle(foldDict(val, '', appendEncodeStyle))
   throw Error(`style must be string or dict, got ${show(val)}`)
 }
 
@@ -160,6 +158,9 @@ function camelToKebab(val) {
   return out
 }
 
+const reText = /[&\u00a0<>]/g
+const reAttr = /[&\u00a0"]/g
+
 // https://www.w3.org/TR/html52/syntax.html#escaping-a-string
 function escapeChar(char) {
   if (char === '&')      return '&amp;'
@@ -208,11 +209,8 @@ function isStringableObj(val) {
   )
 }
 
-function foldArr(val, acc, fun, ...args) {
-  if (!isNil(val)) {
-    valid(val, isArr)
-    for (let i = 0; i < val.length; i += 1) acc = fun(acc, val[i], i, ...args)
-  }
+function foldArr(val, acc, fun) {
+  for (let i = 0; i < val.length; i += 1) acc = fun(acc, val[i])
   return acc
 }
 

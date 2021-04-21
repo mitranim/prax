@@ -22,7 +22,7 @@ Tiny (a few kilobytes _un_-minified) and dependency-free. Native JS module.
   * [`S`](#stype-props-children)
   * [`F`](#fchildren)
   * [`reset`](#resetelem-props-children)
-  * [`resetProps`](#resetelem-props)
+  * [`resetProps`](#resetpropselem-props)
   * [`e`](#etype-props-children-1)
   * [Undocumented](#undocumented)
   * [React Compat](#react-compat)
@@ -347,7 +347,7 @@ customElements.define('a-rec-text', RecText)
 Just like React, Prax conflates attributes and properties, calling everything "props". Here are the rules. The term "nil" stands for both `null` and `undefined`.
 
 * Props as a whole are `nil | {}`.
-* Any prop with a nil value is either removed, unset, or skipped, as appropriate.
+* Any prop with a `nil` value is either unset or skipped, as appropriate.
 * [`class`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/class) and [`className`](https://developer.mozilla.org/en-US/docs/Web/API/Element/className) are both supported, as `nil | string`.
 * [`attributes`](https://developer.mozilla.org/en-US/docs/Web/API/Element/attributes) is `nil | {}`. Every key-value is assumed to be an attribute, even in browsers, and follows the normal attribute assignment rules; see below.
 * [`style`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/style) is `nil | string | {}`. If `{}`, it must have `camelCase` keys, matching the structure of a [`CSSStyleDeclaration`](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleDeclaration) object. Values are `nil | string`.
@@ -423,6 +423,10 @@ function Inner({children, ...props}) {
 ```
 
 ## Changelog
+
+### `0.5.2`
+
+Minor consistency tweaks in class and style assignment. Minor code cosmetics.
 
 ### `0.5.1`
 
