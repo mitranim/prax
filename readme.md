@@ -7,7 +7,7 @@ Experimental HTML/DOM rendering system for hybrid SSR + SPA apps. See [Why](#why
 * No library classes.
 * No templates. No string parsing. Just function calls.
 * No intermediate representations. Render directly to a string in Node, directly to DOM nodes in browsers.
-* Render only once. Use native [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) for state. (Out of scope for Prax.)
+* Render only once. Use native [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) for state. (Doesn't need library support.)
 * Replace instead of reflowing.
 * Nice-to-use in plain JS. No build system required.
 
@@ -423,6 +423,10 @@ function Inner({children, ...props}) {
 ```
 
 ## Changelog
+
+### `0.5.3`
+
+Consistently report key names in exceptions for invalid properties in nested props such as `dataset`.
 
 ### `0.5.2`
 

@@ -100,7 +100,7 @@ function appendEncodeStyle(acc, val, key) {
 function encodeStylePair(key, val) {
   if (isNil(val)) return ''
   validAt(key, val, isStr)
-  return `${camelToKebab(key)}: ${toStr(val)};`
+  return `${camelToKebab(key)}: ${val};`
 }
 
 function encodeDataset(dataset) {
@@ -135,7 +135,8 @@ function attr(key, val) {
     return !val ? `` : ` ${key}=""`
   }
 
-  return ` ${key}="${escapeAttr(toStr(val))}"`
+  validAt(key, val, isStringable)
+  return ` ${key}="${escapeAttr(toStrUnchecked(val))}"`
 }
 
 // ARIA attributes appear to be case-insensitive, with only the `aria-` prefix
@@ -191,13 +192,17 @@ function validAt(key, val, fun) {
   }
 }
 
-function toStr(val) {
+function toStr(val) {return toStrUnchecked(only(val, isStringable))}
+
+// WTB shorter name.
+function toStrUnchecked(val) {
   if (isNil(val)) return ''
   if (isStr(val)) return val
   if (isPrim(val)) return val.toString()
-  valid(val, isStringableObj)
   return toStr(val.toString())
 }
+
+function isStringable(val) {return isPrim(val) || isStringableObj(val)}
 
 function isStringableObj(val) {
   const {toString} = val
@@ -242,4 +247,4 @@ function valid(val, test) {
 }
 
 // Placeholder, might improve.
-function show(val) {return String(val)}
+function show(val) {return (isFun(val) && val.name) || String(val)}

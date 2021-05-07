@@ -1,6 +1,6 @@
 {
   "name": "prax",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "type": "module",
   "main": "./node.mjs",
   "browser": "./prax.mjs",
@@ -10,6 +10,11 @@
     "w": "npm run test-node-w & npm run test-browser-w",
     "prepublishOnly": "node test/test-node.mjs"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mitranim/prax.git"
+  },
+  "license": "Unlicense",
   "devDependencies": {
     "afr": "0.2.1"
   }

@@ -118,4 +118,4 @@ function valid(val, test) {
 }
 
 // Placeholder, might improve.
-function show(val) {return String(val)}
+function show(val) {return (isFun(val) && val.name) || String(val)}

@@ -163,7 +163,8 @@ function setAttr(val, key, node) {
     return
   }
 
-  node.setAttribute(key, toStr(val))
+  validAt(key, val, isStringable)
+  node.setAttribute(key, toStrUnchecked(val))
 }
 
 function setClass(node, val) {
@@ -198,7 +199,10 @@ function setDataset(node, val) {
 
 function setDatasetProp(val, key, dataset) {
   if (isNil(val)) delete dataset[key]
-  else dataset[key] = toStr(val)
+  else {
+    validAt(key, val, isStringable)
+    dataset[key] = toStrUnchecked(val)
+  }
 }
 
 function addClass(acc, val) {
@@ -229,14 +233,17 @@ function elemValid(name, children) {
 // Many DOM APIs consider only `null` to be nil.
 function normNil(val) {return isNil(val) ? null : val}
 function normStr(val) {return isNil(val) ? null : str(val)}
+function toStr(val) {return toStrUnchecked(only(val, isStringable))}
 
-function toStr(val) {
+// WTB shorter name.
+function toStrUnchecked(val) {
   if (isNil(val)) return ''
   if (isStr(val)) return val
   if (isPrim(val)) return val.toString()
-  valid(val, isStringableObj)
   return toStr(val.toString())
 }
+
+function isStringable(val) {return isPrim(val) || isStringableObj(val)}
 
 function isStringableObj(val) {
   const {toString} = val
@@ -280,4 +287,4 @@ function validInst(val, Cls) {
 }
 
 // Placeholder, might improve.
-function show(val) {return String(val)}
+function show(val) {return (isFun(val) && val.name) || String(val)}
