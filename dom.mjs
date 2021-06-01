@@ -102,7 +102,7 @@ function appendRawChild(node, val) {
   while (clone.firstChild) node.append(clone.firstChild)
 }
 
-// Should be kept in sync with `node.mjs` -> `encodeProp`.
+// Should be kept in sync with `str.mjs` -> `encodeProp`.
 // Expected to accumulate more special cases over time.
 function setProp(val, key, node) {
   if (key === 'children')   throw Error(`use {R} from 'prax/rcompat.mjs' for children-in-props`)
@@ -147,7 +147,7 @@ function setAttrs(node, attrs) {
   eachVal(attrs, setAttr, node)
 }
 
-// Should be kept in sync with `node.mjs` -> `attr`.
+// Should be kept in sync with `str.mjs` -> `attr`.
 function setAttr(val, key, node) {
   valid(key, isStr)
 
@@ -180,7 +180,7 @@ function setClass(node, val) {
   setAttr(val, 'class', node)
 }
 
-// Should be kept in sync with `node.mjs` -> `encodeStyle`.
+// Should be kept in sync with `str.mjs` -> `encodeStyle`.
 function setStyle(node, val) {
   if (isNil(val) || isStr(val)) return setAttr(val, 'style', node)
   if (isDict(val)) return eachVal(val, setStyleProp, node.style)

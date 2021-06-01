@@ -1,21 +1,15 @@
 {
   "name": "prax",
-  "version": "0.5.3",
+  "version": "0.6.0",
   "type": "module",
-  "main": "./node.mjs",
-  "browser": "./prax.mjs",
+  "main": "./str.mjs",
+  "browser": "./dom.mjs",
   "scripts": {
-    "test-node-w": "watchexec -c -r -d=0 'node test/test-node.mjs'",
-    "test-browser-w": "node test/srv.mjs",
-    "w": "npm run test-node-w & npm run test-browser-w",
-    "prepublishOnly": "node test/test-node.mjs"
+    "prepublishOnly": "make test-str"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/mitranim/prax.git"
   },
-  "license": "Unlicense",
-  "devDependencies": {
-    "afr": "0.2.1"
-  }
+  "license": "Unlicense"
 }

@@ -1,10 +1,10 @@
 // See `impl.md` for implementation notes.
 
-import {Raw, boolAttrs, voidElems} from './prax.mjs'
+import {Raw, boolAttrs, voidElems} from './dom.mjs'
 
 /* Public API */
 
-export {Raw, boolAttrs, voidElems, cls} from './prax.mjs'
+export {Raw, boolAttrs, voidElems, cls} from './dom.mjs'
 
 export function E(name, props, ...children) {
   return new Raw(encodeHtml(name, props, children))
@@ -29,9 +29,15 @@ export function escapeAttr(val) {
   return reAttr.test(val) ? val.replace(reAttr, escapeChar) : val
 }
 
+export function doc(...children) {
+  return F(doctype, ...children).toString()
+}
+
 export const e = E.bind.bind(E, undefined)
 
 /* Internal Utils */
+
+const doctype = new Raw(`<!doctype html>`)
 
 function encodeHtml(name, props, children) {
   valid(name, isValidElemName)
@@ -62,7 +68,7 @@ function encodeChild(node) {
 function encodeProps(props) {return foldDict(props, '', appendEncodeProp)}
 function appendEncodeProp(acc, val, key) {return acc + encodeProp(key, val)}
 
-// Should be kept in sync with `prax.mjs` -> `setProp`.
+// Should be kept in sync with `dom.mjs` -> `setProp`.
 // Expected to accumulate more special cases over time.
 // TODO: skip this for XML rendering.
 function encodeProp(key, val) {
@@ -82,7 +88,7 @@ function encodeProp(key, val) {
 function encodeAttrs(attrs) {return foldDict(attrs, '', appendEncodeAttr)}
 function appendEncodeAttr(acc, val, key) {return acc + attr(key, val)}
 
-// Should be kept in sync with `prax.mjs` -> `setStyle`.
+// Should be kept in sync with `dom.mjs` -> `setStyle`.
 function encodeStyle(val) {
   if (isNil(val)) return ''
   if (isStr(val)) return val && attr('style', val)
@@ -113,7 +119,7 @@ function appendEncodeDataAttr(acc, val, key) {
 }
 
 /*
-Should be kept in sync with `prax.mjs` -> `setAttr`.
+Should be kept in sync with `dom.mjs` -> `setAttr`.
 
 The HTML specification permits empty attrs without `=""`:
 

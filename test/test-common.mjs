@@ -433,8 +433,8 @@ export function testCommon({E, F, Raw, cls, e}, eqm) {
       }()
     }()
 
-    // Fragment's type and structure is different between Node and browsers, and
-    // tested separately.
+    // Fragment's type and structure is different between `str.mjs` and
+    // `dom.mjs`, and tested separately.
     void function testFragment() {
       void function testFragmentAsChild() {
         eqm(

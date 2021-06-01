@@ -1,5 +1,5 @@
-import * as x from '../prax.mjs'
-import {E, F} from '../prax.mjs'
+import * as x from '../dom.mjs'
+import {E, F} from '../dom.mjs'
 import {is, eq} from './test-utils.mjs'
 import {testCommon} from './test-common.mjs'
 

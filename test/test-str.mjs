@@ -1,5 +1,5 @@
-import * as x from '../node.mjs'
-import {E, F, Raw} from '../node.mjs'
+import * as x from '../str.mjs'
+import {E, F, Raw, doc} from '../str.mjs'
 import {is, eq} from './test-utils.mjs'
 import {testCommon} from './test-common.mjs'
 import {testRcompat} from './test-rcompat.mjs'
@@ -63,7 +63,7 @@ void function testChildEscaping() {
   }()
 }()
 
-// Node-specific; in browsers, it's a `DocumentFragment` which doesn't have any
+// `str`-specific; in browsers, it's a `DocumentFragment` which doesn't have any
 // sensible serialization behavior.
 void function testFragment() {
   is(true, F() instanceof Raw)
@@ -74,6 +74,13 @@ void function testFragment() {
   )
 
   eqm(`&lt;!doctype html&gt;`, F(`<!doctype html>`))
+}()
+
+// `str`-specific; in browsers, we're not allowed to construct `DocumentType`.
+void function testDoc() {
+  is('string', typeof doc())
+  eq(`<!doctype html>`, doc())
+  eq(`<!doctype html><html>text</html>`, doc(E('html', {}, 'text')))
 }()
 
 console.log('[test] ok!')

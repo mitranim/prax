@@ -1,11 +1,5 @@
-See `package.json` → `scripts` for test commands.
+Run `make` for watch mode. Requires `deno`.
 
-Watch mode:
+The DOM test must be verified humanly. Open the URL printed to the terminal.
 
-```sh
-npm run w
-```
-
-Watch mode requires `watchexec`. After starting, click the localhost URL printed to the terminal to open the browser.
-
-NPM runs the Node test via `prepublishOnly`. The browser test must be verified humanly.
+The string test is verified automatically. NPM runs it via `prepublishOnly`.

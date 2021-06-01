@@ -20,4 +20,4 @@ The worst case scenario is:
 
 ## Void Elems
 
-Browsers technically allow appending children to a void element such as `link` or `img`. In the DOM, the children are present, but when serializing, they're ignored. We specifically forbid void element children, in order to minimize gotchas and ensure symmetry between Node and browser.
+Browsers technically allow appending children to a void element such as `link` or `img`. In the DOM, the children are present, but when serializing, they're ignored. We specifically forbid void element children, in order to minimize gotchas and ensure symmetry between `str.mjs` and `dom.mjs`.
