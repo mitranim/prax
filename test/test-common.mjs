@@ -1,6 +1,6 @@
 import {eq, throws} from './test-utils.mjs'
 
-export function testCommon({E, F, Raw, cls, e}, eqm) {
+export function testCommon({E, F, Raw, cls, e, len, map}, eqm) {
   throws(E, 'link', {}, null)
 
   void function testInvalid() {
@@ -470,5 +470,30 @@ export function testCommon({E, F, Raw, cls, e}, eqm) {
     eqm(`<div class="one">some text</div>`, e('div', {class: 'one'}, 'some text')())
     eqm(`<div class="one">some text</div>`, e('div', {class: 'one'})('some text'))
     eqm(`<div class="one">some text</div>`, e('div')({class: 'one'}, 'some text'))
+  }()
+
+  void function testLen() {
+    eq(0, len())
+    eq(0, len(undefined))
+    eq(0, len(null))
+    eq(1, len(10))
+    eq(1, len([10]))
+    eq(1, len([[10]]))
+    eq(3, len([[10], null, 20, undefined, [[30]]]))
+  }()
+
+  void function testMap() {
+    eq([],                 map(undefined, id))
+    eq([],                 map(null, id))
+    eq([],                 map([undefined], id))
+    eq([],                 map([null], id))
+    eq([10, 20],           map([null, [[[10], 20]], undefined], id))
+    eq([[10, 0], [20, 1]], map([null, [[[10], 20]], undefined], args))
+
+    throws(map)
+    throws(map, [])
+
+    function id(val) {return val}
+    function args(...args) {return args}
   }()
 }

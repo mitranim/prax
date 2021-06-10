@@ -1,5 +1,4 @@
-import {eq, throws} from './test-utils.mjs'
-import {R, countChildren, mapChildren} from '../rcompat.mjs'
+import {R} from '../rcompat.mjs'
 
 /*
 Missing tests:
@@ -30,30 +29,5 @@ export function testRcompat({E: baseE}, eqm) {
         E('div', {children: ['one']}, 'two'),
       )
     }()
-  }()
-
-  void function testCountChildren() {
-    eq(0, countChildren())
-    eq(0, countChildren(undefined))
-    eq(0, countChildren(null))
-    eq(1, countChildren(10))
-    eq(1, countChildren([10]))
-    eq(1, countChildren([[10]]))
-    eq(3, countChildren([[10], null, 20, undefined, [[30]]]))
-  }()
-
-  void function testMapChildren() {
-    eq([],                 mapChildren(undefined, id))
-    eq([],                 mapChildren(null, id))
-    eq([],                 mapChildren([undefined], id))
-    eq([],                 mapChildren([null], id))
-    eq([10, 20],           mapChildren([null, [[[10], 20]], undefined], id))
-    eq([[10, 0], [20, 1]], mapChildren([null, [[[10], 20]], undefined], args))
-
-    throws(mapChildren)
-    throws(mapChildren, [])
-
-    function id(val) {return val}
-    function args(...args) {return args}
   }()
 }

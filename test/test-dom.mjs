@@ -1,6 +1,6 @@
 import * as x from '../dom.mjs'
 import {E, F} from '../dom.mjs'
-import {is, eq} from './test-utils.mjs'
+import {is, eq, throws} from './test-utils.mjs'
 import {testCommon} from './test-common.mjs'
 
 Error.stackTraceLimit = Infinity
@@ -29,7 +29,6 @@ try {
     eqm(`<div class="two"></div>`, E('div', {class:     'one', className: 'two'}))
     eqm(`<div class="two"></div>`, E('div', {className: 'one', class: 'two'}))
   }()
-
 
   void function testBoolAttrsAsProps() {
     is(true, E('input', {type: 'checkbox', checked: true}).checked)
@@ -86,6 +85,52 @@ try {
 
     eq([], toChildTextTree(prev))
     eq(['one', 'two', 'three'], toChildTextTree(next))
+  }()
+
+  // Parts of this function are tested elsewhere.
+  // We only need a sanity check here.
+  void function testReset() {
+    throws(x.reset)
+
+    void function testResetIdentity() {
+      const node = E('div')
+      is(node, x.reset(node))
+    }()
+
+    eqm(
+      `<div class="three">four</div>`,
+      x.reset(E('div', {class: 'one'}, 'two'), {class: 'three'}, 'four'),
+    )
+  }()
+
+  // Parts of this function are tested elsewhere.
+  // We only need a sanity check here.
+  void function testResetProps() {
+    throws(x.resetProps)
+
+    void function testResetPropsIdentity() {
+      const node = E('div')
+      is(node, x.resetProps(node))
+    }()
+
+    eqm(
+      `<div class="three">two</div>`,
+      x.resetProps(E('div', {class: 'one'}, 'two'), {class: 'three'}, 'four'),
+    )
+  }()
+
+  // Parts of this function are tested elsewhere.
+  // We only need a sanity check here.
+  void function testReplace() {
+    throws(x.replace)
+    throws(x.replace, E('div'))
+    is(undefined, x.replace(E('div', {}, 'text').firstChild))
+
+    const node = E('div', {}, E('one'), E('two'), E('three'))
+    eqm(`<div><one></one><two></two><three></three></div>`, node)
+
+    is(undefined, x.replace(node.childNodes[1], 'four', null, 'five'))
+    eqm(`<div><one></one>fourfive<three></three></div>`, node)
   }()
 
   void function testOk() {

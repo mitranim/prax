@@ -26,10 +26,26 @@ export function reset(node, props, ...children) {
 export function resetProps(node, props) {
   validInst(node, Element)
   eachVal(props, setProp, node)
+  return node
+}
+
+export function replace(node, ...children) {
+  node.parentNode.replaceChild(F(...children), node)
 }
 
 export function cls(...vals) {
-  return vals.reduce(addClass, '')
+  return fold(vals, '', addClass)
+}
+
+export function len(val) {
+  return isNil(val) ? 0 : isArr(val) ? sumBy(val, len) : 1
+}
+
+export function map(val, fun, ...args) {
+  valid(fun, isFun)
+  const acc = []
+  mapMutDeep(0, val, 0, acc, fun, ...args)
+  return acc
 }
 
 // The specification postulates the concept, but where's the standard list?
@@ -53,7 +69,7 @@ export const voidElems = new Set([
   'param', 'source', 'track', 'wbr',
 ])
 
-// Provided to make code more explicit/intentional. In reality, any `new String`
+// Makes user code more explicit/intentional. In reality, any `new String`
 // object serves as a "raw" marker.
 export class Raw extends String {}
 
@@ -206,7 +222,7 @@ function setDatasetProp(val, key, dataset) {
 }
 
 function addClass(acc, val) {
-  if (isArr(val)) return val.reduce(addClass, acc)
+  if (isArr(val)) return fold(val, acc, addClass)
 
   // For convenience, any falsy value is skipped, allowing `a && b`.
   if (!val) return acc
@@ -246,9 +262,9 @@ function toStrUnchecked(val) {
 function isStringable(val) {return isPrim(val) || isStringableObj(val)}
 
 function isStringableObj(val) {
+  if (!isObj(val)) return false
   const {toString} = val
   return (
-    isObj(val) &&
     isFun(toString) &&
     toString !== Object.prototype.toString &&
     toString !== Array.prototype.toString
@@ -260,6 +276,21 @@ function eachVal(val, fun, ...args) {
   valid(val, isDict)
   for (const key in val) fun(val[key], key, ...args)
 }
+
+function fold(val, acc, fun, ...args) {
+  for (let i = 0; i < val.length; i += 1) acc = fun(acc, val[i], i, ...args)
+  return acc
+}
+
+function mapMutDeep(i, val, _i, acc, fun, ...args) {
+  if (isNil(val)) return i
+  if (isArr(val)) return fold(val, i, mapMutDeep, acc, fun, ...args)
+  acc.push(fun(val, i, ...args))
+  return i + 1
+}
+
+function sumBy(val, fun, ...args) {return fold(val, 0, addBy, fun, ...args)}
+function addBy(acc, val, i, fun, ...args) {return acc + fun(val, i, ...args)}
 
 function is(a, b) {return Object.is(a, b)}
 function isNil(val) {return val == null}

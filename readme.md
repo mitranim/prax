@@ -24,6 +24,10 @@ Tiny (a few kilobytes _un_-minified) and dependency-free. Native JS module.
   * [`F`](#fchildren)
   * [`reset`](#resetelem-props-children)
   * [`resetProps`](#resetpropselem-props)
+  * [`replace`](#replacenode-children)
+  * [`cls`](#clsvals)
+  * [`len`](#lenchildren)
+  * [`map`](#mapchildren-fun-args)
   * [`e`](#etype-props-children-1)
   * [Undocumented](#undocumented)
   * [React Compat](#react-compat)
@@ -264,6 +268,52 @@ import * as x from 'prax'
 x.resetProps(elem, {class: 'new-class', hidden: false})
 ```
 
+### `replace(node, ...children)`
+
+(Browser-specific API, only in `dom.mjs`.)
+
+Shortcut for:
+
+```js
+node.parentNode.replaceChild(F(...children), node)
+```
+
+### `cls(...vals)`
+
+Combines multiple CSS classes:
+
+* Ignores falsy values (nil, `''`, `false`, `0`, `NaN`).
+* Recursively traverses arrays.
+* Combines strings, space-separated.
+
+```js
+x.cls('one', ['two'], false, 0, null, [['three']])
+// 'one two three'
+```
+
+### `len(children)`
+
+Analog of `React.Children.count`. Counts non-nil children, recursively traversing arrays.
+
+```js
+const children = ['one', null, [['two'], null]]
+x.len(children)
+// 2
+```
+
+### `map(children, fun, ...args)`
+
+where `fun` is `ƒ(child, i, ...args)`
+
+Analog of `React.Children.map`. Flatmaps `children` via `fun`, returning the resulting array. Ignores nils and recursively traverses arrays.
+
+```js
+const children = ['one', null, [['two'], null]]
+function fun(...args) {return args}
+x.map(children, fun, 'bonus')
+// [['one', 0, 'bonus'], ['two', 1, 'bonus']]
+```
+
 ### `e(type, props, ...children)`
 
 (Better name pending.) Tiny shortcut for making shortcuts. Performs [partial application](https://en.wikipedia.org/wiki/Partial_application) of [`E`](#etype-props-children) with the given arguments.
@@ -284,7 +334,6 @@ function Page() {
 
 Some tools are exported but undocumented to avoid bloating the docs. The source code should be self-explanatory:
 
-* `cls`
 * `escapeText` (only `str.mjs`)
 * `escapeAttr` (only `str.mjs`)
 * `boolAttrs`
@@ -297,9 +346,7 @@ Some tools are exported but undocumented to avoid bloating the docs. The source 
 The optional module `rcompat.mjs` exports a few functions for JSX compatibility and migrating code from React. See the section [JSX](#jsx) for usage examples.
 
 * `R`
-* `F` (different one)
-* `countChildren`
-* `mapChildren`
+* `F` (different one!)
 
 ## Imperative, Synchronous
 
@@ -429,6 +476,13 @@ function Inner({children, ...props}) {
 ```
 
 ## Changelog
+
+### `0.7.0`
+
+* Added `replace`.
+* `resetProps` now returns the same node, like `reset`.
+* Renamed `countChildren` → `len`, moved from `rcompat.mjs` to main API.
+* Renamed `mapChildren` → `map`, moved from `rcompat.mjs` to main API.
 
 ### `0.6.0`
 

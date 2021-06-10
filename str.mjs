@@ -4,7 +4,7 @@ import {Raw, boolAttrs, voidElems} from './dom.mjs'
 
 /* Public API */
 
-export {Raw, boolAttrs, voidElems, cls} from './dom.mjs'
+export {Raw, boolAttrs, voidElems, cls, len, map} from './dom.mjs'
 
 export function E(name, props, ...children) {
   return new Raw(encodeHtml(name, props, children))
@@ -211,9 +211,9 @@ function toStrUnchecked(val) {
 function isStringable(val) {return isPrim(val) || isStringableObj(val)}
 
 function isStringableObj(val) {
+  if (!isObj(val)) return false
   const {toString} = val
   return (
-    isObj(val) &&
     isFun(toString) &&
     toString !== Object.prototype.toString &&
     toString !== Array.prototype.toString

@@ -79,8 +79,8 @@ void function testFragment() {
 // `str`-specific; in browsers, we're not allowed to construct `DocumentType`.
 void function testDoc() {
   is('string', typeof doc())
-  eq(`<!doctype html>`, doc())
-  eq(`<!doctype html><html>text</html>`, doc(E('html', {}, 'text')))
+  is(`<!doctype html>`, doc())
+  is(`<!doctype html><html>text</html>`, doc(E('html', {}, 'text')))
 }()
 
 console.log('[test] ok!')

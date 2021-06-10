@@ -1,11 +1,11 @@
 {
   "name": "prax",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "type": "module",
   "main": "./str.mjs",
   "browser": "./dom.mjs",
   "scripts": {
-    "prepublishOnly": "make test-str"
+    "prepublishOnly": "make prep"
   },
   "repository": {
     "type": "git",

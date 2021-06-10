@@ -38,19 +38,6 @@ transpiler.
 */
 export function F({children}) {return children}
 
-export function countChildren(val) {
-  if (isNil(val)) return 0
-  if (isArr(val)) return sumBy(val, countChildren)
-  return 1
-}
-
-export function mapChildren(val, fun, ...args) {
-  valid(fun, isFun)
-  const acc = []
-  mapMutDeep(0, val, 0, acc, fun, ...args)
-  return acc
-}
-
 /* Internal Utils */
 
 function propsToReact(props, children) {
@@ -81,21 +68,6 @@ function trim(children) {
 function comb(a, b) {
   return isNil(a) ? b : isNil(b) ? a : [a, b]
 }
-
-function mapMutDeep(i, val, _i, acc, fun, ...args) {
-  if (isNil(val)) return i
-  if (isArr(val)) return fold(val, i, mapMutDeep, acc, fun, ...args)
-  acc.push(fun(val, i, ...args))
-  return i + 1
-}
-
-function fold(val, acc, fun, ...args) {
-  for (let i = 0; i < val.length; i += 1) acc = fun(acc, val[i], i, ...args)
-  return acc
-}
-
-function sumBy(val, fun, ...args) {return fold(val, 0, addBy, fun, ...args)}
-function addBy(acc, val, i, fun, ...args) {return acc + fun(val, i, ...args)}
 
 function isFun(val) {return typeof val === 'function'}
 function isNil(val) {return val == null}

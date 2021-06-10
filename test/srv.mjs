@@ -1,5 +1,5 @@
 import * as hs from 'https://deno.land/std@0.97.0/http/server.ts'
-import * as a from 'https://unpkg.com/afr@0.3.1/afr_deno.mjs'
+import * as a from 'https://unpkg.com/afr@0.3.2/afr_deno.mjs'
 
 const srvOpts = {port: 57286, hostname: 'localhost'}
 const dirs = [a.dir('.', /[.](?:html|mjs$)/)]
