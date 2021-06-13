@@ -79,8 +79,22 @@ Probably never heard of X! For the very specific requirements outlined above, it
 
 ## Usage
 
+With NPM:
+
 ```sh
 npm i -E prax
+```
+
+With URL imports in Deno:
+
+```js
+import {E} from 'https://unpkg.com/prax@<version>/str.mjs'
+```
+
+With URL imports in browsers:
+
+```js
+import {E} from 'https://unpkg.com/prax@<version>/dom.mjs'
 ```
 
 This example uses plain JS. Prax is also [compatible with JSX](#jsx). For a better experience, use native modules and run your app from source in both Node/Deno and browsers.
