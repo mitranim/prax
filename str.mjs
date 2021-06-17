@@ -29,15 +29,13 @@ export function escapeAttr(val) {
   return reAttr.test(val) ? val.replace(reAttr, escapeChar) : val
 }
 
-export function doc(...children) {
-  return F(doctype, ...children).toString()
+export function doc(val) {
+  return `<!doctype html>${encodeChild(val)}`
 }
 
 export const e = E.bind.bind(E, undefined)
 
 /* Internal Utils */
-
-const doctype = new Raw(`<!doctype html>`)
 
 function encodeHtml(name, props, children) {
   valid(name, isValidElemName)

@@ -133,6 +133,14 @@ try {
     eqm(`<div><one></one>fourfive<three></three></div>`, node)
   }()
 
+  // `dom`-specific; in `str`, this prepends a doctype.
+  void function testDoc() {
+    is(undefined, doc())
+
+    const node = E('html')
+    is(node, doc(node))
+  }()
+
   void function testOk() {
     x.reset(document.body, {},
       E('p', {class: 'size-double text-center'}, '[test] ok!'),

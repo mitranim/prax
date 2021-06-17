@@ -48,6 +48,9 @@ export function map(val, fun, ...args) {
   return acc
 }
 
+// Shim for isomorphism with `str.mjs`.
+export function doc(val) {return val}
+
 // The specification postulates the concept, but where's the standard list?
 // Taken from non-authoritative sources.
 //

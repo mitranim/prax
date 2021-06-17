@@ -76,10 +76,11 @@ void function testFragment() {
   eqm(`&lt;!doctype html&gt;`, F(`<!doctype html>`))
 }()
 
-// `str`-specific; in browsers, we're not allowed to construct `DocumentType`.
+// `str`-specific; in browsers, this is a pass-through.
 void function testDoc() {
   is('string', typeof doc())
   is(`<!doctype html>`, doc())
+  is(`<!doctype html>`, doc(``))
   is(`<!doctype html><html>text</html>`, doc(E('html', {}, 'text')))
 }()
 

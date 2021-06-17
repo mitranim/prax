@@ -2,11 +2,15 @@
 
 Experimental HTML/DOM rendering system for hybrid SSR + SPA apps. See [Why](#why). In short: performance and _radical_ simplicity.
 
+* Markup = nested function calls.
+* No intermediate representations.
+  * Render directly to strings in Node/Deno.
+  * Render directly to DOM nodes in browsers.
 * No VDOM.
 * No diffing (mostly).
 * No library classes.
-* No templates. No string parsing. Just function calls.
-* No intermediate representations. Render directly to a string in Node/Deno, directly to DOM nodes in browsers.
+* No templates.
+* No string parsing.
 * Render only once. Use native [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) for state. (Doesn't need library support.)
 * Replace instead of reflowing.
 * Runs in Node, Deno, and browsers.
@@ -18,6 +22,10 @@ Tiny (a few kilobytes _un_-minified) and dependency-free. Native JS module.
 
 * [Why](#why)
 * [Usage](#usage)
+  * [Why not React?](#why-not-react)
+  * [Why not Svelte?](#why-not-svelte)
+  * [Why not plain strings?](#why-not-plain-strings)
+  * [Why not framework X?](#why-not-framework-x)
 * [API](#api)
   * [`E`](#etype-props-children)
   * [`S`](#stype-props-children)
@@ -28,6 +36,7 @@ Tiny (a few kilobytes _un_-minified) and dependency-free. Native JS module.
   * [`cls`](#clsvals)
   * [`len`](#lenchildren)
   * [`map`](#mapchildren-fun-args)
+  * [`doc`](#docval)
   * [`e`](#etype-props-children-1)
   * [Undocumented](#undocumented)
   * [React Compat](#react-compat)
@@ -73,6 +82,20 @@ Svelte has similar design goals, but seems to require a build system, which auto
 
 Prax targets a particular breed of SSR+SPA apps, for which Svelte might be unfit. I haven't checked Svelte's server-rendering story. See the constraints outlined above.
 
+### Why not plain strings?
+
+For the application architecture espoused by Prax, it would be even simpler and faster to use strings, so why bother with Prax?
+
+```js
+`<div class="${cls}">${content}</div>`
+```
+
+* Prax provides an isomorphic API that renders to strings in Node/Deno, and to DOM nodes in browsers.
+* Prax handles a myriad of HTML/XML gotchas, such as content escaping, nil tolerance, and various bug prevention measures.
+* Prax is JSX-compatible, without any React gunk.
+* Nested function calls are more syntactically precise/rich/powerful than a large string. Editors provide better support. Syntax errors are immediately found. And so on.
+* Probably more.
+
 ### Why not framework X?
 
 Probably never heard of X! For the very specific requirements outlined above, it was faster to make a fit, than to search among the thousands of unfits. If one already existed, let me know.
@@ -88,19 +111,19 @@ npm i -E prax
 With URL imports in Deno:
 
 ```js
-import {E} from 'https://unpkg.com/prax@<version>/str.mjs'
+import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.1/str.mjs'
 ```
 
 With URL imports in browsers:
 
 ```js
-import {E} from 'https://unpkg.com/prax@<version>/dom.mjs'
+import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.1/dom.mjs'
 ```
 
 This example uses plain JS. Prax is also [compatible with JSX](#jsx). For a better experience, use native modules and run your app from source in both Node/Deno and browsers.
 
 ```js
-import {E} from 'prax'
+import {E, doc} from 'prax'
 
 function main() {
   const html = Html({title: 'home', body: Index()})
@@ -108,7 +131,7 @@ function main() {
 }
 
 function Html({title, body}) {
-  return (
+  return doc(
     E('html', {lang: 'en'},
       E('head', {},
         E('link', {rel: 'stylesheet', href: '/styles/main.css'}),
@@ -130,6 +153,10 @@ function Index() {
 JSX example. See [notes on JSX compatibility](#jsx).
 
 ```js
+/* @jsx E */
+
+import {E, doc} from 'prax'
+
 function main() {
   const html = Html({title: 'home', body: Index()})
 
@@ -139,7 +166,7 @@ function main() {
 }
 
 function Html({title, body}) {
-  return (
+  return doc(
     <html lang='en'>
       <head>
         <link rel='stylesheet' href='/styles/main.css' />
@@ -226,23 +253,7 @@ function SomeIcon() {
 
 Short for "fragment". Renders the children without an enclosing element. In `str.mjs`, this simply combines their markup without any wrappers or delimiters, and returns a string as `Raw`. In `dom.mjs`, this returns a [`DocumentFragment`](https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment).
 
-You will rarely use this, because [`E`](#etype-props-children) supports arrays of children, nested to any depth. `F` is used internally by [`reset`](#resetelem-props-children). It's also handy for prepending a doctype at the top level (but use undocumented `doc` instead, which is shorter). You could also interpolate strings, but `F` will sensibly handle nils, arrays, and so on.
-
-```js
-import {E, F, Raw} from 'prax'
-
-function onRequest(req, res) {
-  const doc = F(new Raw(`<!doctype html>`), Html())
-  res.end(String(doc))
-}
-
-function Html() {
-  return E('html', {},
-    E('head', {}, '...'),
-    E('body', {}, '...'),
-  )
-}
-```
+You will rarely use this, because [`E`](#etype-props-children) supports arrays of children, nested to any depth. `F` is used internally by [`reset`](#resetelem-props-children).
 
 ### `reset(elem, props, ...children)`
 
@@ -328,6 +339,30 @@ x.map(children, fun, 'bonus')
 // [['one', 0, 'bonus'], ['two', 1, 'bonus']]
 ```
 
+### `doc(val)`
+
+Shortcut for prepending [`<!doctype html>`](https://developer.mozilla.org/en-US/docs/Glossary/Doctype).
+
+  * In `str.mjs`, this encodes `val` using the [children](#children) rules, prepends doctype, and returns a plain string, which may be served over HTTP, written to a file, etc.
+  * In `dom.mjs`, this simply returns `val`. Provided for isomorphism.
+
+```js
+import {E, doc} from 'prax'
+
+function onRequest(req, res) {
+  res.end(Html())
+}
+
+function Html() {
+  return doc(
+    E('html', {},
+      E('head'),
+      E('body'),
+    )
+  )
+}
+```
+
 ### `e(type, props, ...children)`
 
 (Better name pending.) Tiny shortcut for making shortcuts. Performs [partial application](https://en.wikipedia.org/wiki/Partial_application) of [`E`](#etype-props-children) with the given arguments.
@@ -353,7 +388,6 @@ Some tools are exported but undocumented to avoid bloating the docs. The source 
 * `boolAttrs`
 * `voidElems`
 * `Raw`
-* `doc` (only `str.mjs`)
 
 ### React Compat
 
@@ -490,6 +524,10 @@ function Inner({children, ...props}) {
 ```
 
 ## Changelog
+
+### `0.7.1`
+
+`doc` is now isomorphic and documented. In `dom.mjs`, it's just a pass-through.
 
 ### `0.7.0`
 
