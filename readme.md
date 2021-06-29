@@ -93,7 +93,7 @@ For the application architecture espoused by Prax, it would be even simpler and 
 * Prax provides an isomorphic API that renders to strings in Node/Deno, and to DOM nodes in browsers.
 * Prax handles a myriad of HTML/XML gotchas, such as content escaping, nil tolerance, and various bug prevention measures.
 * Prax is JSX-compatible, without any React gunk.
-* Nested function calls are more syntactically precise/rich/powerful than a large string. Editors provide better support. Syntax errors are immediately found. And so on.
+* Nested function calls are more syntactically precise/rich/powerful than a large string. Editors provide better support. Syntax errors are immediately found.
 * Probably more.
 
 ### Why not framework X?
@@ -482,6 +482,10 @@ In `str.mjs`, _after_ resolving all these rules, the output string is escaped, f
 Caution: literal content of `script` elements may require additional escaping when it contains `</script>` inside strings, regexps, and so on. The following example generates broken markup, and will display a visible `')`. Prax currently doesn't escape this automatically.
 
 ```js
+E('script', {}, new Raw(`console.log('</script>')`))
+```
+
+```html
 <script>console.log('</script>')</script>
 ```
 
