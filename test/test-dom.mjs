@@ -97,10 +97,19 @@ try {
       is(node, x.reset(node))
     }()
 
-    eqm(
-      `<div class="three">four</div>`,
-      x.reset(E('div', {class: 'one'}, 'two'), {class: 'three'}, 'four'),
-    )
+    void function testResetRemovesChildren() {
+      eqm(
+        `<div class="three"></div>`,
+        x.reset(E('div', {class: 'one'}, 'two'), {class: 'three'}),
+      )
+    }()
+
+    void function testResetReplacesChildren() {
+      eqm(
+        `<div class="three">four</div>`,
+        x.reset(E('div', {class: 'one'}, 'two'), {class: 'three'}, 'four'),
+      )
+    }()
   }()
 
   // Parts of this function are tested elsewhere.

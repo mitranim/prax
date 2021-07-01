@@ -111,13 +111,13 @@ npm i -E prax
 With URL imports in Deno:
 
 ```js
-import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.1/str.mjs'
+import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.2/str.mjs'
 ```
 
 With URL imports in browsers:
 
 ```js
-import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.1/dom.mjs'
+import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.2/dom.mjs'
 ```
 
 This example uses plain JS. Prax is also [compatible with JSX](#jsx). For a better experience, use native modules and run your app from source in both Node/Deno and browsers.
@@ -528,6 +528,10 @@ function Inner({children, ...props}) {
 ```
 
 ## Changelog
+
+### `0.7.2`
+
+`reset` no longer internally allocates a `DocumentFragment` when called only with 2 arguments.
 
 ### `0.7.1`
 

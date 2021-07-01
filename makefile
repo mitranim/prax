@@ -17,4 +17,4 @@ test-str:
 	deno run test/test-str.mjs
 
 test-dom-w:
-	deno run --allow-net --allow-read --watch test/srv.mjs
+	deno run -A --watch --unstable test/srv.mjs

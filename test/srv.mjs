@@ -1,26 +1,37 @@
-import * as hs from 'https://deno.land/std@0.97.0/http/server.ts'
-import * as a from 'https://unpkg.com/afr@0.3.2/afr_deno.mjs'
+/* global Deno */
+
+import * as a from 'https://deno.land/x/afr@0.4.1/afr.mjs'
 
 const srvOpts = {port: 57286, hostname: 'localhost'}
 const dirs = [a.dir('.', /[.](?:html|mjs$)/)]
 const bro = new a.Broad()
-const srv = hs.serve(srvOpts)
+const lis = Deno.listen(srvOpts)
 
 console.log(`[srv] listening on http://${srvOpts.hostname}:${srvOpts.port}/test/test.html`)
 
 watch()
-serve()
+listen(lis)
 
 async function watch() {
   for await (const msg of a.watch('.', dirs)) await bro.send(msg)
 }
 
-async function serve() {
-  for await (const req of srv) respond(req)
+async function listen(lis) {
+  for await (const conn of lis) {
+    serve(conn).catch(a.logErr)
+  }
 }
 
-async function respond(req) {
-  if (await bro.respond(req)) return
-  if (await a.serveSiteWithNotFound(req, dirs)) return
-  await req.respond({status: 404, body: 'not found'})
+async function serve(conn) {
+  for await (const event of Deno.serveHttp(conn)) {
+    event.respondWith(response(event.request)).catch(a.logErr)
+  }
+}
+
+async function response(req) {
+  return (
+    await bro.res(req) ||
+    a.resSiteWithNotFound(req, dirs) ||
+    new Response('not found', {status: 404})
+  )
 }
