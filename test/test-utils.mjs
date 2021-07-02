@@ -17,7 +17,7 @@ actual:   ${show(actual)}
 }
 
 export function throws(fun, ...args) {
-  if (typeof fun !== 'function') {
+  if (!isFun(fun)) {
     throw Error(`Expected a function, got ${fun}`)
   }
 

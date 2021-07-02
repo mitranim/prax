@@ -8,13 +8,13 @@
   "rules": {
     "no-restricted-globals": ["error",
       // window (browser)
-      "alert", "blur", "confirm", "event", "fetch", "find", "focus", "history",
-      "length", "location", "name", "navigator", "open", "parent", "print",
-      "prompt", "scroll", "self", "status", "stop", "top",
+      "alert", "blur", "confirm", "event", "find", "focus", "history",
+      "length", "location", "name", "open", "parent", "print",
+      "prompt", "scroll", "self", "status", "stop", "top", "close", "caches",
       // global (node)
       "root",
       // other
-      "test",
+      "test", "params", "toString",
       // These global functions are broken
       "isNaN", "isFinite",
     ],
