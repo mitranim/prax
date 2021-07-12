@@ -21,11 +21,11 @@ Tiny (a few kilobytes _un_-minified) and dependency-free. Native JS module.
 ## TOC
 
 * [Why](#why)
-* [Usage](#usage)
   * [Why not React?](#why-not-react)
   * [Why not Svelte?](#why-not-svelte)
   * [Why not plain strings?](#why-not-plain-strings)
   * [Why not framework X?](#why-not-framework-x)
+* [Usage](#usage)
 * [API](#api)
   * [`E`](#etype-props-children)
   * [`S`](#stype-props-children)
@@ -53,7 +53,7 @@ Tiny (a few kilobytes _un_-minified) and dependency-free. Native JS module.
 
 #### Bad for SSR+SPA
 
-React seems _particularly_ unfit for hybrid SSR + SPA apps. Your ideal flow:
+React seems _particularly unfit_ for hybrid SSR + SPA apps. Your ideal flow:
 
 * On any request, render the _entire_ page in Node/Deno.
 * The user gets the fully-built content. It has no JS placeholders, doesn't require any ajax, and doesn't contain invisible JSON.
