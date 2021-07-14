@@ -2,11 +2,15 @@
 
 ## E, S, F
 
-The names of these functions are abbreviated because they're typed and read _A LOT_.
+The names of these functions are abbreviated because they're used _**A LOT**_.
 
 ## `reset`
 
-`reset` buffers child nodes in a `DocumentFragment` _before_ removing old nodes, to avoid blanking old content, failing with a rendering exception, and ending with a blank page.
+`reset` buffers child nodes in a `DocumentFragment` _before_ removing old nodes, to avoid the following situation, which _can happen in Preact_:
+
+  * Clear old content.
+  * Exception during render.
+  * Result = blank page.
 
 Instead of this:
 
@@ -28,7 +32,7 @@ For `str.mjs`, many implementations were considered, implemented, and benchmarke
 
 All benchmarks were done in Node, version either 14 or 16. Other engines and versions might have different performance traits. The benchmark was limited and doesn't fully represent real apps; only _huge_ performance differences between approaches should be considered meaningful.
 
-Caveat: variants using byte buffers performed on-the-fly conversion to `utf-8`, while string-bashing variants did not; I think for "fairness" conversion was performed separately at the end, but memory could be lying.
+Caveat: variants using byte buffers performed on-the-fly conversion to `utf-8`, while string-bashing variants did not; I think that for "fairness", conversion was performed separately at the end, but my memory could be lying.
 
 Attempted approaches:
 
