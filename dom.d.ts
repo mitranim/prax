@@ -15,7 +15,7 @@ type Props =
     }
     & StringableRecord;
 
-type Child = Prim | Node | Child[];
+type Child = Prim | Node | Stringable | Child[];
 
 export function E<K extends keyof HTMLElementTagNameMap>(name: K, props?: Props, ...children: Child[]): HTMLElementTagNameMap[K];
 export function E<N extends HTMLElement>(name: string, props?: Props, ...children: Child[]): N;
