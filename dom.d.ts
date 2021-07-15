@@ -23,7 +23,7 @@ export function resetProps<N extends Node>(node: N, props?: Props): N;
 
 export function replace<N extends Node>(node: N, ...children: Child[]): void;
 
-type ClsVal = Nil | false | 0 | string | Array<ClsVal>;
+type ClsVal = Nil | false | 0 | string | ClsVal[];
 
 export function cls(...vals: ClsVal[]): string;
 
