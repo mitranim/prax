@@ -285,8 +285,8 @@ export function testCommon({E, F, Raw, cls, e, len, map}, eqm) {
       throws(E, 'input', {hidden: 10})
 
       eqm(
-        `<input hidden="" autofocus="" disabled="">`,
-        E('input', {hidden: true, autofocus: true, disabled: true}),
+        `<input autofocus="" disabled="" hidden="">`,
+        E('input', {autofocus: true, disabled: true, hidden: true}),
       )
 
       eqm(

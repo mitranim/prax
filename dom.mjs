@@ -129,13 +129,14 @@ function appendRawChild(node, val) {
 // Should be kept in sync with `str.mjs` -> `encodeProp`.
 // Expected to accumulate more special cases over time.
 function setProp(val, key, node) {
-  if (key === 'children')   throw Error(`use {R} from 'prax/rcompat.mjs' for children-in-props`)
-  if (key === 'is')         return undefined
-  if (key === 'attributes') return void setAttrs(node, val)
-  if (key === 'class')      return void setClass(node, normStr(val))
-  if (key === 'className')  return void setClass(node, normStr(val))
-  if (key === 'style')      return void setStyle(node, val)
-  if (key === 'dataset')    return void setDataset(node, val)
+  if (key === 'children')     throw Error(`use {R} from 'prax/rcompat.mjs' for children-in-props`)
+  if (key === 'is')           return undefined
+  if (key === 'attributes')   return void setAttrs(node, val)
+  if (key === 'class')        return void setClass(node, normStr(val))
+  if (key === 'className')    return void setClass(node, normStr(val))
+  if (key === 'style')        return void setStyle(node, val)
+  if (key === 'dataset')      return void setDataset(node, val)
+  if (/^aria[A-Z]/.test(key)) return void setAttr(val, toAria(key), node)
 
   // Careful balancing act: minimizing gotchas AND special-case knowledge. Likely
   // to get revised many, many times. Also likely one of the bottlenecks.
@@ -229,6 +230,10 @@ function setDatasetProp(val, key, dataset) {
   }
 }
 
+// ARIA attributes appear to be case-insensitive, with only the `aria-` prefix
+// containing a hyphen.
+function toAria(key) {return `aria-${key.slice(4).toLowerCase()}`}
+
 function addClass(acc, val) {
   if (isArr(val)) return fold(val, acc, addClass)
 
@@ -257,7 +262,7 @@ function elemValid(name, children) {
 // Many DOM APIs consider only `null` to be nil.
 function normNil(val) {return isNil(val) ? null : val}
 function normStr(val) {return isNil(val) ? null : str(val)}
-function toStr(val) {return toStrUnchecked(only(val, isStringable))}
+function toStr(val) {return toStrUnchecked(valid(val, isStringable))}
 
 // WTB shorter name.
 function toStrUnchecked(val) {
@@ -312,17 +317,18 @@ function isArr(val) {return isInst(val, Array)}
 function isDict(val) {return isObj(val) && Object.getPrototypeOf(val) === Object.prototype}
 function isInst(val, Cls) {return isComp(val) && val instanceof Cls}
 
-function str(val) {return isNil(val) ? '' : only(val, isStr)}
-function only(val, test) {valid(val, test); return val}
+function str(val) {return isNil(val) ? '' : valid(val, isStr)}
 
 function valid(val, test) {
   if (!test(val)) throw Error(`expected ${show(val)} to satisfy test ${show(test)}`)
+  return val
 }
 
 function validInst(val, Cls) {
   if (!isInst(val, Cls)) {
     throw Error(`expected ${show(val)} to be an instance of ${show(Cls)}`)
   }
+  return val
 }
 
 // Placeholder, might improve.

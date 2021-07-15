@@ -145,9 +145,7 @@ function attr(key, val) {
 
 // ARIA attributes appear to be case-insensitive, with only the `aria-` prefix
 // containing a hyphen.
-function toAria(key) {
-  return `aria-${key.slice(4).toLowerCase()}`
-}
+function toAria(key) {return `aria-${key.slice(4).toLowerCase()}`}
 
 // Should match the browser algorithm for dataset keys.
 // Probably very inefficient.
@@ -196,7 +194,7 @@ function validAt(key, val, fun) {
   }
 }
 
-function toStr(val) {return toStrUnchecked(only(val, isStringable))}
+function toStr(val) {return toStrUnchecked(valid(val, isStringable))}
 
 // WTB shorter name.
 function toStrUnchecked(val) {
@@ -242,12 +240,12 @@ function isArr(val) {return isInst(val, Array)}
 function isDict(val) {return isObj(val) && Object.getPrototypeOf(val) === Object.prototype}
 function isInst(val, Cls) {return isComp(val) && val instanceof Cls}
 
-function only(val, test) {valid(val, test); return val}
-function str(val) {return isNil(val) ? '' : only(val, isStr)}
+function str(val) {return isNil(val) ? '' : valid(val, isStr)}
 function optStr(val) {return isNil(val) ? undefined : str(val)}
 
 function valid(val, test) {
   if (!test(val)) throw Error(`expected ${show(val)} to satisfy test ${show(test)}`)
+  return val
 }
 
 // Placeholder, might improve.
