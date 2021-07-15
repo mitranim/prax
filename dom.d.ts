@@ -64,6 +64,9 @@ export const voidElems: Set<string>;
 
 export class Raw extends String {}
 
+export function e<K extends keyof HTMLElementTagNameMap>(name: K): (props?: Props, ...children: Child[]) => HTMLElementTagNameMap[K];
+export function e<K extends keyof HTMLElementTagNameMap>(name: K, props: Props): (...children: Child[]) => HTMLElementTagNameMap[K];
+export function e<K extends keyof HTMLElementTagNameMap>(name: K, props: Props, ...children: Child[]): (...children: Child[]) => HTMLElementTagNameMap[K];
 export function e<N extends HTMLElement>(name: string): (props?: Props, ...children: Child[]) => N;
 export function e<N extends HTMLElement>(name: string, props: Props): (...children: Child[]) => N;
 export function e<N extends HTMLElement>(name: string, props: Props, ...children: Child[]): (...children: Child[]) => N;
