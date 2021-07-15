@@ -3,7 +3,9 @@
 !/docs
 !/.*rc
 !/.*ignore
+!/*.d.ts
 !/*.mjs
 !/*.md
 !/package.json
 !/makefile
+!/tsconfig.json
