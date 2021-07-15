@@ -78,7 +78,7 @@ try {
 
   void function testChildKidnapping() {
     const prev = E('div', {}, 'one', 'two', 'three')
-    const next = E('p', {}, ...Array.from(prev.childNodes))
+    const next = E('p', {}, ...prev.childNodes)
 
     eqm(`<div></div>`, prev)
     eqm(`<p>onetwothree</p>`, next)
