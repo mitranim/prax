@@ -6,10 +6,10 @@ type Props = Nil | Record<string, Prop>;
 
 type Child = Nil | Primitive | Node | Child[];
 
-export function E<N extends HTMLInputElement>(name: 'input', props?: Props, ...children: Child[]): N;
+export function E<K extends keyof HTMLElementTagNameMap>(name: K, props?: Props, ...children: Child[]): HTMLElementTagNameMap[K];
 export function E<N extends HTMLElement>(name: string, props?: Props, ...children: Child[]): N;
 
-export function S(name: string, props?: Props, ...children: Child[]): SVGElement;
+export function S<K extends keyof SVGElementTagNameMap>(name: K, props?: Props, ...children: Child[]): SVGElementTagNameMap[K];
 
 export function F(...children: Child[]): Node;
 
@@ -23,7 +23,7 @@ type ClsVal = Nil | Primitive | Array<ClsVal>;
 
 export function cls(...vals: ClsVal[]): string;
 
-type LenVal = Nil | Primitive | Element | Array<LenVal>;
+type LenVal = Nil | Primitive | Node | Array<LenVal>;
 
 export function len(val: LenVal): number;
 
@@ -38,7 +38,7 @@ export const voidElems: Set<string>;
 
 export class Raw extends String {}
 
-export const e:
-    | ((name: string) => (props?: Props, ...children: Child[]) => Node)
-    | ((name: string, props: Props) => (...children: Child[]) => Node)
-    | ((name: string, props: Props, ...children: Child[]) => (...children: Child[]) => Node)
+export function e<N extends HTMLElement>(name: string): (props?: Props, ...children: Child[]) => N;
+export function e<N extends HTMLElement>(name: string, props: Props): (...children: Child[]) => N;
+export function e<N extends HTMLElement>(name: string, props: Props, ...children: Child[]): (...children: Child[]) => N;
+
