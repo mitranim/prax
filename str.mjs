@@ -1,3 +1,4 @@
+/// <reference types="./str.d.ts" />
 // See `impl.md` for implementation notes.
 
 import {Raw, boolAttrs, voidElems} from './dom.mjs'
