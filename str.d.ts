@@ -20,6 +20,6 @@ export const len: LenFn<Child>;
 
 export const map: MapFn<Child>; 
 
-export function e(name: string): (props?: Props, ...children: Child[]) => string;
-export function e(name: string, props: Props): (...children: Child[]) => string;
-export function e(name: string, props: Props, ...children: Child[]): (...children: Child[]) => string;
+export function e(name: string): (props?: Props, ...children: Child[]) => Raw;
+export function e(name: string, props: Props): (...children: Child[]) => Raw;
+export function e(name: string, props: Props, ...children: Child[]): (...children: Child[]) => Raw;
