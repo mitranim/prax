@@ -5,7 +5,7 @@ interface Stringable {
     toString(): string
 }
 
-type Props = Nil | Record<string, Stringable>;
+type Props = Nil | Record<string, Stringable | Nil>;
 
 type Child = Prim | Node | Child[];
 
