@@ -1,6 +1,6 @@
 import type {Props} from './dom.d.ts';
 
-export {Raw, boolAttrs, voidElems, cls, len, /* TODO: map */} from './dom.d.ts';
+export {Raw, boolAttrs, voidElems, cls, len, map} from './dom.d.ts';
 
 type Child = string | Child[];
 
