@@ -78,7 +78,7 @@ try {
 
   void function testChildKidnapping() {
     const prev = E('div', {}, 'one', 'two', 'three')
-    const next = E('p', {}, ...prev.childNodes)
+    const next = E('p', {}, ...Array.from(prev.childNodes))
 
     eqm(`<div></div>`, prev)
     eqm(`<p>onetwothree</p>`, next)
@@ -124,7 +124,7 @@ try {
 
     eqm(
       `<div class="three">two</div>`,
-      x.resetProps(E('div', {class: 'one'}, 'two'), {class: 'three'}, 'four'),
+      x.resetProps(E('div', {class: 'one'}, 'two'), {class: 'three'}),
     )
   }()
 
@@ -144,10 +144,10 @@ try {
 
   // `dom`-specific; in `str`, this prepends a doctype.
   void function testDoc() {
-    is(undefined, doc())
+    is(undefined, x.doc())
 
     const node = E('html')
-    is(node, doc(node))
+    is(node, x.doc(node))
   }()
 
   void function testOk() {
