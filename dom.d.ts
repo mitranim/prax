@@ -5,7 +5,7 @@ interface Stringable {
     toString(): string
 }
 
-type StringableRecord = Record<string, Stringable>;
+type StringableRecord = Record<string, Nil | Stringable>;
 
 type Props =
     & {
@@ -15,7 +15,7 @@ type Props =
     }
     & StringableRecord;
 
-type Child = Prim | Node | Stringable | Child[];
+type Child = Nil | Node | Stringable | Child[];
 
 export function E<K extends keyof HTMLElementTagNameMap>(name: K, props?: Props, ...children: Child[]): HTMLElementTagNameMap[K];
 export function E<N extends HTMLElement>(name: string, props?: Props, ...children: Child[]): N;
@@ -45,7 +45,7 @@ type MapReturn<FnRes, Child> = Child extends Array<infer C> ? MapReturn<FnRes, C
 interface MapFn<C> {
     <
         Val extends C,
-        Fn extends <Res>(val: C extends Array<unknown> ? never : C, i: number, ...args: [A1?, A2?, A3?, A4?, A5?, A6?, A7?, A8?, A9?]) => Res,
+        Fn extends <Res>(val: C extends Array<unknown> ? never : C, i: number, ...args: [A1, A2, A3, A4, A5, A6, A7, A8, A9]) => Res,
         A1, A2, A3, A4, A5, A6, A7, A8, A9
     >(
         val: Val,
