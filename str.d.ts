@@ -1,8 +1,8 @@
-import type {Props, Raw, LenFn, MapFn} from './dom.d.ts';
+import type {Stringable, Props, Raw, LenFn, MapFn} from './dom.d.ts';
 
 export {Raw, boolAttrs, voidElems, cls} from './dom.d.ts';
 
-type Child = string | Child[];
+type Child = Stringable | Child[];
 
 export function E(name: string, props: Props, ...children: Child[]): Raw;
 
