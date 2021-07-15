@@ -2,7 +2,7 @@ import type {Stringable, Props, Raw, LenFn, MapFn} from './dom.d.ts';
 
 export {Raw, boolAttrs, voidElems, cls} from './dom.d.ts';
 
-type Child = Stringable | Child[];
+type Child = Nil | Stringable | Child[];
 
 export function E(name: string, props: Props, ...children: Child[]): Raw;
 
