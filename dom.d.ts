@@ -26,19 +26,27 @@ type ClsVal = Nil | false | 0 | string | ClsVal[];
 
 export function cls(...vals: ClsVal[]): string;
 
-export function len(val: Child): number;
+interface LenFn<C> {
+    len(val: C): number;
+}
+
+export const len: LenFn<Child>;
 
 type MapReturn<FnRes, Child> = Child extends Array<infer C> ? MapReturn<FnRes, C>[] : FnRes[];
 
-export function map<
-    Val extends Child,
-    Fn extends <Res>(val: Prim | Node, i: number, ...args: [A1?, A2?, A3?, A4?, A5?, A6?, A7?, A8?, A9?]) => Res,
-    A1, A2, A3, A4, A5, A6, A7, A8, A9
->(
-    val: Val,
-    fun: Fn,
-    ...args: [A1?, A2?, A3?, A4?, A5?, A6?, A7?, A8?, A9?]
-): MapReturn<ReturnType<Fn>, Val>
+interface MapFn<C> {
+    <
+        Val extends C,
+        Fn extends <Res>(val: C extends Array<unknown> ? never : C, i: number, ...args: [A1?, A2?, A3?, A4?, A5?, A6?, A7?, A8?, A9?]) => Res,
+        A1, A2, A3, A4, A5, A6, A7, A8, A9
+    >(
+        val: Val,
+        fun: Fn,
+        ...args: [A1?, A2?, A3?, A4?, A5?, A6?, A7?, A8?, A9?]
+    ): MapReturn<ReturnType<Fn>, Val>
+}
+
+export const map: MapFn<Child>;
 
 export function doc<T>(val?: T): T;
 

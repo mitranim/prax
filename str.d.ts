@@ -1,6 +1,6 @@
-import type {Props, Raw} from './dom.d.ts';
+import type {Props, Raw, LenFn, MapFn} from './dom.d.ts';
 
-export {Raw, boolAttrs, voidElems, cls, len, map} from './dom.d.ts';
+export {Raw, boolAttrs, voidElems, cls} from './dom.d.ts';
 
 type Child = string | Child[];
 
@@ -15,6 +15,10 @@ export function escapeText(val: string): string;
 export function escapeAttr(val: string): string;
 
 export function doc(val: Child): string;
+
+export const len: LenFn<Child>;
+
+export const map: MapFn<Child>; 
 
 export function e(name: string): (props?: Props, ...children: Child[]) => string;
 export function e(name: string, props: Props): (...children: Child[]) => string;
