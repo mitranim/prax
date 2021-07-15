@@ -1,12 +1,11 @@
 type Nil = null | undefined;
-type NonNilPrim = string | number | bigint | boolean;
-type Prim = Nil | NonNilPrim;
+type Prim = Nil | string | number | bigint | boolean;
 
 interface Stringable {
-    [Symbol.toStringTag](): string
+    toString(): string
 }
 
-type Props = Nil | Record<string, NonNilPrim | Stringable>;
+type Props = Nil | Record<string, Stringable>;
 
 type Child = Prim | Node | Child[];
 
