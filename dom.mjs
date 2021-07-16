@@ -1,3 +1,4 @@
+/// <reference types="./dom.d.ts" />
 // See `impl.md` for implementation notes.
 
 /* Public API */
