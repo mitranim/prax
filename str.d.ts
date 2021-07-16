@@ -1,8 +1,10 @@
 import type {Nil, Stringable, Props, Raw, LenFn, MapFn} from './dom.d.ts'
 
+export type {Nil, Prim, Stringable, StringableRecord, Props, ClsVal} from './dom.d.ts'
+
 export {Raw, boolAttrs, voidElems, cls} from './dom.d.ts'
 
-type Child = Nil | Stringable | Child[]
+export type Child = Nil | Stringable | Child[]
 
 export function E(name: string, props: Props, ...children: Child[]): Raw
 
