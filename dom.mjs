@@ -303,8 +303,8 @@ function mapMutDeep(i, val, _i, acc, fun, ...args) {
   return i + 1
 }
 
-function sumBy(val, fun, ...args) {return fold(val, 0, addBy, fun, ...args)}
-function addBy(acc, val, i, fun, ...args) {return acc + fun(val, i, ...args)}
+function sumBy(val, fun) {return fold(val, 0, addBy, fun)}
+function addBy(acc, val, _i, fun) {return acc + fun(val)}
 
 function is(a, b) {return Object.is(a, b)}
 function isNil(val) {return val == null}
