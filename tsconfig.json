@@ -1,6 +1,5 @@
 {
-    "compilerOptions": {
-        "target": "esnext",
-        "lib": ["dom", "deno.worker"]
-    }
+  "compilerOptions": {
+    "lib": ["dom", "deno.worker"]
+  }
 }
