@@ -1,4 +1,4 @@
-import type {Stringable, Props, Raw, LenFn, MapFn} from './dom.d.ts'
+import type {Nil, Stringable, Props, Raw, LenFn, MapFn} from './dom.d.ts'
 
 export {Raw, boolAttrs, voidElems, cls} from './dom.d.ts'
 
@@ -14,7 +14,7 @@ export function escapeText(val: string): string
 
 export function escapeAttr(val: string): string
 
-export function doc(val: Child): string
+export function doc(val?: Child): string
 
 export const len: LenFn<Child>
 

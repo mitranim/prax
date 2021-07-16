@@ -52,7 +52,7 @@ interface MapFn<C> {
 
 export const map: MapFn<Child>
 
-export function doc<T>(val?: T): T
+export function doc<T>(val?: Child): Child
 
 export const boolAttrs: Set<string>
 
