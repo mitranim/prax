@@ -1,5 +1,5 @@
 export type Nil = null | undefined
-export type Prim = Nil | string | number | bigint | boolean
+export type Prim = Nil | string | number | bigint | boolean | symbol
 
 export interface Stringable {toString(): string}
 
