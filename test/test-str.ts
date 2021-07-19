@@ -4,10 +4,11 @@ import {is, eq} from './test-utils.mjs'
 import {testCommon} from './test-common.mjs'
 import {testRcompat} from './test-rcompat.mjs'
 
-Error.stackTraceLimit = Infinity
+// deno-lint-ignore no-explicit-any
+(Error as any).stackTraceLimit = Infinity
 
-// "equal markup"
-function eqm(str, val) {eq(new Raw(str), val)}
+// Short for "equal markup".
+function eqm(str: string, val: Raw) {eq(new Raw(str), val)}
 
 testCommon(x, eqm)
 testRcompat(x, eqm)

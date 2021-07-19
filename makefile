@@ -1,26 +1,24 @@
 MAKEFLAGS := --silent --always-make
 PAR := $(MAKE) -j 128
+DENO := deno run --config tsconfig.json
 
 watch:
-	$(PAR) test-str-w test-dom-w test-type-w
+	$(PAR) test-str-w test-dom-w lint-w
 
 prep:
-	$(PAR) test-str test-type lint
+	$(PAR) test-str lint
+
+lint-w:
+	watchexec -r -d=0 -e=mjs,ts -n -- make lint
 
 lint:
 	deno lint
 
 test-str-w:
-	deno run --watch test/test-str.mjs
+	$(DENO) --watch test/test-str.ts
 
 test-str:
-	deno run test/test-str.mjs
-
-test-type-w:
-	deno run --config tsconfig.json test/test-type.ts
-
-test-type:
-	deno run --config tsconfig.json --watch test/test-type.ts
+	$(DENO) test/test-str.ts
 
 test-dom-w:
-	deno run -A --watch --unstable test/srv.mjs
+	$(DENO) -A --watch --unstable test/srv.mjs

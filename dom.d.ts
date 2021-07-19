@@ -5,13 +5,13 @@ export interface Stringable {toString(): string}
 
 export type StringableRecord = Record<string, Nil | Stringable>
 
-export type Props =
-  & {
-    style?: Nil | Stringable | StringableRecord
-    dataset?: StringableRecord
-    attributes?: StringableRecord
-  }
-  & StringableRecord
+export interface KnownProps {
+  style?: Nil | Stringable | StringableRecord
+  dataset?: StringableRecord
+  attributes?: StringableRecord
+}
+
+export type Props = KnownProps & StringableRecord
 
 export type Child = Nil | Node | Stringable | Child[]
 
@@ -32,25 +32,25 @@ export type ClsVal = Nil | false | 0 | string | ClsVal[]
 
 export function cls(...vals: ClsVal[]): string
 
-interface LenFn<C> {len(val: C): number}
+interface LenFun<C> {len(val: C): number}
 
-export const len: LenFn<Child>
+export const len: LenFun<Child>
 
-type MapReturn<FnRes, Child> = Child extends Array<infer C> ? MapReturn<FnRes, C>[] : FnRes[]
+type MapReturn<FunRes, Child> = Child extends Array<infer C> ? MapReturn<FunRes, C>[] : FunRes[]
 
-interface MapFn<C> {
+interface MapFun<C> {
   <
     Val extends C,
-    Fn extends <Res>(val: C extends Array<unknown> ? never : C, i: number, ...args: [A1, A2, A3, A4, A5, A6, A7, A8, A9]) => Res,
+    Fun extends <Res>(val: C extends Array<unknown> ? never : C, i: number, ...args: [A1, A2, A3, A4, A5, A6, A7, A8, A9]) => Res,
     A1, A2, A3, A4, A5, A6, A7, A8, A9
   >(
     val: Val,
-    fun: Fn,
+    fun: Fun,
     ...args: [A1?, A2?, A3?, A4?, A5?, A6?, A7?, A8?, A9?]
-  ): MapReturn<ReturnType<Fn>, Val>
+  ): MapReturn<ReturnType<Fun>, Val>
 }
 
-export const map: MapFn<Child>
+export const map: MapFun<Child>
 
 export function doc(val?: Child): Child
 

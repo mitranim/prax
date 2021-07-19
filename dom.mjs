@@ -86,13 +86,13 @@ function initNode(node, props, children) {
   return appendChildren(node, children)
 }
 
-// See `impl.md`.
 function resetChildren(node, children) {
   if (!children.length) {
     removeNodes(node)
     return node
   }
 
+  // See `impl.md`.
   const frag = F(...children)
   removeNodes(node)
   node.append(frag)

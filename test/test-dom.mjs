@@ -8,7 +8,7 @@ Error.stackTraceLimit = Infinity
 window.x = x
 Object.assign(window, x)
 
-// "equal markup"
+// Short for "equal markup".
 function eqm(str, node) {is(str, node.outerHTML)}
 
 try {
