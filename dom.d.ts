@@ -1,7 +1,12 @@
 export type Nil = null | undefined
 export type Prim = Nil | string | number | bigint | boolean | symbol
 
-export interface Stringable {toString(): string}
+// Technically, Prax also supports automatic stringification of objects whose
+// `.toString()` is not inherited from `Object` or `Array`. Unclear how to
+// express this at the type level. May revise.
+//
+// deno-lint-ignore ban-types
+export type Stringable = Prim | String
 
 export type StringableRecord = Record<string, Nil | Stringable>
 

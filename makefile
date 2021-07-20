@@ -1,6 +1,6 @@
 MAKEFLAGS := --silent --always-make
 PAR := $(MAKE) -j 128
-DENO := deno run --config tsconfig.json
+DENO := deno run --reload --config tsconfig.json
 
 watch:
 	$(PAR) test-str-w test-dom-w lint-w
