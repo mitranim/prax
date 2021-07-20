@@ -11,7 +11,7 @@ export interface KnownProps {
   attributes?: StringableRecord
 }
 
-export type Props = KnownProps & StringableRecord
+export type Props = KnownProps | StringableRecord
 
 export type Child = Nil | Node | Stringable | Child[]
 
