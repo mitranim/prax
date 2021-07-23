@@ -79,8 +79,8 @@ void function testFragment() {
 
 // `str`-specific; in browsers, this is a pass-through.
 void function testDoc() {
-  is('string', typeof doc())
-  is(`<!doctype html>`, doc())
+  is('string', typeof doc(undefined))
+  is(`<!doctype html>`, doc(undefined))
   is(`<!doctype html>`, doc(``))
   is(`<!doctype html><html>text</html>`, doc(E('html', {}, 'text')))
 }()

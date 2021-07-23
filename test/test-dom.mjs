@@ -144,7 +144,7 @@ try {
 
   // `dom`-specific; in `str`, this prepends a doctype.
   void function testDoc() {
-    is(undefined, x.doc())
+    is(undefined, x.doc(undefined))
 
     const node = E('html')
     is(node, x.doc(node))

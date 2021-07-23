@@ -42,6 +42,8 @@ export function len(val) {
   return isNil(val) ? 0 : isArr(val) ? sumBy(val, len) : 1
 }
 
+export function vac(val) {return hasSome(val) ? val : undefined}
+
 export function map(val, fun, ...args) {
   valid(fun, isFun)
   const acc = []
@@ -305,6 +307,10 @@ function mapMutDeep(i, val, _i, acc, fun, ...args) {
 
 function sumBy(val, fun) {return fold(val, 0, addBy, fun)}
 function addBy(acc, val, _i, fun) {return acc + fun(val)}
+
+function hasSome(val) {
+  return !isNil(val) && (!isArr(val) || val.some(hasSome))
+}
 
 function is(a, b) {return Object.is(a, b)}
 function isNil(val) {return val == null}

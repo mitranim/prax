@@ -1,4 +1,4 @@
-import type {Nil, Stringable, Props, Raw, LenFun, MapFun} from './dom.d.ts'
+import type {Nil, Stringable, Props, Raw, MapFun} from './dom.d.ts'
 
 export type {Nil, Prim, Stringable, StringableRecord, Props, ClsVal} from './dom.d.ts'
 
@@ -16,9 +16,11 @@ export function escapeText(val: string): string
 
 export function escapeAttr(val: string): string
 
-export function doc(val?: Child): string
+export function doc(val: Child): string
 
-export const len: LenFun<Child>
+export function len(val: Child): number
+
+export function vac(val: Child): Child
 
 export const map: MapFun<Child>
 

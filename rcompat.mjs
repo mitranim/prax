@@ -57,6 +57,8 @@ function propsFromReact(props, children) {
 //   []     -> null
 //   [a]    -> a
 //   [a, b] -> [a, b]
+//
+// Only partially redundant with `vac`, which doesn't unwrap arrays.
 function trim(children) {
   if (isArr(children)) {
     if (!children.length) return null
@@ -65,9 +67,7 @@ function trim(children) {
   return children
 }
 
-function comb(a, b) {
-  return isNil(a) ? b : isNil(b) ? a : [a, b]
-}
+function comb(a, b) {return isNil(a) ? b : isNil(b) ? a : [a, b]}
 
 function isFun(val) {return typeof val === 'function'}
 function isNil(val) {return val == null}

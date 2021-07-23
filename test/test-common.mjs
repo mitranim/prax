@@ -1,6 +1,8 @@
 import {eq, throws} from './test-utils.mjs'
 
-export function testCommon({E, F, Raw, cls, e, len, map}, eqm) {
+export function testCommon(x, eqm) {
+  const {E, F, e} = x
+
   throws(E, 'link', {}, null)
 
   void function testInvalid() {
@@ -17,7 +19,8 @@ export function testCommon({E, F, Raw, cls, e, len, map}, eqm) {
       throws(E, 'div', {fun() {}})
       throws(E, 'div', [])
       throws(E, 'div', E)
-      throws(E, 'div', new Raw())
+      throws(E, 'div', new String())
+      throws(E, 'div', new x.Raw())
       throws(E, 'div', new class {}())
       throws(E, 'div', {attributes: 10})
       throws(E, 'div', {attributes: 'str'})
@@ -25,6 +28,8 @@ export function testCommon({E, F, Raw, cls, e, len, map}, eqm) {
       throws(E, 'div', {attributes: new class {}()})
       throws(E, 'div', {class: []})
       throws(E, 'div', {className: []})
+      throws(E, 'div', {class: {}})
+      throws(E, 'div', {className: {}})
       throws(E, 'div', {class: new class {}()})
       throws(E, 'div', {className: new class {}()})
       throws(E, 'div', {class: 10})
@@ -158,7 +163,7 @@ export function testCommon({E, F, Raw, cls, e, len, map}, eqm) {
     void function testStyle() {
       throws(E, 'div', {style: 10})
       throws(E, 'div', {style: []})
-      throws(E, 'div', {style: new Raw()})
+      throws(E, 'div', {style: new x.Raw()})
       throws(E, 'div', {style: {margin: 10}})
 
       eqm(
@@ -424,11 +429,11 @@ export function testCommon({E, F, Raw, cls, e, len, map}, eqm) {
       void function testDontEscapeStringObject() {
         eqm(
           `<outer><inner>text</inner></outer>`,
-          E('outer', {}, new Raw(`<inner>text</inner>`)),
+          E('outer', {}, new x.Raw(`<inner>text</inner>`)),
         )
         eqm(
           `<div><a>one</a><b>two</b><c>three</c></div>`,
-          E('div', {}, new Raw(`<a>one</a><b>two</b><c>three</c>`)),
+          E('div', {}, new x.Raw(`<a>one</a><b>two</b><c>three</c>`)),
         )
       }()
     }()
@@ -451,17 +456,17 @@ export function testCommon({E, F, Raw, cls, e, len, map}, eqm) {
   }()
 
   void function testCls() {
-    throws(cls, true)
-    throws(cls, {})
+    throws(x.cls, true)
+    throws(x.cls, {})
 
-    eq('', cls())
-    eq('', cls(null))
-    eq('', cls(undefined))
-    eq('', cls(0))
-    eq('', cls(false))
-    eq('one', cls(null, undefined, 'one'))
-    eq('one', cls('one', null, undefined))
-    eq('one two three', cls('one', null, ['two', undefined], null, [['three']]))
+    eq('', x.cls())
+    eq('', x.cls(null))
+    eq('', x.cls(undefined))
+    eq('', x.cls(0))
+    eq('', x.cls(false))
+    eq('one', x.cls(null, undefined, 'one'))
+    eq('one', x.cls('one', null, undefined))
+    eq('one two three', x.cls('one', null, ['two', undefined], null, [['three']]))
   }()
 
   void function testBoundE() {
@@ -473,25 +478,43 @@ export function testCommon({E, F, Raw, cls, e, len, map}, eqm) {
   }()
 
   void function testLen() {
-    eq(0, len())
-    eq(0, len(undefined))
-    eq(0, len(null))
-    eq(1, len(10))
-    eq(1, len([10]))
-    eq(1, len([[10]]))
-    eq(3, len([[10], null, 20, undefined, [[30]]]))
+    eq(0, x.len())
+    eq(0, x.len(undefined))
+    eq(0, x.len(null))
+    eq(1, x.len(10))
+    eq(1, x.len([10]))
+    eq(1, x.len([[10]]))
+    eq(3, x.len([[10], null, 20, undefined, [[30]]]))
+  }()
+
+  void function testVac() {
+    eq(undefined, x.vac(undefined))
+    eq(undefined, x.vac(null))
+    eq(undefined, x.vac([]))
+    eq(undefined, x.vac([[]]))
+    eq(undefined, x.vac([[[null]]]))
+
+    eq(0,             x.vac(0))
+    eq(false,         x.vac(false))
+    eq(NaN,           x.vac(NaN))
+    eq([0],           x.vac([0]))
+    eq([false],       x.vac([false]))
+    eq([NaN],         x.vac([NaN]))
+    eq([null, 0],     x.vac([null, 0]))
+    eq([null, false], x.vac([null, false]))
+    eq([null, NaN],   x.vac([null, NaN]))
   }()
 
   void function testMap() {
-    eq([],                 map(undefined, id))
-    eq([],                 map(null, id))
-    eq([],                 map([undefined], id))
-    eq([],                 map([null], id))
-    eq([10, 20],           map([null, [[[10], 20]], undefined], id))
-    eq([[10, 0], [20, 1]], map([null, [[[10], 20]], undefined], args))
+    eq([],                 x.map(undefined, id))
+    eq([],                 x.map(null, id))
+    eq([],                 x.map([undefined], id))
+    eq([],                 x.map([null], id))
+    eq([10, 20],           x.map([null, [[[10], 20]], undefined], id))
+    eq([[10, 0], [20, 1]], x.map([null, [[[10], 20]], undefined], args))
 
-    throws(map)
-    throws(map, [])
+    throws(x.map)
+    throws(x.map, [])
 
     function id(val) {return val}
     function args(...args) {return args}

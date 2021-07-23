@@ -37,9 +37,9 @@ export type ClsVal = Nil | false | 0 | string | ClsVal[]
 
 export function cls(...vals: ClsVal[]): string
 
-interface LenFun<C> {len(val: C): number}
+export function len(val: Child): number
 
-export const len: LenFun<Child>
+export function vac(val: Child): Child
 
 type MapReturn<FunRes, Child> = Child extends Array<infer C> ? MapReturn<FunRes, C>[] : FunRes[]
 
@@ -57,7 +57,7 @@ interface MapFun<C> {
 
 export const map: MapFun<Child>
 
-export function doc(val?: Child): Child
+export function doc(val: Child): Child
 
 export const boolAttrs: Set<string>
 

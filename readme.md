@@ -35,6 +35,7 @@ Tiny (a few kilobytes _un_-minified) and dependency-free. Native JS module.
   * [`replace`](#replacenode-children)
   * [`cls`](#clsvals)
   * [`len`](#lenchildren)
+  * [`vac`](#vacchildren)
   * [`map`](#mapchildren-fun-args)
   * [`doc`](#docval)
   * [`e`](#etype-props-children-1)
@@ -324,6 +325,21 @@ Analog of `React.Children.count`. Counts non-nil children, recursively traversin
 const children = ['one', null, [['two'], null]]
 x.len(children)
 // 2
+```
+
+### `vac(children)`
+
+Same as `len(children) ? children : undefined`, but more efficient. The name is short for "vacate" / "vacuum" / "vacuous".
+
+```js
+x.vac(null)
+// undefined
+
+x.vac([[[null]]])
+// undefined
+
+x.vac([null, 0, 'str'])
+// [null, 0, 'str']
 ```
 
 ### `map(children, fun, ...args)`
