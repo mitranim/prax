@@ -150,6 +150,46 @@ try {
     is(node, x.doc(node))
   }()
 
+  // This test is very limited and needs to be expanded.
+  void function testProps() {
+    throws(x.props)
+
+    eq(
+      {
+        dataset: {two: 'three', four: 'five'},
+        class: 'one',
+        style: 'padding: 1rem;',
+      },
+      toPlain(x.props(E('div', {
+        dataset: {two: 'three'},
+        'data-four': 'five',
+        class: 'one',
+        style: {padding: '1rem'},
+      }))),
+    )
+
+    const props = {
+      dataset: {two: 'three', four: 'five'},
+      class: 'one',
+      style: 'padding: 1rem;',
+    }
+
+    eqm(
+      `<div data-two="three" data-four="five" class="one" style="padding: 1rem;"></div>`,
+      E('div', props),
+    )
+
+    eqm(
+      `<div data-two="three" data-four="five" class="one" style="padding: 1rem;"></div>`,
+      E('div', x.props(E('div', props))),
+    )
+
+    eqm(
+      `<div data-two="three" data-four="five" class="one" style="padding: 1rem;"></div>`,
+      E('div', x.props(E('div', x.props(E('div', props))))),
+    )
+  }()
+
   void function testOk() {
     x.reset(document.body, {},
       E('p', {class: 'size-double text-center'}, '[test] ok!'),
@@ -165,3 +205,5 @@ function toChildTextTree(node) {
   if (node instanceof Text) return node.textContent
   return [...node.childNodes].map(toChildTextTree)
 }
+
+function toPlain(val) {return JSON.parse(JSON.stringify(val))}

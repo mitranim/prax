@@ -64,7 +64,7 @@ function encodeChild(node) {
   return escapeText(toStr(node))
 }
 
-function encodeProps(props) {return foldDict(props, '', appendEncodeProp)}
+function encodeProps(props) {return foldVals(props, '', appendEncodeProp)}
 function appendEncodeProp(acc, val, key) {return acc + encodeProp(key, val)}
 
 // Should be kept in sync with `dom.mjs` -> `setProp`.
@@ -84,14 +84,14 @@ function encodeProp(key, val) {
   return attr(key, val)
 }
 
-function encodeAttrs(attrs) {return foldDict(attrs, '', appendEncodeAttr)}
+function encodeAttrs(attrs) {return foldVals(attrs, '', appendEncodeAttr)}
 function appendEncodeAttr(acc, val, key) {return acc + attr(key, val)}
 
 // Should be kept in sync with `dom.mjs` -> `setStyle`.
 function encodeStyle(val) {
   if (isNil(val)) return ''
   if (isStr(val)) return val && attr('style', val)
-  if (isDict(val)) return encodeStyle(foldDict(val, '', appendEncodeStyle))
+  if (isStruct(val)) return encodeStyle(foldVals(val, '', appendEncodeStyle))
   throw Error(`style must be string or dict, got ${show(val)}`)
 }
 
@@ -109,7 +109,7 @@ function encodeStylePair(key, val) {
 }
 
 function encodeDataset(dataset) {
-  return foldDict(dataset, '', appendEncodeDataAttr)
+  return foldVals(dataset, '', appendEncodeDataAttr)
 }
 
 function appendEncodeDataAttr(acc, val, key) {
@@ -222,9 +222,9 @@ function foldArr(val, acc, fun) {
   return acc
 }
 
-function foldDict(val, acc, fun, ...args) {
+function foldVals(val, acc, fun, ...args) {
   if (!isNil(val)) {
-    valid(val, isDict)
+    valid(val, isStruct)
     for (const key in val) acc = fun(acc, val[key], key, ...args)
   }
   return acc
@@ -238,7 +238,7 @@ function isComp(val) {return isObj(val) || isFun(val)}
 function isFun(val) {return typeof val === 'function'}
 function isObj(val) {return val !== null && typeof val === 'object'}
 function isArr(val) {return isInst(val, Array)}
-function isDict(val) {return isObj(val) && Object.getPrototypeOf(val) === Object.prototype}
+function isStruct(val) {return isObj(val) && !isArr(val) && !isInst(val, String)}
 function isInst(val, Cls) {return isComp(val) && val instanceof Cls}
 
 function str(val) {return isNil(val) ? '' : valid(val, isStr)}

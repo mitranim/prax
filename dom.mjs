@@ -34,6 +34,11 @@ export function replace(node, ...children) {
   node.parentNode.replaceChild(F(...children), node)
 }
 
+export function props(node) {
+  validInst(node, Element)
+  return fold(node.attributes, {dataset: node.dataset}, attrToProp, node)
+}
+
 export function cls(...vals) {
   return fold(vals, '', addClass)
 }
@@ -140,9 +145,14 @@ function setProp(val, key, node) {
   if (key === 'style')        return void setStyle(node, val)
   if (key === 'dataset')      return void setDataset(node, val)
   if (/^aria[A-Z]/.test(key)) return void setAttr(val, toAria(key), node)
+  setUnknownProp(node, key, val)
+}
 
-  // Careful balancing act: minimizing gotchas AND special-case knowledge. Likely
-  // to get revised many, many times. Also likely one of the bottlenecks.
+// Careful balancing act: minimizing gotchas AND special-case knowledge. Likely
+// to get revised many, many times. Also likely one of the bottlenecks.
+//
+// For a VERY approximate inverse, see `guessProp`.
+function setUnknownProp(node, key, val) {
   if (key in node) {
     const prev = node[key]
     if (isNil(prev) || isFun(prev)) {
@@ -211,7 +221,7 @@ function setClass(node, val) {
 // Should be kept in sync with `str.mjs` -> `encodeStyle`.
 function setStyle(node, val) {
   if (isNil(val) || isStr(val)) return setAttr(val, 'style', node)
-  if (isDict(val)) return eachVal(val, setStyleProp, node.style)
+  if (isStruct(val)) return eachVal(val, setStyleProp, node.style)
   throw Error(`style must be string or dict, got ${show(val)}`)
 }
 
@@ -246,6 +256,21 @@ function addClass(acc, val) {
   val = str(val)
   if (!acc) return val
   return `${acc} ${val}`
+}
+
+function attrToProp(acc, {name, value}, _i, node) {
+  if (name.startsWith('data-')) return acc
+  acc[name] = guessProp(node, name, value)
+  return acc
+}
+
+// VERY approximate inverse of `setUnknownProp`.
+function guessProp(node, key, val) {
+  if (key in node) {
+    const prev = node[key]
+    if (isPrim(prev)) return prev
+  }
+  return val
 }
 
 function validAt(key, val, fun) {
@@ -289,7 +314,7 @@ function isStringableObj(val) {
 
 function eachVal(val, fun, ...args) {
   if (isNil(val)) return
-  valid(val, isDict)
+  valid(val, isStruct)
   for (const key in val) fun(val[key], key, ...args)
 }
 
@@ -321,7 +346,7 @@ function isComp(val) {return isObj(val) || isFun(val)}
 function isFun(val) {return typeof val === 'function'}
 function isObj(val) {return val !== null && typeof val === 'object'}
 function isArr(val) {return isInst(val, Array)}
-function isDict(val) {return isObj(val) && Object.getPrototypeOf(val) === Object.prototype}
+function isStruct(val) {return isObj(val) && !isArr(val) && !isInst(val, String)}
 function isInst(val, Cls) {return isComp(val) && val instanceof Cls}
 
 function str(val) {return isNil(val) ? '' : valid(val, isStr)}

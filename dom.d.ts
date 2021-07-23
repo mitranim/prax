@@ -31,7 +31,9 @@ export function reset<N extends Node>(node: N, props?: Props, ...children: Child
 
 export function resetProps<N extends Node>(node: N, props?: Props): N
 
-export function replace<N extends Node>(node: N, ...children: Child[]): void
+export function replace(node: Node, ...children: Child[]): void
+
+export function props(node: Node): Props
 
 export type ClsVal = Nil | false | 0 | string | ClsVal[]
 

@@ -33,6 +33,7 @@ Tiny (a few kilobytes _un_-minified) and dependency-free. Native JS module.
   * [`reset`](#resetelem-props-children)
   * [`resetProps`](#resetpropselem-props)
   * [`replace`](#replacenode-children)
+  * [`props`](#propsnode)
   * [`cls`](#clsvals)
   * [`len`](#lenchildren)
   * [`vac`](#vacchildren)
@@ -304,6 +305,17 @@ Shortcut for:
 node.parentNode.replaceChild(F(...children), node)
 ```
 
+### `props(node)`
+
+(Browser-specific API, only in `dom.mjs`.)
+
+Takes an `Element` and returns _very approximate_ source props derived _only from attributes_.
+
+```js
+x.props(E('div', {class: 'one', dataset: {two: 'three'}}))
+// {dataset: DOMStringMap{two: "three"}, class: "one"}
+```
+
 ### `cls(...vals)`
 
 Combines multiple CSS classes:
@@ -471,7 +483,7 @@ Just like React, Prax conflates attributes and properties, calling everything "p
 * [`dataset`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLOrForeignElement/dataset) must be `nil | {}`, where keys are `camelCase` without the `data-` prefix. Values follow the attribute encoding rules. In `str.mjs`, `dataset` is converted to [`data-*`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/data-*) attributes. You can also just use those attributes.
 * [`innerHTML`](https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML) works in both environments, and must be `nil | string`.
 * [`for`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/label#attr-for) and [`htmlFor`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLLabelElement/htmlFor) both work, and must be `nil | string`.
-* ARIA properties such as [`ariaCurrent`](https://developer.mozilla.org/en-US/docs/Web/API/Element/ariaCurrent) work in both environments, and must be `nil | string`. In `str.mjs`, they're converted to kebab-cased `aria-*` attributes. You can also just use those attributes.
+* ARIA properties such as [`ariaCurrent`](https://developer.mozilla.org/en-US/docs/Web/API/Element/ariaCurrent) work in both environments, and must be `nil | string`. In `str.mjs`, they're converted to kebab-cased `aria-*` attributes. You can use both property names and attribute names.
 * The value of any attribute, or a DOM property whose type is known to be `string`, must be either `nil` or [stringable](#stringable).
 
 Additional environment-specific rules:
