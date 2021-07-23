@@ -557,6 +557,10 @@ function Inner({children, ...props}) {
 
 ## Changelog
 
+### `0.7.6`
+
+Allow `.ts` on NPM (previously auto-banned in `.npmignore`).
+
 ### `0.7.5`
 
 Added functions `vac` and `props`.
