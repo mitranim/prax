@@ -1,4 +1,4 @@
-import type {Nil, Stringable, Props, Raw, MapFun} from './dom.d.ts'
+import type {Nil, Stringable, Props, Raw} from './dom.d.ts'
 
 export type {Nil, Prim, Stringable, StringableRecord, Props, ClsVal} from './dom.d.ts'
 
@@ -22,7 +22,7 @@ export function len(val: Child): number
 
 export function vac(val: Child): Child
 
-export const map: MapFun<Child>
+export function map<T>(val: Child, fun: (child: Child, i?: number) => T): T
 
 export function e(name: string): (props?: Props, ...children: Child[]) => Raw
 export function e(name: string, props: Props): (...children: Child[]) => Raw

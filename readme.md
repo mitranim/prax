@@ -113,13 +113,13 @@ npm i -E prax
 With URL imports in Deno:
 
 ```js
-import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.5/str.mjs'
+import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.7/str.mjs'
 ```
 
 With URL imports in browsers:
 
 ```js
-import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.5/dom.mjs'
+import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.7/dom.mjs'
 ```
 
 This example uses plain JS. Prax is also [compatible with JSX](#jsx). For a better experience, use native modules and run your app from source in both Node/Deno and browsers.
@@ -556,6 +556,10 @@ function Inner({children, ...props}) {
 ```
 
 ## Changelog
+
+### `0.7.7`
+
+`dom.d.ts` now pre-declares any DOM globals that it depends on. These declarations get merged with any externals, such as from `lib="dom"`. This allows Prax to be imported in any environment.
 
 ### `0.7.6`
 
