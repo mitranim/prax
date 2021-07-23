@@ -113,13 +113,13 @@ npm i -E prax
 With URL imports in Deno:
 
 ```js
-import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.4/str.mjs'
+import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.5/str.mjs'
 ```
 
 With URL imports in browsers:
 
 ```js
-import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.4/dom.mjs'
+import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.5/dom.mjs'
 ```
 
 This example uses plain JS. Prax is also [compatible with JSX](#jsx). For a better experience, use native modules and run your app from source in both Node/Deno and browsers.
@@ -556,6 +556,14 @@ function Inner({children, ...props}) {
 ```
 
 ## Changelog
+
+### `0.7.5`
+
+Added functions `vac` and `props`.
+
+Because props returned by `props` may include dict-like `DOMStringMap` (most notably `dataset`), to make `props` reversible without resorting to unnecessary object copying, this version also removes the undocumented requirement of using plain dicts (`{}` or null-prototype objects) for props, `dataset`, `attributes` and `style`. Prax now allows them to be non-plain objects. This is tentative, and may be revised in future versions.
+
+Minor tweaks in TS definitions.
 
 ### `0.7.4`
 
