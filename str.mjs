@@ -175,8 +175,8 @@ function escapeChar(char) {
   return char
 }
 
-// Extremely permissive. Should prevent common gotchas while not interfering
-// with non-ASCII XML, which we do support.
+// Extremely permissive. Should prevent common gotchas without interfering with
+// non-ASCII XML, which we do support.
 //
 // Reference for HTML:
 // https://www.w3.org/TR/html52/syntax.html#tag-name
