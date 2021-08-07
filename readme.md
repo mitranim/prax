@@ -113,13 +113,13 @@ npm i -E prax
 With URL imports in Deno:
 
 ```js
-import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.7/str.mjs'
+import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.8/str.mjs'
 ```
 
 With URL imports in browsers:
 
 ```js
-import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.7/dom.mjs'
+import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.8/dom.mjs'
 ```
 
 This example uses plain JS. Prax is also [compatible with JSX](#jsx). For a better experience, use native modules and run your app from source in both Node/Deno and browsers.
@@ -556,6 +556,10 @@ function Inner({children, ...props}) {
 ```
 
 ## Changelog
+
+### `0.7.8`
+
+Better compatibility with dead code elimination. Bundlers should now remove `voidElems`, `boolAttrs`, and `e` if unused.
 
 ### `0.7.7`
 

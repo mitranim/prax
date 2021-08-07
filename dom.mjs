@@ -40,7 +40,7 @@ export function props(node) {
 }
 
 export function cls(...vals) {
-  return fold(vals, '', addClass)
+  return fold(vals, '', clsAppend)
 }
 
 export function len(val) {
@@ -63,7 +63,7 @@ export function doc(val) {return val}
 // Taken from non-authoritative sources.
 //
 // https://www.w3.org/TR/html52/infrastructure.html#boolean-attribute
-export const boolAttrs = new Set([
+export const boolAttrs = /* @__PURE__ */ new Set([
   'allowfullscreen', 'allowpaymentrequest', 'async',    'autofocus',
   'autoplay',        'checked',             'controls', 'default',
   'disabled',        'formnovalidate',      'hidden',   'ismap',
@@ -75,7 +75,7 @@ export const boolAttrs = new Set([
 
 // https://www.w3.org/TR/html52/
 // https://www.w3.org/TR/html52/syntax.html#writing-html-documents-elements
-export const voidElems = new Set([
+export const voidElems = /* @__PURE__ */ new Set([
   'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta',
   'param', 'source', 'track', 'wbr',
 ])
@@ -84,7 +84,7 @@ export const voidElems = new Set([
 // object serves as a "raw" marker.
 export class Raw extends String {}
 
-export const e = E.bind.bind(E, undefined)
+export function e(...args) {return E.bind(undefined, ...args)}
 
 /* Internal Utils */
 
@@ -247,8 +247,8 @@ function setDatasetProp(val, key, dataset) {
 // containing a hyphen.
 function toAria(key) {return `aria-${key.slice(4).toLowerCase()}`}
 
-function addClass(acc, val) {
-  if (isArr(val)) return fold(val, acc, addClass)
+function clsAppend(acc, val) {
+  if (isArr(val)) return fold(val, acc, clsAppend)
 
   // For convenience, any falsy value is skipped, allowing `a && b`.
   if (!val) return acc

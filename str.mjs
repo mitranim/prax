@@ -34,7 +34,7 @@ export function doc(val) {
   return `<!doctype html>${encodeChild(val)}`
 }
 
-export const e = E.bind.bind(E, undefined)
+export function e(...args) {return E.bind(undefined, ...args)}
 
 /* Internal Utils */
 
