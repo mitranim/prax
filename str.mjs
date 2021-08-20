@@ -21,13 +21,15 @@ export function F(...children) {
 // https://www.w3.org/TR/html52/syntax.html#escaping-a-string
 export function escapeText(val) {
   val = str(val)
-  return reText.test(val) ? val.replace(reText, escapeChar) : val
+  const re = /[\u00a0&<>]/g
+  return re.test(val) ? val.replace(re, escapeChar) : val
 }
 
 // https://www.w3.org/TR/html52/syntax.html#escaping-a-string
 export function escapeAttr(val) {
   val = str(val)
-  return reAttr.test(val) ? val.replace(reAttr, escapeChar) : val
+  const re = /[\u00a0&"]/g
+  return re.test(val) ? val.replace(re, escapeChar) : val
 }
 
 export function doc(val) {
@@ -39,7 +41,7 @@ export function e(...args) {return E.bind(undefined, ...args)}
 /* Internal Utils */
 
 function encodeHtml(name, props, children) {
-  valid(name, isValidElemName)
+  req(name, isValidElemName)
 
   const open = `<${name}${encodeProps(props)}>`
 
@@ -104,7 +106,7 @@ function appendEncodeStyle(acc, val, key) {
 // Probably want to detect and reject unquoted `:;` in values.
 function encodeStylePair(key, val) {
   if (isNil(val)) return ''
-  validAt(key, val, isStr)
+  reqAt(key, val, isStr)
   return `${camelToKebab(key)}: ${val};`
 }
 
@@ -132,15 +134,15 @@ at such ostentatious notions! In addition, browsers tend to serialize the
 `=""`. We follow their lead for consistency.
 */
 function attr(key, val) {
-  valid(key, isValidAttrName)
+  req(key, isValidAttrName)
   if (isNil(val)) return ``
 
   if (boolAttrs.has(key)) {
-    validAt(key, val, isBool)
+    reqAt(key, val, isBool)
     return !val ? `` : ` ${key}=""`
   }
 
-  validAt(key, val, isStringable)
+  reqAt(key, val, isStringable)
   return ` ${key}="${escapeAttr(toStrUnchecked(val))}"`
 }
 
@@ -151,7 +153,7 @@ function toAria(key) {return `aria-${key.slice(4).toLowerCase()}`}
 // Should match the browser algorithm for dataset keys.
 // Probably very inefficient.
 function camelToKebab(val) {
-  valid(val, isStr)
+  req(val, isStr)
 
   let out = ''
   for (const char of val) {
@@ -161,9 +163,6 @@ function camelToKebab(val) {
   }
   return out
 }
-
-const reText = /[&\u00a0<>]/g
-const reAttr = /[&\u00a0"]/g
 
 // https://www.w3.org/TR/html52/syntax.html#escaping-a-string
 function escapeChar(char) {
@@ -175,7 +174,7 @@ function escapeChar(char) {
   return char
 }
 
-// Extremely permissive. Should prevent common gotchas without interfering with
+// Extremely permissive. Should prevent stupid errors without interfering with
 // non-ASCII XML, which we do support.
 //
 // Reference for HTML:
@@ -186,16 +185,16 @@ function escapeChar(char) {
 // https://www.w3.org/TR/html52/syntax.html#elements-attributes
 function isValidElemName(val) {return isStr(val) && /^[^\s<>"]+$/.test(val)}
 
-// Extremely permissive. Intended only to prevent weird gotchas.
+// Extremely permissive. Intended only to prevent stupid errors.
 function isValidAttrName(val) {return /\S+/.test(val)}
 
-function validAt(key, val, fun) {
+function reqAt(key, val, fun) {
   if (!fun(val)) {
     throw Error(`invalid property "${key}": expected ${show(val)} to satisfy ${show(fun)}`)
   }
 }
 
-function toStr(val) {return toStrUnchecked(valid(val, isStringable))}
+function toStr(val) {return toStrUnchecked(req(val, isStringable))}
 
 // WTB shorter name.
 function toStrUnchecked(val) {
@@ -224,7 +223,7 @@ function foldArr(val, acc, fun) {
 
 function foldVals(val, acc, fun, ...args) {
   if (!isNil(val)) {
-    valid(val, isStruct)
+    req(val, isStruct)
     for (const key in val) acc = fun(acc, val[key], key, ...args)
   }
   return acc
@@ -241,10 +240,10 @@ function isArr(val) {return isInst(val, Array)}
 function isStruct(val) {return isObj(val) && !isArr(val) && !isInst(val, String)}
 function isInst(val, Cls) {return isComp(val) && val instanceof Cls}
 
-function str(val) {return isNil(val) ? '' : valid(val, isStr)}
+function str(val) {return isNil(val) ? '' : req(val, isStr)}
 function optStr(val) {return isNil(val) ? undefined : str(val)}
 
-function valid(val, test) {
+function req(val, test) {
   if (!test(val)) throw Error(`expected ${show(val)} to satisfy test ${show(test)}`)
   return val
 }

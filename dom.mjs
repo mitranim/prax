@@ -4,13 +4,13 @@
 /* Public API */
 
 export function E(name, props, ...children) {
-  elemValid(name, children)
+  reqElem(name, children)
   const node = document.createElement(name, props)
   return initNode(node, props, children)
 }
 
 export function S(name, props, ...children) {
-  valid(name, isStr)
+  req(name, isStr)
   const node = document.createElementNS(`http://www.w3.org/2000/svg`, name, props)
   return initNode(node, props, children)
 }
@@ -25,7 +25,7 @@ export function reset(node, props, ...children) {
 }
 
 export function resetProps(node, props) {
-  validInst(node, Element)
+  reqInst(node, Element)
   eachVal(props, setProp, node)
   return node
 }
@@ -35,7 +35,7 @@ export function replace(node, ...children) {
 }
 
 export function props(node) {
-  validInst(node, Element)
+  reqInst(node, Element)
   return fold(node.attributes, {dataset: node.dataset}, attrToProp, node)
 }
 
@@ -50,7 +50,7 @@ export function len(val) {
 export function vac(val) {return hasSome(val) ? val : undefined}
 
 export function map(val, fun, ...args) {
-  valid(fun, isFun)
+  req(fun, isFun)
   const acc = []
   mapMutDeep(0, val, 0, acc, fun, ...args)
   return acc
@@ -107,7 +107,7 @@ function resetChildren(node, children) {
 }
 
 function removeNodes(node) {
-  validInst(node, Node)
+  reqInst(node, Node)
   while (node.firstChild) node.firstChild.remove()
 }
 
@@ -167,7 +167,7 @@ function setUnknownProp(node, key, val) {
 
     if (isPrim(prev)) {
       if (!isPrim(val)) throw Error(`can't set non-primitive "${show(key)}": ${show(val)} on ${show(node)}`)
-      if (!isNil(val) && boolAttrs.has(key)) validAt(key, val, isBool)
+      if (!isNil(val) && boolAttrs.has(key)) reqAt(key, val, isBool)
       maybeSetProp(node, key, prev, val)
       return
     }
@@ -187,7 +187,7 @@ function setAttrs(node, attrs) {
 
 // Should be kept in sync with `str.mjs` -> `attr`.
 function setAttr(val, key, node) {
-  valid(key, isStr)
+  req(key, isStr)
 
   if (isNil(val)) {
     node.removeAttribute(key)
@@ -195,13 +195,13 @@ function setAttr(val, key, node) {
   }
 
   if (boolAttrs.has(key)) {
-    validAt(key, val, isBool)
+    reqAt(key, val, isBool)
     if (val) node.setAttribute(key, '')
     else node.removeAttribute(key)
     return
   }
 
-  validAt(key, val, isStringable)
+  reqAt(key, val, isStringable)
   node.setAttribute(key, toStrUnchecked(val))
 }
 
@@ -227,7 +227,7 @@ function setStyle(node, val) {
 
 function setStyleProp(val, key, style) {
   if (isNil(val)) val = ''
-  validAt(key, val, isStr)
+  reqAt(key, val, isStr)
   maybeSetProp(style, key, style[key], val)
 }
 
@@ -238,7 +238,7 @@ function setDataset(node, val) {
 function setDatasetProp(val, key, dataset) {
   if (isNil(val)) delete dataset[key]
   else {
-    validAt(key, val, isStringable)
+    reqAt(key, val, isStringable)
     dataset[key] = toStrUnchecked(val)
   }
 }
@@ -273,15 +273,15 @@ function guessProp(node, key, val) {
   return val
 }
 
-function validAt(key, val, fun) {
+function reqAt(key, val, fun) {
   if (!fun(val)) {
     throw Error(`invalid property "${show(key)}": expected ${show(val)} to satisfy ${show(fun)}`)
   }
 }
 
 // See `impl.md` on void elems.
-function elemValid(name, children) {
-  valid(name, isStr)
+function reqElem(name, children) {
+  req(name, isStr)
   if (children.length && voidElems.has(name)) {
     throw Error(`got unexpected children for void element "${show(name)}"`)
   }
@@ -290,7 +290,7 @@ function elemValid(name, children) {
 // Many DOM APIs consider only `null` to be nil.
 function normNil(val) {return isNil(val) ? null : val}
 function normStr(val) {return isNil(val) ? null : str(val)}
-function toStr(val) {return toStrUnchecked(valid(val, isStringable))}
+function toStr(val) {return toStrUnchecked(req(val, isStringable))}
 
 // WTB shorter name.
 function toStrUnchecked(val) {
@@ -314,7 +314,7 @@ function isStringableObj(val) {
 
 function eachVal(val, fun, ...args) {
   if (isNil(val)) return
-  valid(val, isStruct)
+  req(val, isStruct)
   for (const key in val) fun(val[key], key, ...args)
 }
 
@@ -349,14 +349,14 @@ function isArr(val) {return isInst(val, Array)}
 function isStruct(val) {return isObj(val) && !isArr(val) && !isInst(val, String)}
 function isInst(val, Cls) {return isComp(val) && val instanceof Cls}
 
-function str(val) {return isNil(val) ? '' : valid(val, isStr)}
+function str(val) {return isNil(val) ? '' : req(val, isStr)}
 
-function valid(val, test) {
+function req(val, test) {
   if (!test(val)) throw Error(`expected ${show(val)} to satisfy test ${show(test)}`)
   return val
 }
 
-function validInst(val, Cls) {
+function reqInst(val, Cls) {
   if (!isInst(val, Cls)) {
     throw Error(`expected ${show(val)} to be an instance of ${show(Cls)}`)
   }
