@@ -5,15 +5,15 @@ export function testCommon(x, eqm) {
 
   throws(E, 'link', {}, null)
 
-  void function testInvalid() {
-    void function testInvalidType() {
+  void function test_invalid() {
+    void function test_invalid_type() {
       throws(E)
       throws(E, E)
       throws(E, {})
       throws(E, {toString() {return 'div'}})
     }()
 
-    void function testInvalidProps() {
+    void function test_invalid_props() {
       throws(E, 'div', 10)
       throws(E, 'div', 'str')
       throws(E, 'div', {fun() {}})
@@ -44,10 +44,10 @@ export function testCommon(x, eqm) {
     }()
   }()
 
-  void function testTagClosing() {
-    void function testVoidElems() {
+  void function test_tag_closing() {
+    void function test_void_elems() {
       // See `impl.md`.
-      void function testVoidElemsWithChildren() {
+      void function test_void_elems_with_children() {
         throws(E, 'link', {}, null)
         throws(E, 'link', {}, undefined)
         throws(E, 'link', {}, '')
@@ -58,7 +58,7 @@ export function testCommon(x, eqm) {
         throws(E, 'img',  {}, [])
       }()
 
-      void function testEmptyVoidElemSelfClosing() {
+      void function test_empty_void_elem_self_closing() {
         eqm(`<area>`,   E('area'))
         eqm(`<base>`,   E('base'))
         eqm(`<br>`,     E('br'))
@@ -80,14 +80,14 @@ export function testCommon(x, eqm) {
       }()
     }()
 
-    void function testNormalElems() {
+    void function test_normal_elems() {
       eqm(`<div></div>`, E('div'))
       eqm(`<a-elem></a-elem>`, E('a-elem'))
     }()
   }()
 
-  void function testProps() {
-    void function testVoidElemAttrs() {
+  void function test_props() {
+    void function test_void_elem_attrs() {
       eqm(
         `<link rel="stylesheet" href="main.css">`,
         E('link', {rel: 'stylesheet', href: 'main.css'}),
@@ -99,8 +99,8 @@ export function testCommon(x, eqm) {
       // )
     }()
 
-    void function testAttrValEncoding() {
-      void function testAttrForbiddenStringer() {
+    void function test_attr_val_encoding() {
+      void function test_attr_forbidden_stringer() {
         throws(E, 'div', {one: {}})
         throws(E, 'div', {one: new class {}()})
         throws(E, 'div', {}, () => {})
@@ -112,25 +112,25 @@ export function testCommon(x, eqm) {
         throws(E, 'div', {one: new class extends Array {}()})
       }()
 
-      void function testNilEncoding() {
+      void function test_nil_encoding() {
         eqm(`<div></div>`, E('div', {one: null, two: undefined}))
       }()
 
-      void function testPrimEncoding() {
+      void function test_prim_encoding() {
         eqm(
           `<div one="" two="10" three="0" four="false" five="Symbol(&quot;)"></div>`,
           E('div', {one: '', two: '10', three: 0, four: false, five: Symbol(`"`)}),
         )
       }()
 
-      void function testAttrArbitraryStringer() {
+      void function test_attr_arbitrary_stringer() {
         eqm(
           `<div one="https://example.com/"></div>`,
           E('div', {one: new URL(`https://example.com`)}),
         )
       }()
 
-      void function testAttrValEscaping() {
+      void function test_attr_val_escaping() {
         eqm(
           `<div attr="<one>&amp;&quot;</one>"></div>`,
           E('div', {attr: `<one>&"</one>`}),
@@ -143,12 +143,12 @@ export function testCommon(x, eqm) {
       }()
     }()
 
-    void function testClass() {
+    void function test_class() {
       // Recommendation: prefer `class`.
       eqm(`<div class="one"></div>`, E('div', {class:     'one'}))
       eqm(`<div class="one"></div>`, E('div', {className: 'one'}))
 
-      void function testClassEscaping() {
+      void function test_class_escaping() {
         eqm(
           `<div class="<one>&amp;&quot;</one>"></div>`,
           E('div', {class: `<one>&"</one>`}),
@@ -156,7 +156,7 @@ export function testCommon(x, eqm) {
       }()
     }()
 
-    void function testStyle() {
+    void function test_style() {
       throws(E, 'div', {style: 10})
       throws(E, 'div', {style: []})
       throws(E, 'div', {style: new x.Raw()})
@@ -172,7 +172,7 @@ export function testCommon(x, eqm) {
         E('div', {style: {margin: '1rem', padding: '1rem'}}),
       )
 
-      void function testStyleNonStrings() {
+      void function test_style_non_strings() {
         throws(E, 'div', {style: {margin: 10}})
 
         eqm(`<div></div>`, E('div', {style: {margin: null}}))
@@ -180,7 +180,7 @@ export function testCommon(x, eqm) {
         eqm(`<div></div>`, E('div', {style: {margin: undefined}}))
       }()
 
-      void function testStyleEscaping() {
+      void function test_style_escaping() {
         eqm(
           `<div style="<one>&amp;&quot;</one>"></div>`,
           E('div', {style: `<one>&"</one>`}),
@@ -188,8 +188,8 @@ export function testCommon(x, eqm) {
       }()
     }()
 
-    void function testDataAttrs() {
-      void function testDataAttrsBasic() {
+    void function test_data_attrs() {
+      void function test_data_attrs_basic() {
         eqm(`<div></div>`,                  E('div', {'data-one': null}))
         eqm(`<div></div>`,                  E('div', {'data-one': undefined}))
         eqm(`<div data-one=""></div>`,      E('div', {'data-one': ''}))
@@ -203,7 +203,7 @@ export function testCommon(x, eqm) {
         )
       }()
 
-      void function testDatasetBasic() {
+      void function test_dataset_basic() {
         eqm(`<div></div>`,                  E('div', {dataset: {one: null}}))
         eqm(`<div></div>`,                  E('div', {dataset: {one: undefined}}))
         eqm(`<div data-one=""></div>`,      E('div', {dataset: {one: ''}}))
@@ -217,14 +217,14 @@ export function testCommon(x, eqm) {
         )
       }()
 
-      void function testDatasetPropNameToAttrName() {
+      void function test_dataset_prop_name_to_attr_name() {
         eqm(
           `<div data--one="" data--two-three="" data--f-o-u-r=""></div>`,
           E('div', {dataset: {One: '', TwoThree: '', FOUR: ''}}),
         )
       }()
 
-      void function testDataAttrEscaping() {
+      void function test_data_attr_escaping() {
         eqm(
           `<div data-attr="<one>&amp;&quot;</one>"></div>`,
           E('div', {'data-attr': `<one>&"</one>`}),
@@ -236,8 +236,8 @@ export function testCommon(x, eqm) {
       }()
     }()
 
-    void function testAriaAttrs() {
-      void function testAriaPropsCamel() {
+    void function test_aria_attrs() {
+      void function test_aria_props_camel() {
         eqm(
           `<div></div>`,
           E('div', {ariaCurrent: null, ariaChecked: undefined}),
@@ -249,7 +249,7 @@ export function testCommon(x, eqm) {
         )
       }()
 
-      void function testAriaAttrsKebab() {
+      void function test_aria_attrs_kebab() {
         eqm(
           `<div></div>`,
           E('div', {'aria-current': null, 'aria-checked': undefined}),
@@ -261,7 +261,7 @@ export function testCommon(x, eqm) {
         )
       }()
 
-      void function testAriaMixed() {
+      void function test_aria_mixed() {
         eqm(
           `<div></div>`,
           E('div', {ariaCurrent: null, 'aria-checked': undefined}),
@@ -273,7 +273,7 @@ export function testCommon(x, eqm) {
         )
       }()
 
-      void function testAriaMultiHumpedCamel() {
+      void function test_aria_multi_humped_camel() {
         eqm(
           `<a aria-autocomplete="page">text</a>`,
           E('a', {ariaAutoComplete: 'page'}, 'text'),
@@ -281,7 +281,7 @@ export function testCommon(x, eqm) {
       }()
     }()
 
-    void function testBoolAttrs() {
+    void function test_bool_attrs() {
       throws(E, 'input', {hidden: ''})
       throws(E, 'input', {hidden: 10})
 
@@ -301,7 +301,7 @@ export function testCommon(x, eqm) {
       )
     }()
 
-    void function testAttributesProp() {
+    void function test_attributes_prop() {
       throws(E, 'div', {attributes: {hidden: 10}})
 
       eqm(
@@ -309,7 +309,7 @@ export function testCommon(x, eqm) {
         E('div', {attributes: {nonbool: 'one', hidden: true, disabled: false}}),
       )
 
-      void function testAttributesPropEscaping() {
+      void function test_attributes_prop_escaping() {
         eqm(
           `<div attr="<one>&amp;&quot;</one>"></div>`,
           E('div', {attributes: {attr: `<one>&"</one>`}}),
@@ -317,14 +317,14 @@ export function testCommon(x, eqm) {
       }()
     }()
 
-    void function testUnknownWeirdAttrs() {
+    void function test_unknown_weird_attrs() {
       eqm(
         `<div one-two="three" four.five="six"></div>`,
         E('div', {'one-two': 'three', 'four.five': 'six'}),
       )
     }()
 
-    void function testMetaAttrs() {
+    void function test_meta_attrs() {
       eqm(`<meta http-equiv="content-type">`, E('meta', {httpEquiv: 'content-type'}))
 
       eqm(`<meta http-equiv="content-type">`, E('meta', {'http-equiv': 'content-type'}))
@@ -336,8 +336,8 @@ export function testCommon(x, eqm) {
     }()
   }()
 
-  void function testChildren() {
-    void function testChildForbiddenStringer() {
+  void function test_children() {
+    void function test_child_forbidden_stringer() {
       throws(E, 'div', {}, {})
       throws(E, 'div', {}, new class {}())
       throws(E, 'div', {}, () => {})
@@ -345,7 +345,7 @@ export function testCommon(x, eqm) {
       throws(E, 'div', {}, Promise.resolve())
     }()
 
-    void function testPrimChildren() {
+    void function test_prim_children() {
       eqm(`<div></div>`,            E('div', {}, null))
       eqm(`<div></div>`,            E('div', {}, undefined))
       eqm(`<div>0</div>`,           E('div', {}, 0))
@@ -376,11 +376,11 @@ export function testCommon(x, eqm) {
       )
     }()
 
-    void function testChildArbitraryStringer() {
+    void function test_child_arbitrary_stringer() {
       eqm(`<div>https://example.com/</div>`, E('div', {}, new URL(`https://example.com`)))
     }()
 
-    void function testChildFlattening() {
+    void function test_child_flattening() {
       eqm(
         `<outer>one<mid>two<inner>three</inner>four</mid>five</outer>`,
         E('outer', {},
@@ -401,7 +401,7 @@ export function testCommon(x, eqm) {
       )
     }()
 
-    void function testChildEscaping() {
+    void function test_child_escaping() {
       eqm(
         `<div>&lt;one&gt;&amp;"&lt;/one&gt;</div>`,
         E('div', {}, `<one>&"</one>`),
@@ -422,7 +422,7 @@ export function testCommon(x, eqm) {
         E(`div`, {}, Symbol(`<script></script>`)),
       )
 
-      void function testDontEscapeStringObject() {
+      void function test_dont_escape_string_object() {
         eqm(
           `<outer><inner>text</inner></outer>`,
           E('outer', {}, new x.Raw(`<inner>text</inner>`)),
@@ -436,8 +436,8 @@ export function testCommon(x, eqm) {
 
     // Fragment's type and structure is different between `str.mjs` and
     // `dom.mjs`, and tested separately.
-    void function testFragment() {
-      void function testFragmentAsChild() {
+    void function test_fragment() {
+      void function test_fragment_as_child() {
         eqm(
           `<div>onetwo</div>`,
           E('div', {}, F(null, 'one', undefined, ['two'], [])),
@@ -451,7 +451,7 @@ export function testCommon(x, eqm) {
     }()
   }()
 
-  void function testCls() {
+  void function test_cls() {
     throws(x.cls, true)
     throws(x.cls, {})
 
@@ -465,7 +465,7 @@ export function testCommon(x, eqm) {
     eq('one two three', x.cls('one', null, ['two', undefined], null, [['three']]))
   }()
 
-  void function testBoundE() {
+  void function test_e() {
     eqm(`<div></div>`,                      e('div')())
     eqm(`<div class="one"></div>`,          e('div', {class: 'one'})())
     eqm(`<div class="one">some text</div>`, e('div', {class: 'one'}, 'some text')())
@@ -473,7 +473,7 @@ export function testCommon(x, eqm) {
     eqm(`<div class="one">some text</div>`, e('div')({class: 'one'}, 'some text'))
   }()
 
-  void function testLen() {
+  void function test_len() {
     eq(0, x.len())
     eq(0, x.len(undefined))
     eq(0, x.len(null))
@@ -483,7 +483,7 @@ export function testCommon(x, eqm) {
     eq(3, x.len([[10], null, 20, undefined, [[30]]]))
   }()
 
-  void function testVac() {
+  void function test_vac() {
     eq(undefined, x.vac(undefined))
     eq(undefined, x.vac(null))
     eq(undefined, x.vac([]))
@@ -501,7 +501,7 @@ export function testCommon(x, eqm) {
     eq([null, NaN],   x.vac([null, NaN]))
   }()
 
-  void function testMap() {
+  void function test_map() {
     eq([],                 x.map(undefined, id))
     eq([],                 x.map(null, id))
     eq([],                 x.map([undefined], id))
@@ -514,5 +514,55 @@ export function testCommon(x, eqm) {
 
     function id(val) {return val}
     function args(...args) {return args}
+  }()
+
+  void function test_merge() {
+    eq(undefined, x.merge())
+    eq(undefined, x.merge(undefined, null))
+    eq({}, x.merge(undefined, {}, null))
+
+    eq(
+      {one: 10, two: 20, three: 40},
+      x.merge({one: 10, three: 30}, {two: 20, three: 40}),
+    )
+
+    eq(
+      {one: 10, two: 20, class: `three four`},
+      x.merge({one: 10, class: `three`}, {two: 20, class: [`four`]}),
+    )
+
+    eq(
+      {one: 10, two: 20, className: `three four`},
+      x.merge({one: 10, className: `three`}, {two: 20, className: [`four`]}),
+    )
+
+    eq(
+      {one: 10, two: 20, attributes: {three: 30, four: 40}},
+      x.merge({one: 10, attributes: {three: 30}}, {two: 20, attributes: {four: 40}}),
+    )
+
+    eq(
+      {one: 10, two: 20, dataset: {three: 30, four: 40}},
+      x.merge({one: 10, dataset: {three: 30}}, {two: 20, dataset: {four: 40}}),
+    )
+
+    eq(
+      {one: 10, two: 20, style: {three: 30, four: 40}},
+      x.merge({one: 10, style: {three: 30}}, {two: 20, style: {four: 40}}),
+    )
+
+    eq(
+      {one: 10, two: 20, style: {three: 30}},
+      x.merge({one: 10, style: {three: 30}}, {two: 20, style: undefined}),
+    )
+
+    eq(
+      {one: 10, two: 20, style: {three: 40}},
+      x.merge({one: 10, style: undefined}, {two: 20, style: {three: 40}}),
+    )
+
+    throws(x.merge, `str`)
+    throws(x.merge, 10)
+    throws(x.merge, x.merge)
   }()
 }

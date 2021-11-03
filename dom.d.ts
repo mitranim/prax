@@ -49,6 +49,8 @@ export function map<T>(val: Child, fun: (child: Child, i?: number) => T): T
 
 export function doc(val: Child): Child
 
+export function merge(...props: Props[]): Props
+
 export const boolAttrs: Set<string>
 
 export const voidElems: Set<string>

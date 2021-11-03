@@ -13,7 +13,7 @@ export function testRcompat({E: baseE}, eqm) {
   // Should be copied to application code.
   function E() {return R(baseE, ...arguments)}
 
-  void function testPropsChildren() {
+  void function test_props_children() {
     eqm(`<div>one</div>`, E('div', {children: 'one'}))
 
     eqm(`<div>onetwo</div>`, E('div', {children: ['one', 'two']}))
@@ -23,7 +23,7 @@ export function testRcompat({E: baseE}, eqm) {
       E('outer', {children: [E('inner', {}, 'one')]}),
     )
 
-    void function testPropsChildrenComeBeforeOtherChildren() {
+    void function test_props_children_come_before_other_children() {
       eqm(
         `<div>onetwo</div>`,
         E('div', {children: ['one']}, 'two'),

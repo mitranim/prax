@@ -44,7 +44,7 @@ export function cls(...vals) {
 }
 
 export function len(val) {
-  return isNil(val) ? 0 : isArr(val) ? sumBy(val, len) : 1
+  return isNil(val) ? 0 : isArr(val) ? sum(val, len) : 1
 }
 
 export function vac(val) {return hasSome(val) ? val : undefined}
@@ -58,6 +58,19 @@ export function map(val, fun, ...args) {
 
 // Shim for isomorphism with `str.mjs`.
 export function doc(val) {return val}
+
+export function merge(...vals) {
+  vals.forEach(reqOptStruct)
+  const len = count(vals, isSome)
+
+  return (
+    !len
+    ? undefined
+    : len === 1
+    ? vals.find(isSome)
+    : fold(vals, {}, addProps)
+  )
+}
 
 // The specification postulates the concept, but where's the standard list?
 // Taken from non-authoritative sources.
@@ -273,6 +286,37 @@ function guessProp(node, key, val) {
   return val
 }
 
+function addProps(acc, props) {
+  if (isNil(props)) return acc
+  req(props, isStruct)
+
+  for (const key in props) {
+    const val = props[key]
+
+    if (key === `attributes` || key === `dataset` || key === `style`) {
+      acc[key] = maybePatch(acc[key], val)
+      continue
+    }
+
+    if (key === `class` || key === `className`) {
+      acc[key] = cls(acc[key], val)
+      continue
+    }
+
+    acc[key] = val
+  }
+
+  return acc
+}
+
+function maybePatch(prev, next) {
+  return isStruct(prev) && isStruct(next)
+    ? {...prev, ...next}
+    : isStruct(prev) && isNil(next)
+    ? prev
+    : next
+}
+
 function reqAt(key, val, fun) {
   if (!fun(val)) {
     throw Error(`invalid property "${show(key)}": expected ${show(val)} to satisfy ${show(fun)}`)
@@ -286,6 +330,8 @@ function reqElem(name, children) {
     throw Error(`got unexpected children for void element "${show(name)}"`)
   }
 }
+
+function reqOptStruct(val) {if (isSome(val)) req(val, isStruct)}
 
 // Many DOM APIs consider only `null` to be nil.
 function normNil(val) {return isNil(val) ? null : val}
@@ -330,8 +376,11 @@ function mapMutDeep(i, val, _i, acc, fun, ...args) {
   return i + 1
 }
 
-function sumBy(val, fun) {return fold(val, 0, addBy, fun)}
-function addBy(acc, val, _i, fun) {return acc + fun(val)}
+function sum(val, fun) {return fold(val, 0, add, fun)}
+function add(acc, val, _i, fun) {return acc + fun(val)}
+
+function count(val, fun) {return fold(val, 0, inc, fun)}
+function inc(acc, val, _, fun) {return fun(val) ? acc + 1 : acc}
 
 function hasSome(val) {
   return !isNil(val) && (!isArr(val) || val.some(hasSome))
@@ -339,6 +388,7 @@ function hasSome(val) {
 
 function is(a, b) {return Object.is(a, b)}
 function isNil(val) {return val == null}
+function isSome(val) {return !isNil(val)}
 function isBool(val) {return typeof val === 'boolean'}
 function isStr(val) {return typeof val === 'string'}
 function isPrim(val) {return !isComp(val)}

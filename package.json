@@ -1,6 +1,6 @@
 {
   "name": "prax",
-  "version": "0.7.8",
+  "version": "0.7.9",
   "type": "module",
   "main": "./str.mjs",
   "browser": "./dom.mjs",

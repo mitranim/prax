@@ -16,7 +16,7 @@ Experimental HTML/DOM rendering system for hybrid SSR + SPA apps. See [Why](#why
 * Runs in Node, Deno, and browsers.
 * Nice-to-use in plain JS. No build system required.
 
-Tiny (a few kilobytes _un_-minified) and dependency-free. Native JS module.
+Tiny (a few kilobytes unminified) and dependency-free. Native JS module.
 
 ## TOC
 
@@ -39,6 +39,7 @@ Tiny (a few kilobytes _un_-minified) and dependency-free. Native JS module.
   * [`vac`](#vacchildren)
   * [`map`](#mapchildren-fun-args)
   * [`doc`](#docval)
+  * [`merge`](#mergevals)
   * [`e`](#etype-props-children-1)
   * [Undocumented](#undocumented)
   * [React Compat](#react-compat)
@@ -76,7 +77,7 @@ Parts of the overhead weren't in Preact itself, but merely encouraged by it. In 
 
 #### Large
 
-By now React has bloated to what, 100+ KiB minified? More? Fortunately, Preact solves that (≈10 KiB minified at the time of writing). Prax is even smaller; a few kilobytes _un_-minified, with no dependencies.
+By now React has bloated to what, 100+ KiB minified? More? Fortunately, Preact solves that (≈10 KiB minified at the time of writing). Prax is even smaller; a few kilobytes unminified, with no dependencies.
 
 ### Why not Svelte?
 
@@ -113,13 +114,13 @@ npm i -E prax
 With URL imports in Deno:
 
 ```js
-import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.8/str.mjs'
+import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.9/str.mjs'
 ```
 
 With URL imports in browsers:
 
 ```js
-import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.8/dom.mjs'
+import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.9/dom.mjs'
 ```
 
 This example uses plain JS. Prax is also [compatible with JSX](#jsx). For a better experience, use native modules and run your app from source in both Node/Deno and browsers.
@@ -391,6 +392,17 @@ function Html() {
 }
 ```
 
+### `merge(...vals)`
+
+Combines multiple [props](#props) into one, merging their `attributes`, `dataset`, `style`, `class`, `className` whenever possible. For other properties, this performs an override rather than merge (last value wins). In case of `style`, merging is done only for style dicts, not for style strings.
+
+```js
+import {merge} from 'prax'
+
+merge({class: `one`, onclick: someFunc}, {class: `two`, disabled: true})
+// {class: `one two`, onclick: someFunc, disabled: true}
+```
+
 ### `e(type, props, ...children)`
 
 (Better name pending.) Tiny shortcut for making shortcuts. Performs [partial application](https://en.wikipedia.org/wiki/Partial_application) of [`E`](#etype-props-children) with the given arguments.
@@ -556,6 +568,10 @@ function Inner({children, ...props}) {
 ```
 
 ## Changelog
+
+### `0.7.9`
+
+Added `merge`.
 
 ### `0.7.8`
 

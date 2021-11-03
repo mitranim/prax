@@ -2,7 +2,7 @@ import type {Nil, Stringable, Props, Raw} from './dom.d.ts'
 
 export type {Nil, Prim, Stringable, StringableRecord, Props, ClsVal} from './dom.d.ts'
 
-export {Raw, boolAttrs, voidElems, cls} from './dom.d.ts'
+export {Raw, boolAttrs, voidElems, cls, merge} from './dom.d.ts'
 
 export type Child = Nil | Stringable | Child[]
 
