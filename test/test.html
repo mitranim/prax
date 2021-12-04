@@ -4,7 +4,8 @@
 <link rel="icon" href="data:;base64,=">
 <title>prax test</title>
 
-<script type="module" src="/test/test-dom.mjs"></script>
+<script type="module" src="/test/test_dom.mjs"></script>
+<script type="module" src="/test/bench_dom.mjs"></script>
 <script type="module" src="/afr/client.mjs"></script>
 
 <style>
@@ -19,22 +20,23 @@
 
   a[href] {color: var(--color-link);}
 
-  .flex                         {display: flex;}
-  .size-double                  {font-size: 2rem;}
-  .gaps-v-2 > :not(:last-child) {margin-bottom: 2rem;}
-  .text-center                  {text-align: center;}
-  .high                         {min-height: 100vh;}
-  .wspace-pre                   {white-space: pre;}
+  .flex {display: flex;}
+  .size-double {font-size: 2rem;}
+  .gap-ver-2 > :not(:last-child) {margin-bottom: 2rem;}
+  .text-cen {text-align: center;}
+  .high {min-height: 100vh;}
 
-  .ccc {
-    flex-direction:  column;
+  .col-cen-cen {
+    flex-direction: column;
     justify-content: center;
-    align-items:     center;
+    align-items: center;
   }
 
-  .font-monospace {
+  .pre {
     font-family: SF Mono, Menlo, Monaco, DejaVu Sans Mono, Consolas, monospace;
+    word-break: break-word;
+    white-space: pre-wrap;
   }
 </style>
 
-<body class="high flex ccc gaps-v-2 font-monospace wspace-pre"></body>
+<body class="high flex col-cen-cen gap-ver-2 pre"></body>

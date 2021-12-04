@@ -29,9 +29,12 @@ async function serve(conn) {
 }
 
 async function response(req) {
+  const {pathname} = new URL(req.url)
+  if (pathname.startsWith(`/Users`)) return a.resExactFile(pathname)
+
   return (
     await bro.res(req) ||
-    a.resSiteWithNotFound(req, dirs) ||
+    (await a.resSiteWithNotFound(req, dirs)) ||
     new Response('not found', {status: 404})
   )
 }

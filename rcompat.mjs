@@ -1,5 +1,7 @@
 // Optional adapters for migrating React-based apps to Prax.
 
+import * as d from './dom.mjs'
+
 /* Public API */
 
 /*
@@ -13,14 +15,14 @@ Replaces `React.createElement`. Usage:
   export function S(...args) {return R(x.S, ...args)}
 */
 export function R(E, type, props, ...children) {
-  valid(E, isFun)
+  d.req(E, d.isFun)
   props = dict(props)
 
   try {
-    if (isFun(type)) {
+    if (d.isFun(type)) {
       propsToReact(props, children)
       const pro = type.prototype
-      if (pro && isFun(pro.render)) return new type(props).render()
+      if (pro && d.isFun(pro.render)) return new type(props).render()
       return type(props)
     }
 
@@ -60,34 +62,12 @@ function propsFromReact(props, children) {
 //
 // Only partially redundant with `vac`, which doesn't unwrap arrays.
 function trim(children) {
-  if (isArr(children)) {
+  if (d.isArr(children)) {
     if (!children.length) return null
     if (children.length === 1) return trim(children[0])
   }
   return children
 }
 
-function comb(a, b) {return isNil(a) ? b : isNil(b) ? a : [a, b]}
-
-function isFun(val) {return typeof val === 'function'}
-function isNil(val) {return val == null}
-function isArr(val) {return isInst(val, Array)}
-function isComp(val) {return isObj(val) || isFun(val)}
-function isObj(val) {return val !== null && typeof val === 'object'}
-function isInst(val, Cls) {return isComp(val) && val instanceof Cls}
-
-function isDict(val) {
-  if (!isObj(val)) return false
-  const proto = Object.getPrototypeOf(val)
-  return proto === null || proto === Object.prototype
-}
-
-function only(val, test) {valid(val, test); return val}
-function dict(val) {return isNil(val) ? {} : only(val, isDict)}
-
-function valid(val, test) {
-  if (!test(val)) throw Error(`expected ${show(val)} to satisfy test ${show(test)}`)
-}
-
-// Placeholder, might improve.
-function show(val) {return (isFun(val) && val.name) || String(val)}
+function comb(a, b) {return d.isNil(a) ? b : (d.isNil(b) ? a : [a, b])}
+function dict(val) {return d.isNil(val) ? Object.create(null) : d.req(val, d.isDict)}

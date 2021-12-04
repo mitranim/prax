@@ -1,100 +1,95 @@
 /// <reference types="./str.d.ts" />
 // See `impl.md` for implementation notes.
 
-import {Raw, boolAttrs, voidElems} from './dom.mjs'
+import * as d from './dom.mjs'
 
 /* Public API */
 
-export {Raw, boolAttrs, voidElems, cls, len, vac, map, merge} from './dom.mjs'
+export {Raw, boolAttrs, voidElems, cls, len, vac, map, merge, lax} from './dom.mjs'
 
 export function E(name, props, ...children) {
-  return new Raw(encodeHtml(name, props, children))
+  return new d.Raw(encodeHtml(name, props, children))
 }
 
 // TODO: this should use XML encoding, without HTML special cases.
 export const S = E
 
-export function F(...children) {
-  return new Raw(encodeChildren(children))
-}
+export function F(...vals) {return new d.Raw(encodeChildren(vals))}
 
 // https://www.w3.org/TR/html52/syntax.html#escaping-a-string
 export function escapeText(val) {
-  val = str(val)
+  val = d.str(val)
   const re = /[\u00a0&<>]/g
   return re.test(val) ? val.replace(re, escapeChar) : val
 }
 
 // https://www.w3.org/TR/html52/syntax.html#escaping-a-string
 export function escapeAttr(val) {
-  val = str(val)
+  val = d.str(val)
   const re = /[\u00a0&"]/g
   return re.test(val) ? val.replace(re, escapeChar) : val
 }
 
-export function doc(val) {
-  return `<!doctype html>${encodeChild(val)}`
-}
-
+export function doc(val) {return `<!doctype html>${encodeChild(val)}`}
 export function e(...args) {return E.bind(undefined, ...args)}
 
 /* Internal Utils */
 
 function encodeHtml(name, props, children) {
-  req(name, isValidElemName)
+  d.req(name, isValidElemName)
 
   const open = `<${name}${encodeProps(props)}>`
 
-  if (voidElems.has(name)) {
+  if (d.voidElems.has(name)) {
     if (children.length) {
       throw Error(`got unexpected children for void element "${name}"`)
     }
     return open
   }
 
-  const innerHtml = toStr(props && props.innerHTML)
+  const innerHtml = d.toStr(props && props.innerHTML)
   const inner = encodeChildren(children)
   return `${open}${innerHtml}${inner}</${name}>`
 }
 
-function encodeChildren(val) {return foldArr(val, '', appendEncodeChild)}
+function encodeChildren(val) {return d.fold(val, ``, appendEncodeChild)}
 function appendEncodeChild(acc, node) {return acc + encodeChild(node)}
 
 function encodeChild(node) {
-  if (isArr(node)) return encodeChildren(node)
-  if (isInst(node, String)) return node
-  return escapeText(toStr(node))
+  if (d.isSeq(node)) return encodeChildren(node)
+  if (d.isInst(node, d.Raw)) return node
+  return escapeText(d.toStr(node))
 }
 
-function encodeProps(props) {return foldVals(props, '', appendEncodeProp)}
+function encodeProps(props) {return foldStruct(props, ``, appendEncodeProp)}
 function appendEncodeProp(acc, val, key) {return acc + encodeProp(key, val)}
 
 // Should be kept in sync with `dom.mjs` -> `setProp`.
 // Expected to accumulate more special cases over time.
 // TODO: skip this for XML rendering.
 function encodeProp(key, val) {
-  if (key === 'children')     throw Error(`use {R} from 'prax/rcompat.mjs' for children-in-props`)
-  if (key === 'attributes')   return encodeAttrs(val)
-  if (key === 'class')        return attr('class', optStr(val))
-  if (key === 'className')    return attr('class', optStr(val))
-  if (key === 'style')        return encodeStyle(val)
-  if (key === 'dataset')      return encodeDataset(val)
-  if (key === 'httpEquiv')    return attr('http-equiv', val)
-  if (key === 'htmlFor')      return attr('for', val)
+  if (key === `children`)     throw Error(`use {R} from 'prax/rcompat.mjs' for children-in-props`)
+  if (key === `attributes`)   return encodeAttrs(val)
+  if (key === `class`)        return attr(`class`, d.optStr(val))
+  if (key === `className`)    return attr(`class`, d.optStr(val))
+  if (key === `style`)        return encodeStyle(val)
+  if (key === `dataset`)      return encodeDataset(val)
+  if (key === `httpEquiv`)    return attr(`http-equiv`, val)
+  if (key === `htmlFor`)      return attr(`for`, val)
   if (/^aria[A-Z]/.test(key)) return attr(toAria(key), val)
-  if (key === 'innerHTML')    return ''
+  if (key === `innerHTML`)    return ``
   return attr(key, val)
 }
 
-function encodeAttrs(attrs) {return foldVals(attrs, '', appendEncodeAttr)}
+function encodeAttrs(attrs) {return foldStruct(attrs, ``, appendEncodeAttr)}
 function appendEncodeAttr(acc, val, key) {return acc + attr(key, val)}
 
 // Should be kept in sync with `dom.mjs` -> `setStyle`.
 function encodeStyle(val) {
-  if (isNil(val)) return ''
-  if (isStr(val)) return val && attr('style', val)
-  if (isStruct(val)) return encodeStyle(foldVals(val, '', appendEncodeStyle))
-  throw Error(`style must be string or dict, got ${show(val)}`)
+  if (d.isNil(val)) return ``
+  if (d.isString(val)) return val && attr(`style`, val)
+  if (d.isStruct(val)) return encodeStyle(foldStruct(val, ``, appendEncodeStyle))
+  throw TypeError(`style must be string or dict, got ${d.show(val)}`)
 }
 
 function appendEncodeStyle(acc, val, key) {
@@ -105,18 +100,16 @@ function appendEncodeStyle(acc, val, key) {
 // Might need smarter conversion from JS to CSS properties.
 // Probably want to detect and reject unquoted `:;` in values.
 function encodeStylePair(key, val) {
-  if (isNil(val)) return ''
-  reqAt(key, val, isStr)
-  return `${camelToKebab(key)}: ${val};`
+  if (d.isNil(val)) return ``
+  d.reqAt(key, val, d.isString)
+  return `${cached(styleKeys, key, d.camelToKebab)}: ${val};`
 }
 
-function encodeDataset(dataset) {
-  return foldVals(dataset, '', appendEncodeDataAttr)
-}
+function encodeDataset(dataset) {return foldStruct(dataset, ``, appendEncodeDataAttr)}
 
 function appendEncodeDataAttr(acc, val, key) {
-  if (isNil(val)) return acc
-  return acc + attr(`data-${camelToKebab(key)}`, toStr(val))
+  if (d.isNil(val)) return acc
+  return acc + attr(cached(dataKeys, key, camelToDataKey), d.toStr(val))
 }
 
 /*
@@ -134,119 +127,68 @@ at such ostentatious notions! In addition, browsers tend to serialize the
 `=""`. We follow their lead for consistency.
 */
 function attr(key, val) {
-  req(key, isValidAttrName)
-  if (isNil(val)) return ``
+  d.req(key, isValidAttrName)
+  if (d.isNil(val)) return ``
 
-  if (boolAttrs.has(key)) {
-    reqAt(key, val, isBool)
+  if (d.boolAttrs.has(key)) {
+    d.reqAt(key, val, d.isBool)
     return !val ? `` : ` ${key}=""`
   }
 
-  reqAt(key, val, isStringable)
-  return ` ${key}="${escapeAttr(toStrUnchecked(val))}"`
+  val = d.toMaybeStr(val)
+  if (d.isNil(val)) return ``
+  return ` ${key}="${escapeAttr(val)}"`
 }
 
-// ARIA attributes appear to be case-insensitive, with only the `aria-` prefix
-// containing a hyphen.
+// ARIA attributes appear to be case-insensitive. Only the `aria-` prefix
+// contains a hyphen.
 function toAria(key) {return `aria-${key.slice(4).toLowerCase()}`}
 
-// Should match the browser algorithm for dataset keys.
-// Probably very inefficient.
-function camelToKebab(val) {
-  req(val, isStr)
+// Average cost: single digit ns.
+export function cached(map, val, fun) {
+  if (!map.has(val)) map.set(val, fun(val))
+  return map.get(val)
+}
 
-  let out = ''
-  for (const char of val) {
-    const lower = char.toLowerCase()
-    if (char !== lower) out += '-'
-    out += lower
-  }
-  return out
+export const styleKeys = new Map()
+export const dataKeys = new Map()
+
+// Reference: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset#name_conversion
+export function camelToDataKey(val) {
+  return `data-` + (/^[A-Z]/.test(val) ? `-` : ``) + d.camelToKebab(val)
 }
 
 // https://www.w3.org/TR/html52/syntax.html#escaping-a-string
-function escapeChar(char) {
-  if (char === '&')      return '&amp;'
-  if (char === '\u00a0') return '&nbsp;'
-  if (char === '"')      return '&quot;'
-  if (char === '<')      return '&lt;'
-  if (char === '>')      return '&gt;'
+export function escapeChar(char) {
+  if (char === `&`) return `&amp;`
+  if (char === `\u00a0`) return `&nbsp;`
+  if (char === `"`) return `&quot;`
+  if (char === `<`) return `&lt;`
+  if (char === `>`) return `&gt;`
   return char
 }
 
-// Extremely permissive. Should prevent stupid errors without interfering with
-// non-ASCII XML, which we do support.
-//
-// Reference for HTML:
-// https://www.w3.org/TR/html52/syntax.html#tag-name
-// https://www.w3.org/TR/html52/infrastructure.html#alphanumeric-ascii-characters
-//
-// Also see for attrs, unused:
-// https://www.w3.org/TR/html52/syntax.html#elements-attributes
-function isValidElemName(val) {return isStr(val) && /^[^\s<>"]+$/.test(val)}
+/*
+Extremely permissive. Should prevent stupid errors without interfering with
+non-ASCII XML, which we do support.
+
+Reference for HTML:
+
+  https://www.w3.org/TR/html52/syntax.html#tag-name
+  https://www.w3.org/TR/html52/infrastructure.html#alphanumeric-ascii-characters
+
+Also see for attrs, unused:
+https://www.w3.org/TR/html52/syntax.html#elements-attributes
+*/
+function isValidElemName(val) {return d.isString(val) && /^[^\s<>"]+$/.test(val)}
 
 // Extremely permissive. Intended only to prevent stupid errors.
 function isValidAttrName(val) {return /\S+/.test(val)}
 
-function reqAt(key, val, fun) {
-  if (!fun(val)) {
-    throw Error(`invalid property "${key}": expected ${show(val)} to satisfy ${show(fun)}`)
-  }
-}
-
-function toStr(val) {return toStrUnchecked(req(val, isStringable))}
-
-// WTB shorter name.
-function toStrUnchecked(val) {
-  if (isNil(val)) return ''
-  if (isStr(val)) return val
-  if (isPrim(val)) return val.toString()
-  return toStr(val.toString())
-}
-
-function isStringable(val) {return isPrim(val) || isStringableObj(val)}
-
-function isStringableObj(val) {
-  if (!isObj(val)) return false
-  const {toString} = val
-  return (
-    isFun(toString) &&
-    toString !== Object.prototype.toString &&
-    toString !== Array.prototype.toString
-  )
-}
-
-function foldArr(val, acc, fun) {
-  for (let i = 0; i < val.length; i += 1) acc = fun(acc, val[i])
-  return acc
-}
-
-function foldVals(val, acc, fun, ...args) {
-  if (!isNil(val)) {
-    req(val, isStruct)
+function foldStruct(val, acc, fun, ...args) {
+  if (!d.isNil(val)) {
+    d.req(val, d.isStruct)
     for (const key in val) acc = fun(acc, val[key], key, ...args)
   }
   return acc
 }
-
-function isNil(val) {return val == null}
-function isBool(val) {return typeof val === 'boolean'}
-function isStr(val) {return typeof val === 'string'}
-function isPrim(val) {return !isComp(val)}
-function isComp(val) {return isObj(val) || isFun(val)}
-function isFun(val) {return typeof val === 'function'}
-function isObj(val) {return val !== null && typeof val === 'object'}
-function isArr(val) {return isInst(val, Array)}
-function isStruct(val) {return isObj(val) && !isArr(val) && !isInst(val, String)}
-function isInst(val, Cls) {return isComp(val) && val instanceof Cls}
-
-function str(val) {return isNil(val) ? '' : req(val, isStr)}
-function optStr(val) {return isNil(val) ? undefined : str(val)}
-
-function req(val, test) {
-  if (!test(val)) throw Error(`expected ${show(val)} to satisfy test ${show(test)}`)
-  return val
-}
-
-// Placeholder, might improve.
-function show(val) {return (isFun(val) && val.name) || String(val)}

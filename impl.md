@@ -4,6 +4,10 @@
 
 The names of these functions are abbreviated because they're used _**A LOT**_.
 
+## Void Elems
+
+Browsers technically allow appending children to a void element such as `link` or `img`. In the DOM, the children are present, but when serializing, they're ignored. We specifically forbid void element children, in order to minimize gotchas and ensure symmetry between `str.mjs` and `dom.mjs`.
+
 ## `reset`
 
 `reset` buffers child nodes in a `DocumentFragment` _before_ removing old nodes, to avoid the following situation, which _can happen in Preact_:
@@ -20,11 +24,11 @@ The worst case scenario is:
 
     content -> exception -> old content
 
-`E` bypasses this because it always creates a new node. Exceptions during `E` don't break existing content, unless someone passes an array of pre-existing nodes to be "stolen".
+`E` bypasses this because it always creates a new node. Exceptions during `E` don't break existing content, unless someone passes a collection of pre-existing nodes to be "stolen".
 
-## Void Elems
+## `resetText`
 
-Browsers technically allow appending children to a void element such as `link` or `img`. In the DOM, the children are present, but when serializing, they're ignored. We specifically forbid void element children, in order to minimize gotchas and ensure symmetry between `str.mjs` and `dom.mjs`.
+Currently forces creation of a new text node. Could be optimized, but needs benchmarks first. Alternative implementation would cost a lot more code.
 
 ## Str Performance
 

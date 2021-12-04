@@ -3,10 +3,11 @@
 export type Nil = null | undefined
 export type Prim = Nil | string | number | bigint | boolean | symbol
 
-// Technically, Prax also supports automatic stringification of objects whose
-// `.toString()` is not inherited from `Object` or `Array`. Unclear how to
-// express this at the type level. May revise.
-//
+/*
+Technically, Prax also supports automatic stringification of objects whose
+`.toString()` is not inherited from `Object` or `Array`. Unclear how to express
+this at the type level. May revise.
+*/
 // deno-lint-ignore ban-types
 export type Stringable = Prim | String
 
@@ -35,6 +36,14 @@ export function resetProps<N extends Node>(node: N, props?: Props): N
 
 export function replace(node: Node, ...children: Child[]): void
 
+export function resetDoc(head: HTMLHeadElement, body: HTMLBodyElement): void
+
+export function resetHead(head: HTMLHeadElement): void
+
+export function resetText(node: HTMLElement, src: Stringable): HTMLElement
+
+export function reg(cls: {new(): HTMLElement}): void
+
 export function props(node: Node): Props
 
 export type ClsVal = Nil | false | 0 | string | ClsVal[]
@@ -50,6 +59,8 @@ export function map<T>(val: Child, fun: (child: Child, i?: number) => T): T
 export function doc(val: Child): Child
 
 export function merge(...props: Props[]): Props
+
+export function lax(val?: boolean): boolean
 
 export const boolAttrs: Set<string>
 
@@ -68,6 +79,8 @@ declare global {
   interface Node {}
   interface Element extends Node {}
   interface HTMLElement extends Element {}
+  interface HTMLHeadElement extends Element {}
+  interface HTMLBodyElement extends Element {}
   interface DocumentFragment extends Node {}
   interface HTMLElementTagNameMap {}
   interface SVGElementTagNameMap {}

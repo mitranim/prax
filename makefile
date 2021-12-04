@@ -1,24 +1,34 @@
 MAKEFLAGS := --silent --always-make
 PAR := $(MAKE) -j 128
-DENO := deno run --reload
+DENO := deno run --reload --unstable --allow-hrtime
+RUN := $(if $(run),--run "$(run)",)
+VERB := $(if $(filter $(verb),true),-v,)
+TEST_STR := test/test_str.ts $(VERB) $(RUN)
+BENCH_STR := test/bench_str.mjs $(VERB) $(RUN)
 
 watch:
-	$(PAR) test-str-w test-dom-w lint-w
+	$(PAR) test_str_w test_dom_w
 
 prep:
-	$(PAR) test-str lint
+	$(PAR) test_str lint
 
-lint-w:
-	watchexec -r -d=0 -e=mjs,ts -n -- make lint
+lint_w:
+	watchexec -r -d=0 -e=mjs,ts -n -- $(MAKE) lint
 
 lint:
-	deno lint
+	deno lint --rules-exclude=no-empty,require-yield
 
-test-str-w:
-	$(DENO) --watch test/test-str.ts
+test_str_w:
+	$(DENO) --watch $(TEST_STR)
 
-test-str:
-	$(DENO) test/test-str.ts
+test_str:
+	$(DENO) $(TEST_STR)
 
-test-dom-w:
-	$(DENO) -A --watch --unstable test/srv.mjs
+test_dom_w:
+	$(DENO) --no-check --watch -A test/srv.mjs
+
+bench_w:
+	$(DENO) --no-check --watch $(BENCH_STR)
+
+bench:
+	$(DENO) --no-check $(BENCH_STR)

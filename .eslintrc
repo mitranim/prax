@@ -1,9 +1,11 @@
 {
-  "parserOptions": {"sourceType": "module"},
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+  },
   "env": {
     "es2020": true,
     "browser": true,
-    "node": true
   },
   "rules": {
     "no-restricted-globals": ["error",
@@ -38,7 +40,7 @@
     "no-dupe-else-if": "error",
     "no-dupe-keys": "error",
     "no-duplicate-case": "error",
-    "no-empty": "error",
+    // "no-empty": "error",
     "no-empty-character-class": "error",
     "no-empty-pattern": "error",
     "no-ex-assign": "error",

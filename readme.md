@@ -1,6 +1,6 @@
 ## Overview
 
-Experimental HTML/DOM rendering system for hybrid SSR + SPA apps. See [Why](#why). In short: performance and _radical_ simplicity.
+HTML/DOM rendering system for hybrid SSR + SPA apps. See [Why](#why). In short: performance and _radical_ simplicity.
 
 * Markup = nested function calls.
 * No intermediate representations.
@@ -11,9 +11,9 @@ Experimental HTML/DOM rendering system for hybrid SSR + SPA apps. See [Why](#why
 * No library classes.
 * No templates.
 * No string parsing.
-* Render only once. Use native [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) for state. (Doesn't need library support.)
+* Render only once. Use native [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) for state. (Custom elements don't need library support.)
 * Replace instead of reflowing.
-* Runs in Node, Deno, and browsers.
+* Runs in [Node](https://nodejs.org/en/about/), [Deno](https://deno.land), and browsers.
 * Nice-to-use in plain JS. No build system required.
 
 Tiny (a few kilobytes unminified) and dependency-free. Native JS module.
@@ -33,6 +33,10 @@ Tiny (a few kilobytes unminified) and dependency-free. Native JS module.
   * [`reset`](#resetelem-props-children)
   * [`resetProps`](#resetpropselem-props)
   * [`replace`](#replacenode-children)
+  * [`resetDoc`](#resetdochead-body)
+  * [`resetHead`](#resetheadhead)
+  * [`resetText`](#resettextnode-src)
+  * [`reg`](#regcls)
   * [`props`](#propsnode)
   * [`cls`](#clsvals)
   * [`len`](#lenchildren)
@@ -40,6 +44,7 @@ Tiny (a few kilobytes unminified) and dependency-free. Native JS module.
   * [`map`](#mapchildren-fun-args)
   * [`doc`](#docval)
   * [`merge`](#mergevals)
+  * [`lax`](#laxval)
   * [`e`](#etype-props-children-1)
   * [Undocumented](#undocumented)
   * [React Compat](#react-compat)
@@ -65,15 +70,15 @@ React seems _particularly unfit_ for hybrid SSR + SPA apps. Your ideal flow:
 
 If the entire page was rendered with React, then to activate the interactive parts, you must load all that JS and _re-render_ the entire page with React. In the browser. On a page that was already rendered. This is ludicrously wasteful. In my current company's app, this easily takes 500ms of CPU time on many pages (using Preact). To make it worse, because markup is a function of data (regardless of your rendering library), this requires the _original data_, which you must either invisibly inline into HTML (wasted traffic, SEO deranking), or re-fetch in the browser (wasted traffic, server load). This is insane.
 
-For apps with SSR, a better approach is to activate interactive components in-place without any "render". Native custom elements are a particularly good fit for this. This requires separating the _markup_ code from the _stateful behavior_ code. React is predicated on the idea of co-locating markup and state. You could still render your markup with React, but when markup is stateless, this is pointlessly inefficient. Prax can do it much faster, while optionally using JSX.
+For apps with SSR, a better approach is to activate interactive components in-place without any "render". Native custom elements are _particularly fit_ for this. This requires separating the _markup_ code from the _stateful behavior_ code. React is predicated on the idea of co-locating markup and state. You could still render your markup with React, but when markup is stateless, this is pointlessly inefficient. Prax can do it much faster, while optionally using JSX.
 
 #### Slow
 
 React's rendering model is _inefficient by design_. Svelte's creator did a better job explaining this: https://svelte.dev/blog/virtual-dom-is-pure-overhead.
 
-The _design_ inefficiencies described above shouldn't apply to the initial page render in Node/Deno, when there's nothing to diff against. However, there are also needless _implementation_ inefficiencies. My benchmarks are for Preact, which we've been using over React for size reasons. At my current company, replacing `preact@10.5.13` and `preact-render-to-string@5.1.18` with the initial, naive and almost unoptimized Prax has yielded x5 better performance in Node, and somewhere between x3 and x8 (depending on how you measure) better in browsers, for rendering big pages. In addition, switching to custom elements for stateful components allows to completely eliminate the in-browser initial render, which was hitching the CPU for 500ms on some pages, while also eliminating the need to fetch or inline a huge amount of data that was required for that render.
+The _design_ inefficiencies described above shouldn't apply to the initial page render in Node/Deno, when there's nothing to diff against. However, there are also needless _implementation_ inefficiencies. My benchmarks are for Preact, which we've been using over React for size reasons. At my current company, replacing `preact@10.5.13` and `preact-render-to-string@5.1.18` with the initial, naive and almost unoptimized Prax yields x5 better performance in Node, and somewhere between x3 and x8 (depending on how you measure) better in browsers, for rendering big pages. In addition, switching to custom elements for stateful components allows to completely eliminate the in-browser initial render, which would hitch the CPU for 500ms on some pages, while also eliminating the need to fetch or inline a huge amount of data that was required for that render.
 
-Parts of the overhead weren't in Preact itself, but merely encouraged by it. In SSR, components would initialize state, create additional owned objects, bind callbacks, and establish implicit reactive subscriptions, even though this would all be wasted. This doesn't excuse an unfit model, and the performance improvement was real.
+Parts of the overhead weren't in Preact itself, but merely encouraged by it. In SSR, components would initialize state, create additional owned objects, bind callbacks, and establish implicit reactive subscriptions, even though this would all be wasted. This doesn't excuse an unfit model, and the performance improvement is real.
 
 #### Large
 
@@ -101,7 +106,7 @@ For the application architecture espoused by Prax, it would be even simpler and 
 
 ### Why not framework X?
 
-Probably never heard of X! For the very specific requirements outlined above, it was faster to make a fit, than to search among the thousands of unfits. If one already existed, let me know.
+Probably never heard of X! For the very specific requirements outlined above, it was faster to build a fit, than to search among the thousands of unfits. If one already existed, let me know.
 
 ## Usage
 
@@ -114,13 +119,13 @@ npm i -E prax
 With URL imports in Deno:
 
 ```js
-import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.9/str.mjs'
+import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.10/str.mjs'
 ```
 
 With URL imports in browsers:
 
 ```js
-import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.9/dom.mjs'
+import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.10/dom.mjs'
 ```
 
 This example uses plain JS. Prax is also [compatible with JSX](#jsx). For a better experience, use native modules and run your app from source in both Node/Deno and browsers.
@@ -192,14 +197,16 @@ function Index() {
 
 ## API
 
-In Prax, rendering functions ([`E`](#etype-props-children)/[`S`](#stype-props-children)/[`F`](#fchildren)) return different output in Node/Deno and browsers. But you import and call them the same way. Prax provides the module `str.mjs` for Node/Deno, and the module `dom.mjs` for browsers. Its `package.json` specifies which file should be imported where, in ways understood by Node and bundlers such as Webpack. You should be able to just:
+Also see changelog: [changelog.md](changelog.md).
+
+In Prax, rendering functions ([`E`](#etype-props-children)/[`S`](#stype-props-children)/[`F`](#fchildren)) return different output in Node/Deno and browsers. But you import and call them the same way. Prax provides the module `str.mjs` for Node/Deno, and the module `dom.mjs` for browsers. Its `package.json` specifies which file should be imported where, in ways understood by Node and bundlers such as Esbuild. You should be able to just:
 
 ```js
 import {E} from 'prax'
 import * as x from 'prax'
 ```
 
-Also, you don't need a bundler! JS modules are natively supported by evergreen browsers, but you'll need an importmap. Importmap support is polyfillable. You could also use a bundler _just_ for production builds.
+Also, you don't need a bundler! JS modules are natively supported by evergreen browsers. To avoid repeating the import URL, either list your dependencies in one module imported by the rest of the app, or use an importmap. Importmap support is [polyfillable](https://github.com/guybedford/es-module-shims). You can also use a bundler such as Esbuild _just_ for production builds.
 
 ```html
 <script type="importmap">
@@ -211,7 +218,7 @@ You might also need an importmap for Deno, to choose between `str.mjs` and `dom.
 
 ### `E(type, props, ...children)`
 
-Short for "element", abbreviated for frequent use. Renders an HTML element. In `str.mjs`, returns a string (as `Raw` to indicate that it shouldn't be escaped). In `dom.mjs`, returns a DOM node.
+Short for "element", abbreviated for frequent use. Renders an HTML element. In `str.mjs` returns a string, as `Raw` to indicate that it shouldn't be escaped. In `dom.mjs` returns a DOM node.
 
 `type` must be a string. See [Props](#props) for props rules, and [Children](#children) for child rules.
 
@@ -242,7 +249,7 @@ new Btn()
 
 Exactly like [`E`](#etype-props-children), but generates SVG markup. In Node/Deno, either function will work, but in browsers, you _must_ use `S` for SVG. It uses `document.createElementNS` with the SVG namespace.
 
-This is because unlike every template-based system (including React), Prax renders _immediately_. Nested function calls are evaluated inner-to-outer. When rendering an arbitrary element like `path` (there are many!), `E` has no way of knowing that it will eventually be included into `svg`. HTML parsers automate this because they parse _outer_ elements first.
+This is because unlike every template-based system, including React, Prax renders _immediately_. Nested function calls are evaluated inner-to-outer. When rendering an arbitrary element like `path` (there are many!), `E` has no way of knowing that it will eventually be included into `svg`. HTML parsers automate this because they parse _outer_ elements first.
 
 ```js
 import {S} from 'prax'
@@ -286,9 +293,9 @@ customElements.define('a-btn', Btn, {extends: 'button'})
 
 (Browser-specific API, only in `dom.mjs`.)
 
-Mutates the element, resetting its properties and attributes. Properties and attributes missing from `props` are not affected. To unset existing ones, include them with the appropriate "zero value" (usually `null`/`undefined`).
+Mutates the element, resetting its properties and attributes. Properties and attributes missing from `props` are not affected. To unset existing props, include them with the appropriate "zero value" (usually `null`/`undefined`).
 
-For any given property, if the previous value is identical (via `Object.is`), the new value is not assigned. Many DOM properties are setters; assigning even an identical value may have expensive side effects.
+Avoids reassigning properties when values are identical via `Object.is`. Many DOM properties are setters with side effects. This avoids unexpected costs.
 
 ```js
 import * as x from 'prax'
@@ -303,7 +310,76 @@ x.resetProps(elem, {class: 'new-class', hidden: false})
 Shortcut for:
 
 ```js
-node.parentNode.replaceChild(F(...children), node)
+import * as x from 'prax'
+
+node.parentNode.replaceChild(x.F(...children), node)
+```
+
+### `resetDoc(head, body)`
+
+(Browser-specific API, only in `dom.mjs`.)
+
+Carefully updates `document.head` and `document.body`. In `document.head`, this moves nodes from the given head and removes _only_ the elements that were previously added by `resetDoc`. When replacing `document.body`, this attempts to preserve focus. Example usage:
+
+```js
+import * as x from 'prax'
+import {E} from 'prax'
+
+function SomePage() {
+  x.resetDoc(
+    E(`head`, {},
+      E(`title`, {}, `some title`),
+      E(`meta`, {name: `author`, content: `some author`}),
+      E(`meta`, {name: `description`, content: `some description`}),
+    ),
+    E(`body`, {},
+      E(`p`, {}, `hello world!`),
+    )
+  )
+}
+```
+
+### `resetHead(head)`
+
+(Browser-specific API, only in `dom.mjs`.)
+
+Takes `HTMLHeadElement`, usually rendered with `E('head', ...)`, and carefully updates the current `document.head`. Rules:
+
+  * _Doesn't affect nodes that weren't previously passed to `resetHead`_.
+  * Instead of appending `<title>`, sets `document.title` to its text content.
+
+Nodes previously passed to `resetHead` are tagged using a `WeakSet` which is exported as `metas` but undocumented. Adding other nodes to this set will cause Prax to replace them as well.
+
+See [`resetDoc`](#resetdochead-body) for examples.
+
+### `resetText(node, src)`
+
+(Browser-specific API, only in `dom.mjs`.)
+
+Takes an `Element` and replaces its `textContent` by a stringified version of `src`, using Prax's [stringification rules](#stringable). Returns the given element. Very similar to the following:
+
+```js
+node.textContent = src
+```
+
+... but will _not_ render `[object Object]` or other similar garbage. See [rules](#stringable).
+
+### `reg(cls)`
+
+(Browser-specific API, only in `dom.mjs`.)
+
+Short for "register". Registers a custom DOM element class, automatically deriving tag name from class name, and inspecting the prototype chain to automatically determine the base tag for the `{extends}` option. Incompatible with name-mangling minifiers. When using a bundler/minifier, it must be configured to preserve class names.
+
+The following examples are equivalent:
+
+```js
+class Link extends HTMLAnchorElement {}
+x.reg(Link)
+```
+
+```js
+class Link extends HTMLAnchorElement {}
+customElements.define(`a-link`, Link, {extends: `a`})
 ```
 
 ### `props(node)`
@@ -342,7 +418,7 @@ x.len(children)
 
 ### `vac(children)`
 
-Same as `len(children) ? children : undefined`, but more efficient. The name is short for "vacate" / "vacuum" / "vacuous".
+The name is short for "vacate" / "vacuum" / "vacuous". Same as `len(children) ? children : undefined`, but more efficient.
 
 ```js
 x.vac(null)
@@ -353,6 +429,12 @@ x.vac([[[null]]])
 
 x.vac([null, 0, 'str'])
 // [null, 0, 'str']
+```
+
+This function allows to use `&&` without accidentally rendering a falsy value such as `false` or `0`. Without `x.vac`, `&&` may evaluate to something not intended for rendering.
+
+```js
+x.vac(someValue) && E(`div`, {}, someValue)
 ```
 
 ### `map(children, fun, ...args)`
@@ -397,10 +479,24 @@ function Html() {
 Combines multiple [props](#props) into one, merging their `attributes`, `dataset`, `style`, `class`, `className` whenever possible. For other properties, this performs an override rather than merge (last value wins). In case of `style`, merging is done only for style dicts, not for style strings.
 
 ```js
-import {merge} from 'prax'
+import * as x from 'prax'
 
-merge({class: `one`, onclick: someFunc}, {class: `two`, disabled: true})
+x.merge({class: `one`, onclick: someFunc}, {class: `two`, disabled: true})
 // {class: `one two`, onclick: someFunc, disabled: true}
+```
+
+### `lax(val)`
+
+Toggles lax/strict mode, which affects Prax's [stringification rules](#stringable). This is a combined getter/setter:
+
+```js
+import * as x from 'prax'
+
+x.lax()      // false
+x.lax(true)  // true
+x.lax()      // true
+x.lax(false) // false
+x.lax()      // false
 ```
 
 ### `e(type, props, ...children)`
@@ -440,7 +536,7 @@ The optional module `rcompat.mjs` exports a few functions for JSX compatibility 
 
 Imperative control flow and immediate, synchronous side effects are precious things. Don't squander them carelessly.
 
-In Prax, everything is immediate. Rendering exceptions can be caught via `try/catch`. Magic context can be setup trivially in user code, via `try/finally`, without library support. Lifecycle stages such as "before render" and "after DOM mounting" can be done just by placing lines of code before and after a [`reset`](#resetelem-props-children) call. (Also via native lifecycle callbacks in custom elements.)
+In Prax, everything is immediate. Rendering exceptions can be caught via `try/catch`. Magic context can be setup trivially in user code, via `try/finally`, without library support. Lifecycle stages such as "before render" and "after DOM mounting" can be done just by placing lines of code before and after a [`reset`](#resetelem-props-children) call. (Also via native lifecycle callbacks in custom elements, which doesn't require library support.)
 
 Compare the hacks and workarounds invented in React to implement the same trivial things.
 
@@ -457,14 +553,15 @@ You can simply `new RecText(obs)`, passing a specific observable. No "props" inv
 ```js
 import {E, reset} from 'prax'
 
-function someMarkup() {
-  return reset(new RecText(someObservable), {class: 'text'})
+function SomeMarkup() {
+  return new RecText(someObservable, {class: 'text'})
 }
 
 class RecText extends HTMLElement {
-  constructor(observable) {
+  constructor(observable, props) {
     super()
     this.obs = observable
+    x.resetProps(this, props)
   }
 
   connectedCallback() {
@@ -485,8 +582,9 @@ customElements.define('a-rec-text', RecText)
 
 ## Props
 
-Just like React, Prax conflates attributes and properties, calling everything "props". Here are the rules. The term "nil" stands for both `null` and `undefined`.
+Just like React, Prax conflates attributes and properties, calling everything "props". Here are the rules.
 
+* The term `nil` stands for both `null` and `undefined`.
 * Props as a whole are `nil | {}`.
 * Any prop with a `nil` value is either unset or skipped, as appropriate.
 * [`class`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/class) and [`className`](https://developer.mozilla.org/en-US/docs/Web/API/Element/className) are both supported, as `nil | string`.
@@ -514,10 +612,10 @@ All rendering functions, such as [`E`](#etype-props-children) or [`reset`](#rese
 * `[]` is traversed, recursively if needed. The following are all equivalent: `a, b, c` | `[a, b, c]` | `[[a], [[[b, [[c]]]]]]`.
 * As a consequence of the previous rules, `[null, [undefined]]` is the same as no children at all.
 * Other primitives (numbers, bools, symbols) are stringified.
-* `new String` strings (of any subclass) are considered "inner HTML". In `str.mjs`, their content is included verbatim and not escaped. In `dom.mjs`, their content is parsed into DOM nodes, similarly to `innerHTML`.
+* `new Raw` strings are considered "inner HTML". In `str.mjs`, their content is included verbatim and not escaped. In `dom.mjs`, their content is parsed into DOM nodes, similarly to `innerHTML`.
 * Anything else must be a [stringable object](#stringable).
 
-In `str.mjs`, _after_ resolving all these rules, the output string is escaped, following [standard rules](https://www.w3.org/TR/html52/syntax.html#escaping-a-string). The only exception is `new String` strings, which are verbatim.
+In `str.mjs`, _after_ resolving all these rules, the output string is escaped, following [standard rules](https://www.w3.org/TR/html52/syntax.html#escaping-a-string). The only exception is `new Raw` strings, which are verbatim.
 
 Caution: literal content of `script` elements may require additional escaping when it contains `</script>` inside strings, regexps, and so on. The following example generates broken markup, and will display a visible `')`. Prax currently doesn't escape this automatically.
 
@@ -535,7 +633,10 @@ Prax's stringification rules are carefully designed to minimize gotchas and bugs
 
 * `null` and `undefined` are equivalent to `''`.
 * Other primitives are stringified. (For example, `0` → `'0'`, `false` → `'false'`, `NaN` → `'NaN'`.)
-* Objects without a custom `.toString` method are forbidden and cause an exception. This includes `{}` and a variety of other classes. This is a bug prevention measure: the vast majority of such objects are never intended for rendering, and are only passed accidentally.
+* Objects without a custom `.toString` method are verboten. This includes `{}` and a variety of other classes. This is a bug prevention measure: the vast majority of such objects are never intended for rendering, and are only passed accidentally.
+  * When `lax(false)` (default, recommended for development), non-stringable objects cause exceptions.
+  * When `lax(true)` (recommended for production), non-stringable objects are treated as nil.
+  * See the [`lax`](#laxval) function.
 * Other objects are stringified via their `.toString`. For example, rendering a `Date` or `URL` object is OK.
 
 ## JSX
@@ -566,80 +667,6 @@ function Inner({children, ...props}) {
   return <div {...props}>one {children} two</div>
 }
 ```
-
-## Changelog
-
-### `0.7.9`
-
-Added `merge`.
-
-### `0.7.8`
-
-Better compatibility with dead code elimination. Bundlers should now remove `voidElems`, `boolAttrs`, and `e` if unused.
-
-### `0.7.7`
-
-`dom.d.ts` now pre-declares any DOM globals that it depends on. These declarations get merged with any externals, such as from `lib="dom"`. This allows Prax to be imported in any environment.
-
-### `0.7.6`
-
-Allow `.ts` on NPM (previously auto-banned in `.npmignore`).
-
-### `0.7.5`
-
-Added functions `vac` and `props`.
-
-Because props returned by `props` may include dict-like `DOMStringMap` (most notably `dataset`), to make `props` reversible without resorting to unnecessary object copying, this version also removes the undocumented requirement of using plain dicts (`{}` or null-prototype objects) for props, `dataset`, `attributes` and `style`. Prax now allows them to be non-plain objects. This is tentative, and may be revised in future versions.
-
-Minor tweaks in TS definitions.
-
-### `0.7.4`
-
-Now has `.d.ts` definitions, courtesy of @pleshevskiy.
-
-### `0.7.3`
-
-`dom.mjs`: fixed ARIA properties such as `ariaCurrent` for FF and possibly other non-Blink browsers.
-
-### `0.7.2`
-
-`reset` no longer internally allocates a `DocumentFragment` when called only with 2 arguments.
-
-### `0.7.1`
-
-`doc` is now isomorphic and documented. In `dom.mjs`, it's just a pass-through.
-
-### `0.7.0`
-
-* Added `replace`.
-* `resetProps` now returns the same node, like `reset`.
-* Renamed `countChildren` → `len`, moved from `rcompat.mjs` to main API.
-* Renamed `mapChildren` → `map`, moved from `rcompat.mjs` to main API.
-
-### `0.6.0`
-
-Better lexicon:
-
-  * `node.mjs` → `str.mjs`.
-  * `prax.mjs` → `dom.mjs`.
-
-Added undocumented function `doc` to `str.mjs`.
-
-### `0.5.3`
-
-Consistently report key names in exceptions for invalid properties in nested props such as `dataset`.
-
-### `0.5.2`
-
-Minor consistency tweaks in class and style assignment. Minor code cosmetics.
-
-### `0.5.1`
-
-`resetProps` and `reset` avoid reassigning identical prop values. This sometimes avoids expensive style recalculations.
-
-### `0.5.0`
-
-Prior versions were a weird cross-section of several libraries, whose functionality eventually got integrated into those libraries. `0.5.0` is an entirely new and different system, completely standalone. See the docs.
 
 ## License
 

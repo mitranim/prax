@@ -1,43 +1,43 @@
+import {t} from './lib.mjs'
+import {testCommon} from './test_common.mjs'
+import {testRcompat} from './test_rcompat.mjs'
 import * as x from '../str.mjs'
 import {E, F, Raw, doc} from '../str.mjs'
-import {is, eq} from './test-utils.mjs'
-import {testCommon} from './test-common.mjs'
-import {testRcompat} from './test-rcompat.mjs'
 
 // deno-lint-ignore no-explicit-any
 (Error as any).stackTraceLimit = Infinity
 
 // Short for "equal markup".
-function eqm(str: string, val: Raw) {eq(new Raw(str), val)}
+function eqm(val: Raw, str: string) {t.eq(val, new Raw(str))}
 
 testCommon(x, eqm)
 testRcompat(x, eqm)
 
 // Recommendation: prefer `class`.
-void function testClassVsClassName() {
+t.test(function testClassVsClassName() {
   eqm(
-    `<div class="one" class="two"></div>`,
     E('div', {class: 'one', className: 'two'}),
-  )
-
-  eqm(
     `<div class="one" class="two"></div>`,
-    E('div', {className: 'one', class: 'two'}),
   )
-}()
 
-// Testing only in Node because browsers ignore this invalid property.
-void function testStyleEscaping() {
   eqm(
-    `<div style="width: <one>&amp;&quot;</one>;"></div>`,
-    E('div', {style: {width: `<one>&"</one>`}}),
+    E('div', {className: 'one', class: 'two'}),
+    `<div class="one" class="two"></div>`,
   )
-}()
+})
 
-// Testing only in Node because:
+// Testing only in "str" because browsers ignore this invalid style property.
+t.test(function testStyleEscaping() {
+  eqm(
+    E('div', {style: {width: `<one>&"</one>`}}),
+    `<div style="width: <one>&amp;&quot;</one>;"></div>`,
+  )
+})
+
+// Testing only in "str" because:
 //   * Wouldn't work in browsers.
 //   * Unnecessary in browsers.
-void function testChildEscaping() {
+t.test(function testChildEscaping() {
   // This horribly breaks inline scripts... which might be a decent default.
   // Users must escape them in an appropriate language-specific way and then
   // use `Raw`. We might be unable to provide a generic solution because
@@ -45,44 +45,39 @@ void function testChildEscaping() {
   // and JSON, the correct way to escape </script> depends on the syntactic
   // context.
   eqm(
-    `<script>console.log('&lt;/script&gt;')</script>`,
     E('script', {}, `console.log('</script>')`),
+    `<script>console.log('&lt;/script&gt;')</script>`,
   )
 
   // This generates broken markup. The test simply demonstrates the possibility.
   // For sane markup, see the corresponding test in the "common" file.
-  void function testDontEscapeStringObject() {
+  t.test(function testDontEscapeStringObject() {
     eqm(
-      `<outer><<&>></outer>`,
-      E('outer', {}, new String(`<<&>>`)),
-    )
-
-    eqm(
-      `<outer><<&>></outer>`,
       E('outer', {}, new Raw(`<<&>>`)),
+      `<outer><<&>></outer>`,
     )
-  }()
-}()
+  })
+})
 
 // `str`-specific; in browsers, it's a `DocumentFragment` which doesn't have any
 // sensible serialization behavior.
-void function testFragment() {
-  is(true, F() instanceof Raw)
+t.test(function testFragment() {
+  t.is(true, F() instanceof Raw)
 
   eqm(
-    `<!doctype html><html>text</html>`,
     F(new Raw(`<!doctype html>`), E('html', {}, 'text')),
+    `<!doctype html><html>text</html>`,
   )
 
-  eqm(`&lt;!doctype html&gt;`, F(`<!doctype html>`))
-}()
+  eqm(F(`<!doctype html>`), `&lt;!doctype html&gt;`)
+})
 
 // `str`-specific; in browsers, this is a pass-through.
-void function testDoc() {
-  is('string', typeof doc(undefined))
-  is(`<!doctype html>`, doc(undefined))
-  is(`<!doctype html>`, doc(``))
-  is(`<!doctype html><html>text</html>`, doc(E('html', {}, 'text')))
-}()
+t.test(function testDoc() {
+  t.is('string', typeof doc(undefined))
+  t.is(`<!doctype html>`, doc(undefined))
+  t.is(`<!doctype html>`, doc(``))
+  t.is(`<!doctype html><html>text</html>`, doc(E('html', {}, 'text')))
+})
 
 console.log('[test] ok!')
