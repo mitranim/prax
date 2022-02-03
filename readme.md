@@ -35,6 +35,7 @@ Tiny (a few kilobytes unminified) and dependency-free. Native JS module.
   * [`replace`](#replacenode-children)
   * [`resetDoc`](#resetdochead-body)
   * [`resetHead`](#resetheadhead)
+  * [`resetBody`](#resetbodybody)
   * [`resetText`](#resettextnode-src)
   * [`reg`](#regcls)
   * [`props`](#propsnode)
@@ -319,7 +320,7 @@ node.parentNode.replaceChild(x.F(...children), node)
 
 (Browser-specific API, only in `dom.mjs`.)
 
-Carefully updates `document.head` and `document.body`. In `document.head`, this moves nodes from the given head and removes _only_ the elements that were previously added by `resetDoc`. When replacing `document.body`, this attempts to preserve focus. Example usage:
+Carefully updates the current `document.head` and `document.body`. Shortcut for using [`resetHead`](#resetheadhead) and [`resetBody`](#resetbodybody) together. Example:
 
 ```js
 import * as x from 'prax'
@@ -348,9 +349,15 @@ Takes `HTMLHeadElement`, usually rendered with `E('head', ...)`, and carefully u
   * _Doesn't affect nodes that weren't previously passed to `resetHead`_.
   * Instead of appending `<title>`, sets `document.title` to its text content.
 
-Nodes previously passed to `resetHead` are tagged using a `WeakSet` which is exported as `metas` but undocumented. Adding other nodes to this set will cause Prax to replace them as well.
+Nodes previously passed to `resetHead` are tagged using a `WeakSet` which is exported under the name `metas` but undocumented. Adding other nodes to this set will cause Prax to replace them as well.
 
 See [`resetDoc`](#resetdochead-body) for examples.
+
+### `resetBody(body)`
+
+(Browser-specific API, only in `dom.mjs`.)
+
+Takes `HTMLBodyElement`, usually rendered with `E('body', ...)`, and replaces the current `document.body`, preserving focus if possible. See [`resetDoc`](#resetdochead-body) for examples.
 
 ### `resetText(node, src)`
 
