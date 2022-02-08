@@ -120,13 +120,13 @@ npm i -E prax
 With URL imports in Deno:
 
 ```js
-import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.10/str.mjs'
+import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.11/str.mjs'
 ```
 
 With URL imports in browsers:
 
 ```js
-import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.10/dom.mjs'
+import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.11/dom.mjs'
 ```
 
 This example uses plain JS. Prax is also [compatible with JSX](#jsx). For a better experience, use native modules and run your app from source in both Node/Deno and browsers.

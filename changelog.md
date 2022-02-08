@@ -1,3 +1,7 @@
+## `0.7.11`
+
+`toStr` is also exported by `str.mjs` (undocumented).
+
 ## `0.7.10`
 
 Added iterator support. Iterators, such as those from `function*`, are now automatically traversed just like arrays.

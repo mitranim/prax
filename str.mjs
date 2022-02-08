@@ -5,7 +5,7 @@ import * as d from './dom.mjs'
 
 /* Public API */
 
-export {Raw, boolAttrs, voidElems, cls, len, vac, map, merge, lax} from './dom.mjs'
+export {Raw, boolAttrs, voidElems, cls, len, vac, map, merge, lax, toStr} from './dom.mjs'
 
 export function E(name, props, ...children) {
   return new d.Raw(encodeHtml(name, props, children))

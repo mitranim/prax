@@ -430,7 +430,7 @@ function maybeNonStringable(val) {
 export function isStringable(val) {return isPrim(val) || isStringableObj(val)}
 
 function isStringableObj(val) {
-  if (!isObj(val)) return false
+  if (!isObj(val) || !(`toString` in val)) return false
   const {toString} = val
   return (
     isFun(toString) &&
