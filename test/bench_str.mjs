@@ -18,5 +18,9 @@ t.bench(function bench_camelToKebab_cached() {
   s.cached(s.styleKeys, `oneTwoThreeFour`, d.camelToKebab)
 })
 
+t.bench(function bench_clsTag() {
+  d.clsTag(Array)
+})
+
 t.deopt()
 t.benches()

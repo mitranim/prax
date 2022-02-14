@@ -1,3 +1,7 @@
+## `0.7.12`
+
+`reg` is now idempotent. This allows `reg(new.target)`, which can automate registration of subclasses.
+
 ## `0.7.11`
 
 `toStr` is also exported by `str.mjs` (undocumented).

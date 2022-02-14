@@ -120,13 +120,13 @@ npm i -E prax
 With URL imports in Deno:
 
 ```js
-import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.11/str.mjs'
+import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.12/str.mjs'
 ```
 
 With URL imports in browsers:
 
 ```js
-import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.11/dom.mjs'
+import {E} from 'https://cdn.jsdelivr.net/npm/prax@0.7.12/dom.mjs'
 ```
 
 This example uses plain JS. Prax is also [compatible with JSX](#jsx). For a better experience, use native modules and run your app from source in both Node/Deno and browsers.
@@ -377,11 +377,22 @@ node.textContent = src
 
 Short for "register". Registers a custom DOM element class, automatically deriving tag name from class name, and inspecting the prototype chain to automatically determine the base tag for the `{extends}` option. Incompatible with name-mangling minifiers. When using a bundler/minifier, it must be configured to preserve class names.
 
-The following examples are equivalent:
+This function is idempotent: repeated calls with the same class are nops. This is handy for `new.target`, see below.
+
+The following examples are nearly equivalent. Using `x.reg(new.target)` also automatically registers subclasses on their instantiation.
 
 ```js
 class Link extends HTMLAnchorElement {}
 x.reg(Link)
+```
+
+```js
+class Link extends HTMLAnchorElement {
+  constructor() {
+    x.reg(new.target)
+    super()
+  }
+}
 ```
 
 ```js

@@ -56,6 +56,7 @@ export function resetText(node, src) {
 }
 
 export function reg(cls) {
+  if (clsTags.has(cls)) return
   customElements.define(clsTag(cls), cls, clsExtends(cls))
 }
 
@@ -363,7 +364,12 @@ export function focusPop() {
   finally {focus.length = 0}
 }
 
-export function clsTag(cls) {return clsNameTag(clsName(cls))}
+export const clsTags = /* @__PURE__ */ new WeakMap()
+
+export function clsTag(cls) {
+  return clsTags.get(cls) || mapSet(clsTags, cls, clsNameTag(clsName(cls)))
+}
+
 export function clsName(cls) {return req(cls, isFun).name}
 
 export function clsNameTag(name) {
@@ -479,6 +485,7 @@ function count(val, fun) {return fold(val, 0, inc, fun)}
 function inc(acc, val, fun) {return fun(val) ? acc + 1 : acc}
 function hasSome(val) {return !!val && (!isArr(val) || val.some(hasSome))}
 function indexOf(list, val) {return Array.prototype.indexOf.call(list, val)}
+function mapSet(map, key, val) {return map.set(key, val), val}
 
 export function is(a, b) {return Object.is(a, b)}
 export function isNil(val) {return val == null}
