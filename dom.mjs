@@ -55,11 +55,6 @@ export function resetText(node, src) {
   return node
 }
 
-export function reg(cls) {
-  if (clsTags.has(cls)) return
-  customElements.define(clsTag(cls), cls, clsExtends(cls))
-}
-
 export function props(node) {
   reqInst(node, Element)
   return fold(node.attributes, {dataset: node.dataset}, attrToProp, node)
@@ -364,44 +359,6 @@ export function focusPop() {
   finally {focus.length = 0}
 }
 
-export const clsTags = /* @__PURE__ */ new WeakMap()
-
-export function clsTag(cls) {
-  return clsTags.get(cls) || mapSet(clsTags, cls, clsNameTag(clsName(cls)))
-}
-
-export function clsName(cls) {return req(cls, isFun).name}
-
-export function clsNameTag(name) {
-  req(name, isString)
-  return name ? `a-` + camelToKebab(name).replace(/^-/, ``) : ``
-}
-
-export function clsExtends(cls) {
-  const tag = clsTagBase(cls)
-  return tag ? {extends: tag} : undefined
-}
-
-export function clsTagBase(cls) {
-  req(cls, isFun)
-
-  while (isFun(cls)) {
-    const name = clsTagNative(cls)
-    if (name) return name
-    cls = Object.getPrototypeOf(cls)
-  }
-
-  return ``
-}
-
-export function clsTagNative(cls) {
-  const name = clsName(cls)
-  if (!window[name]) return ``
-  if (name === `HTMLAnchorElement`) return `a`
-  const match = name.match(/^HTML(\w+)Element$/)
-  return match ? match[1].toLowerCase() : ``
-}
-
 export function reqAt(key, val, fun) {
   if (!fun(val)) {
     throw TypeError(`invalid property ${show(key)}: expected ${show(val)} to satisfy ${show(fun)}`)
@@ -485,7 +442,6 @@ function count(val, fun) {return fold(val, 0, inc, fun)}
 function inc(acc, val, fun) {return fun(val) ? acc + 1 : acc}
 function hasSome(val) {return !!val && (!isArr(val) || val.some(hasSome))}
 function indexOf(list, val) {return Array.prototype.indexOf.call(list, val)}
-function mapSet(map, key, val) {return map.set(key, val), val}
 
 export function is(a, b) {return Object.is(a, b)}
 export function isNil(val) {return val == null}

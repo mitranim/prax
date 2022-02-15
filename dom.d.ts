@@ -42,8 +42,6 @@ export function resetHead(head: HTMLHeadElement): void
 
 export function resetText(node: HTMLElement, src: Stringable): HTMLElement
 
-export function reg(cls: {new(): HTMLElement}): void
-
 export function props(node: Node): Props
 
 export type ClsVal = Nil | false | 0 | string | ClsVal[]

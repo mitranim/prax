@@ -1,3 +1,12 @@
+## `0.8.0`
+
+Improvements in custom element registration:
+
+  * Split off into optional module `reg.mjs`.
+  * Provide base classes that implement automatic registration on `new`.
+  * Support idempotent registration.
+  * Auto-resolve name conflicts.
+
 ## `0.7.12`
 
 `reg` is now idempotent. This allows `reg(new.target)`, which can automate registration of subclasses.
